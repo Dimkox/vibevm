@@ -57,7 +57,10 @@ featured = ["org.vibevm.core/vibevm", "org.vibevm.core/vibevm-docs"]
 # rather than a hole for whoever notices: no id means no tag in the page
 # at all — never a tag with an empty attribute, which would load the
 # script and report nothing. A deployment that wants the tag passes its
-# id in, as the owner's runbook does with every other live value.
+# id in, as the owner's runbook does with every other live value. The
+# published image takes it from the repository variable
+# `UMAMI_WEBSITE_ID`, which the image workflow hands to
+# `docker/vibevm-doc/Dockerfile` as a build argument.
 #
 # `host_url` is left out on purpose: absent, the tag reports to the
 # site's own origin, which is where a first-party script served by the

@@ -64,6 +64,7 @@ jobs:
           NPM_REGISTRY: ${{ inputs.npm_registry || vars.NPM_CONFIG_REGISTRY || 'https://registry.npmjs.org' }}
           VIBE_SHA: ${{ steps.release.outputs.vibe_sha }}
           ZAP_COMMIT: ${{ steps.release.outputs.zap_commit }}
+          UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
         shell: bash
         run: |
           set -euo pipefail
@@ -85,10 +86,13 @@ jobs:
             --build-arg BASE_IMAGE=vibevm/vibevm:1.0.0 \
             --build-arg DEV_IMAGE=vibevm/vibevm-dev:1.0.0 \
             --build-arg NPM_CONFIG_REGISTRY="$NPM_REGISTRY" \
+            --build-arg UMAMI_WEBSITE_ID="$UMAMI_WEBSITE_ID" \
             -t vibevm/vibevm-doc:1.0.0 -t vibevm/vibevm-doc:latest \
             -f docker/vibevm-doc/Dockerfile .
 
       - name: Smoke the unpublished images
+        env:
+          UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
         shell: bash
         run: |
           set -euo pipefail
@@ -103,6 +107,11 @@ jobs:
           curl --fail --silent http://127.0.0.1:18081/ >/dev/null
           curl --fail --silent http://127.0.0.1:18081/doc/ >/dev/null
           curl --fail --silent http://127.0.0.1:18081/doc/org.vibevm.core/vibevm-docs/latest/ >/dev/null
+          if [ -n "$UMAMI_WEBSITE_ID" ]; then
+            for page in / /doc/org.vibevm.core/vibevm-docs/latest/; do
+              curl --fail --silent "http://127.0.0.1:18081$page" | grep -q "data-website-id=\"$UMAMI_WEBSITE_ID\""
+            done
+          fi
 
       - name: Authenticate to Docker Hub
         shell: bash

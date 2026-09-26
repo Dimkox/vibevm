@@ -15,7 +15,18 @@ RUN cd /web && pnpm install --frozen-lockfile
 COPY vibevm/vibepacks/org.vibevm.doc/web/v1.0.0/ /web/
 COPY . /checkout
 COPY vibevm/vibepacks/org.vibevm.doc/web/v1.0.0/docker/site.toml /site.toml
-RUN vibe doc build-site --config /site.toml --out /out --web /web
+# The live analytics property comes from the deployment, never the repository
+# (##SITE-ANALYTICS); empty keeps the committed default, which renders no tag.
+ARG UMAMI_WEBSITE_ID=""
+RUN if [ -n "$UMAMI_WEBSITE_ID" ]; then \
+        printf '%s\n' "$UMAMI_WEBSITE_ID" \
+            | grep -Eqx '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' \
+            || { echo "UMAMI_WEBSITE_ID is not a UUID" >&2; exit 1; }; \
+        sed -i "s/^website_id = \"\"\$/website_id = \"${UMAMI_WEBSITE_ID}\"/" /site.toml; \
+        grep -qx "website_id = \"${UMAMI_WEBSITE_ID}\"" /site.toml \
+            || { echo "site.toml has no empty website_id to fill" >&2; exit 1; }; \
+    fi \
+    && vibe doc build-site --config /site.toml --out /out --web /web
 
 FROM ${BASE_IMAGE}
 USER root
