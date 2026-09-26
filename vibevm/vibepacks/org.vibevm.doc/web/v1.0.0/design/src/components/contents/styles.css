@@ -7,18 +7,86 @@
   font-size: 0.85rem;
 }
 
+/* The control that opens the manual, where there is no column to show it
+   in.
+   ---------------------------------------------------------------------
+   It was a faint uppercase label in the mono face at 0.7rem — the same
+   eyebrow this column puts over a folder of pages — and on a phone it is
+   the ONLY way into the rest of the manual. A reader did not see it. So
+   it is drawn as what it does: the interface's own face at reading size,
+   a box that says it can be pressed, a menu glyph before the word and a
+   mark after it that turns when the list is open. It is at least 44px
+   tall, because on a phone it is hit with a thumb rather than pointed at.
+
+   The native marker goes two ways, because the two engines hide it
+   differently and one of them ignores `list-style` on a flex `summary`. */
 .contents__summary {
-  padding: 0.35rem 0;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-raise);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
+  list-style: none;
+  /* Where the ≡ of the reading controls puts it: under the sticky bar
+     rather than behind it. How much the bar covers is the bar's own
+     measure, published by the stylesheet that draws it — which is loaded
+     exactly when there is a bar, so in the reader `vibe` serves there is
+     none and the fallback of nothing is the right answer. */
+  scroll-margin-top: var(--site-header-cover, 0px);
+  transition:
+    border-color var(--speed) ease,
+    color var(--speed) ease;
+}
+
+.contents__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* What kind of control it is, in one character: the same ≡ the reading
+   controls use for this list, so a reader meets one sign for it. */
+.contents__summary::before {
+  content: "≡";
+  font-family: var(--font-mono);
+  font-size: 1.1em;
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* And whether it is open, at the far end of the row — the `details` own
+   state, read by the stylesheet and not by a script. */
+.contents__summary::after {
+  content: "▸";
+  margin-left: auto;
+  font-size: 0.78em;
+  color: var(--text-3);
+  transition: transform var(--speed) ease;
+}
+
+.contents[open] > .contents__summary::after {
+  transform: rotate(90deg);
 }
 
 .contents__summary:hover {
+  border-color: var(--accent);
   color: var(--accent);
+}
+
+.contents__summary:hover::after {
+  color: var(--accent);
+}
+
+/* Opened, the list stands clear of the control that opened it. In the
+   column there is no control, and the rule below puts the gap back. */
+.contents__summary + .contents__nav {
+  margin-top: 0.8rem;
 }
 
 .contents__section + .contents__section,
@@ -71,6 +139,19 @@
 .contents__link--current {
   border-left-color: var(--accent);
   color: var(--accent);
+}
+
+/* The entry the reading controls just pointed at, for a moment.
+   ---------------------------------------------------------------------
+   In the column shape ≡ does not move the page — the list is already on
+   the screen — so something has to say where the answer is, and it is the
+   entry itself. The mark is put on by the reader and taken off again; a
+   reader who asked for stillness gets it without the fade, because the
+   base stylesheet takes every transition's duration away. */
+.contents__link--cued {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+  transition: background var(--speed) ease;
 }
 
 /* Which of the two views is showing, decided by the root element and by
@@ -159,6 +240,7 @@
 
 .has-sidebar .contents > .contents__nav {
   display: block;
+  margin-top: 0;
 }
 
 .has-sidebar .contents {

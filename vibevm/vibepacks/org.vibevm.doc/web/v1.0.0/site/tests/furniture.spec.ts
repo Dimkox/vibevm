@@ -422,3 +422,75 @@ test("on a phone the blocks the page carries fold by themselves", async ({
   }
   expect(await scrolls(page)).toBe(false);
 });
+
+/**
+ * The way into the rest of the manual, where there is no column to show
+ * it in.
+ *
+ * It was a faint uppercase label in the mono face, at 0.7rem, in the
+ * quietest text tone — and on a phone it is the only way to another page
+ * of the manual. «A person will not notice it» (owner, 2026-09-26). What
+ * is pinned here is that it is a CONTROL: a box a thumb can hit, 44px of
+ * it, that opens the list it names.
+ */
+test("the way into the manual is a control a thumb can hit", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(PAGE);
+
+  const summary = page.locator("[data-contents] .contents__summary");
+  await expect(summary).toBeVisible();
+  const box = await summary.boundingBox();
+  expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+
+  /* It looks like something that can be pressed: a border of its own and
+     a ground under it, and the interface's own face rather than the mono
+     eyebrow it was. */
+  const drawn = await summary.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      border: style.borderTopWidth,
+      transform: style.textTransform,
+    };
+  });
+  expect(drawn.border).not.toBe("0px");
+  expect(drawn.transform).toBe("none");
+
+  /* And it opens the manual's pages, by being a `<details>` and nothing
+     else. */
+  await expect(page.locator("[data-contents] a").first()).toBeHidden();
+  await summary.click();
+  await expect(page.locator("[data-contents] a").first()).toBeVisible();
+
+  /* The page's own headings are the same shape one step quieter, so the
+     pair reads as navigation with one of the two leading. */
+  const toc = page.locator("[data-toc] .toc__summary");
+  await expect(toc).toBeVisible();
+  const both = await page.evaluate(() => {
+    const read = (selector: string): Record<string, string> => {
+      const element = document.querySelector(selector);
+      if (element === null) return {};
+      const style = getComputedStyle(element);
+      return { ground: style.backgroundColor, size: style.fontSize };
+    };
+    return {
+      contents: read(".contents__summary"),
+      toc: read(".toc__summary"),
+    };
+  });
+  expect(both.contents["ground"]).not.toBe(both.toc["ground"]);
+  expect(Number.parseFloat(both.contents["size"] ?? "0")).toBeGreaterThan(
+    Number.parseFloat(both.toc["size"] ?? "0"),
+  );
+});
+
+/** On a wide screen the column shows the pages and the control stays away. */
+test("the control is absent where the column shows the pages", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(PAGE);
+  await expect(page.locator("[data-contents] .contents__summary")).toBeHidden();
+  await expect(page.locator("[data-toc] .toc__summary")).toBeHidden();
+});

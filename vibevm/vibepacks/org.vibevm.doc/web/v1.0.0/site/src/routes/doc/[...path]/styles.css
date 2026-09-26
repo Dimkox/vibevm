@@ -55,6 +55,19 @@
   padding-top: 2.5rem;
 }
 
+/* Folded, both lists stand above the text as blocks of their own, and
+   they take the reading column's own gutter. They did not need one while
+   they were faint labels; a control with a box on it would have started
+   at the screen's edge, as the one thing on the page not lined up with
+   the text it belongs to. */
+.doc-view--page:not(.has-sidebar) > .contents {
+  padding: 1.5rem 1.25rem 0;
+}
+
+.doc-view--page:not(.has-sidebar) > .toc {
+  padding: 0 1.25rem;
+}
+
 .doc-view__unaddressed {
   padding: 1rem;
   border: 1px dashed var(--line-strong);
