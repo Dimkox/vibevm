@@ -15,11 +15,19 @@
  * under one origin and one of them is about what a reload restores, so
  * parallel workers would be two readers sharing one memory; and a retry
  * that turns a failure green is a failure that will come back.
+ *
+ * Two knobs, both from the environment and both with the defaults the
+ * run always had: `VIBE_E2E_PORT` moves the server's port, and
+ * `VIBE_SITE_DIST` — the same name the build reads (`tools/out-dir.mjs`)
+ * — names the output it serves. They exist so that two checkouts of this
+ * package can run their suites on one machine at the same time without
+ * one of them measuring the other's build.
  */
 
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 4173;
+const PORT = Number.parseInt(process.env["VIBE_E2E_PORT"] ?? "4173", 10);
+const DIST = (process.env["VIBE_SITE_DIST"] ?? "").trim() || "dist";
 const ORIGIN = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
@@ -35,7 +43,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `node serve.mjs ${PORT}`,
+    command: `node serve.mjs ${PORT} ${DIST}`,
     url: `${ORIGIN}/doc/`,
     reuseExistingServer: false,
     stdout: "ignore",
