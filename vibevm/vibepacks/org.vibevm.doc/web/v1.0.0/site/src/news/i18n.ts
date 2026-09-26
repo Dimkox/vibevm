@@ -25,6 +25,7 @@
  */
 
 import type { Locale } from "../landing/i18n.ts";
+import { CREATOR_SITE } from "../lib/people.ts";
 
 /** One channel: a place, on a platform, at an address, for a reason. */
 /**
@@ -39,6 +40,10 @@ export const CHANNEL_URLS = {
   reddit: "https://www.reddit.com/r/vibevm/",
   conversation: "https://t.me/chat_1red2black",
   creator: "https://x.com/1red2black",
+  /* The creator's own site, which is where his NAME leads everywhere on
+     this site; the table of the people this site links owns the address
+     and this row reads it, so the footer and this page cannot disagree. */
+  creatorSite: CREATOR_SITE,
 } as const;
 
 export type Channel = {
@@ -100,11 +105,21 @@ const EN: NewsStrings = {
           href: CHANNEL_URLS.news,
           body: "Releases and announcements.",
         },
+        /* Two cards and not one: the card IS the link, so the creator's
+           name could not lead to the creator while it led to an account
+           on X. His own site carries the name; the account beside it
+           carries its handle. */
         {
           name: "Oleg Chirukhin",
+          platform: "Website",
+          href: CHANNEL_URLS.creatorSite,
+          body: "The creator of VibeVM.",
+        },
+        {
+          name: "@1red2black",
           platform: "X",
           href: CHANNEL_URLS.creator,
-          body: "The creator of VibeVM.",
+          body: "Posts by the creator of VibeVM.",
         },
       ],
     },
@@ -157,9 +172,15 @@ const RU: NewsStrings = {
         },
         {
           name: "Олег Чирухин",
+          platform: "Сайт",
+          href: CHANNEL_URLS.creatorSite,
+          body: "Создатель VibeVM.",
+        },
+        {
+          name: "@1red2black",
           platform: "X",
           href: CHANNEL_URLS.creator,
-          body: "Создатель VibeVM.",
+          body: "Записи создателя VibeVM.",
         },
       ],
     },

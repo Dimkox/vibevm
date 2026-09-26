@@ -55,7 +55,7 @@ export const NEWS_META: Readonly<Record<Locale, NewsMeta>> = {
  */
 export const NEWS_LLMS = {
   label: "News & support",
-  gloss: `the official channels: the Telegram news channel (${CHANNEL_URLS.news}), the support and bug-report chat (${CHANNEL_URLS.support}), the community on Reddit (${CHANNEL_URLS.reddit}), a chat for general discussion (${CHANNEL_URLS.conversation}), and the creator of VibeVM, Oleg Chirukhin, on X (${CHANNEL_URLS.creator}).`,
+  gloss: `the official channels: the Telegram news channel (${CHANNEL_URLS.news}), the support and bug-report chat (${CHANNEL_URLS.support}), the community on Reddit (${CHANNEL_URLS.reddit}), a chat for general discussion (${CHANNEL_URLS.conversation}), the site of the creator of VibeVM, Oleg Chirukhin (${CHANNEL_URLS.creatorSite}), and his posts on X (${CHANNEL_URLS.creator}).`,
 } as const;
 
 /** The `llms.txt` entry of the channels page, against a given origin. */

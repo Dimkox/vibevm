@@ -20,6 +20,7 @@
 import { SITE } from "../config.ts";
 import { type Locale, STRINGS as LANDING } from "../landing/i18n.ts";
 import { href } from "../lib/href.ts";
+import { CREATOR_SITE } from "../lib/people.ts";
 import { visionPath } from "./paths.ts";
 
 export type VisionMeta = {
@@ -63,7 +64,10 @@ export function visionArticleGraph(locale: Locale): string {
     url: canonical,
     mainEntityOfPage: canonical,
     inLanguage: LANDING[locale].htmlLang,
-    author: { "@type": "Person", name: "Oleg Chirukhin" },
+    /* And the author's own site with his name, as every mention of him on
+       this site carries it (owner, 2026-09-26): a `Person` with a `url`
+       is a person a graph can resolve rather than a string. */
+    author: { "@type": "Person", name: "Oleg Chirukhin", url: CREATOR_SITE },
     publisher: { "@type": "Organization", name: "VibeVM", url: SITE.origin },
     image: `${SITE.origin}${href("og.png")}`,
     isPartOf: { "@type": "WebSite", name: "VibeVM", url: SITE.origin },

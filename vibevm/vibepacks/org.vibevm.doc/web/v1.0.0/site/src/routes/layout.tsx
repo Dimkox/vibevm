@@ -11,6 +11,7 @@ import {
 } from "@vibe-docs/design";
 
 import { docSegments, href, parseDocTarget } from "../lib/href.ts";
+import { LINKED_PEOPLE } from "../lib/people.ts";
 import { SITE_LANGUAGES, SITE_LANGUAGE_LABEL } from "../lib/site-language.ts";
 import { findInDocumentation } from "../reader/search.ts";
 import { startSiteLanguage } from "../reader/site-language.ts";
@@ -130,7 +131,10 @@ export default component$(() => {
       <main>
         <Slot />
       </main>
-      <Footer copyright="© 2026 Oleg Chirukhin" />
+      {/* The name in the signature leads to the person, here as on the
+          landing: the site links the people it names, and who those are
+          is the table this list comes from. */}
+      <Footer copyright="© 2026 Oleg Chirukhin" people={LINKED_PEOPLE} />
     </>
   );
 });

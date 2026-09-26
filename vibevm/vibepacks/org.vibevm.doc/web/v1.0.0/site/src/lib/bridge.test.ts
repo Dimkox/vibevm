@@ -5,6 +5,7 @@ import { describe, it } from "node:test";
 
 import { bridgeOf } from "./bridge.ts";
 import { parseDocManifest } from "./manifest.ts";
+import { LINKED_PEOPLE } from "./people.ts";
 
 const FIXTURES = join(import.meta.dirname, "..", "fixtures");
 
@@ -22,6 +23,10 @@ describe("a bridge's two authorships, as a page is handed them", () => {
       maintainers: ["The fixture's maintainer"],
       upstreamAuthors: ["The author of the bytes the fixture wraps"],
       upstreamLicense: "Apache-2.0",
+      /* The people the SITE links, carried with the data so that the
+         component never has to know who they are. Neither name above is
+         one of them, and both stay text. */
+      people: LINKED_PEOPLE,
     });
   });
 

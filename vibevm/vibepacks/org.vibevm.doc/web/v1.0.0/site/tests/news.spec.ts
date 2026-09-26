@@ -5,7 +5,7 @@
  * who it is to a crawler, that the header's first row ends with it
  * wherever a reader stands and leads to the edition they are reading,
  * that the page marks itself current, that the two letters in the corner
- * keep a reader on it — and that the five cards lead to the five
+ * keep a reader on it — and that the six cards lead to the six
  * addresses the owner named, each one a whole target with a ring around
  * it.
  *
@@ -46,15 +46,22 @@ const PAGES = [
 ] as const;
 
 /**
- * The five destinations, in the order the page prints them, with the
+ * The six destinations, in the order the page prints them, with the
  * address each card must show and the address it must lead to.
  *
  * Both, because they are two different promises: a card that led to the
  * right place while printing another is a lie a reader cannot see, and a
  * card that printed the right place while leading elsewhere is worse.
+ *
+ * The creator is two of them now. A card is the link, so the one card
+ * that carried his NAME could not lead to him while it led to an account
+ * on X — and every mention of him on this site leads to his own site
+ * (owner, 2026-09-26). His site stands under his name and the account
+ * under its handle, in that order.
  */
 const CHANNELS = [
   { href: "https://t.me/vibevm", shown: "t.me/vibevm" },
+  { href: "https://oleg.guru", shown: "oleg.guru" },
   { href: "https://x.com/1red2black", shown: "x.com/1red2black" },
   { href: "https://t.me/vibevm_chat", shown: "t.me/vibevm_chat" },
   { href: "https://www.reddit.com/r/vibevm/", shown: "reddit.com/r/vibevm" },
@@ -219,11 +226,11 @@ for (const one of PAGES) {
 }
 
 /**
- * The five cards: the owner's five addresses, in his order, each leading
+ * The six cards: the owner's six addresses, in his order, each leading
  * off the domain and saying so, and each printing where it goes.
  */
 for (const one of PAGES) {
-  test(`${one.route} carries the five channels the owner named`, async ({
+  test(`${one.route} carries the six channels the owner named`, async ({
     page,
   }) => {
     await page.goto(one.route);
@@ -250,6 +257,14 @@ for (const one of PAGES) {
        target inside it would give a reader two stops for one place and a
        ring that is not where they clicked. */
     await expect(page.locator("main a")).toHaveCount(CHANNELS.length);
+
+    /* And the creator's two cards say which is which: his name over his
+       own site, the handle over the account. */
+    const names = cards.locator(".ns-card__name");
+    await expect(names.nth(1)).toHaveText(
+      one.language === "ru" ? "Олег Чирухин" : "Oleg Chirukhin",
+    );
+    await expect(names.nth(2)).toHaveText("@1red2black");
   });
 }
 

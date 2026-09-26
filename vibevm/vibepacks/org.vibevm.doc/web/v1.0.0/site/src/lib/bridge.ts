@@ -26,6 +26,7 @@
  */
 
 import type { DocPackage } from "../generated/doc-manifest.ts";
+import { LINKED_PEOPLE } from "./people.ts";
 
 import type { BridgeAuthorship } from "@vibe-docs/design";
 
@@ -35,6 +36,9 @@ export function bridgeOf(card: DocPackage): BridgeAuthorship | undefined {
   return {
     maintainers: bridge.maintainers,
     upstreamAuthors: bridge.upstream_authors,
+    /* Which of those names the site links, which is the site's own list
+       and not a manifest's: a name nobody here knows stays text. */
+    people: LINKED_PEOPLE,
     ...(bridge.upstream_license === undefined
       ? {}
       : { upstreamLicense: bridge.upstream_license }),

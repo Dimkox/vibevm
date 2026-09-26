@@ -40,3 +40,27 @@
   font-family: var(--font-mono);
   font-size: 0.74rem;
 }
+
+/* Two names in a row read as two names: the separator is here because
+   each name is an element of its own, so that one of them can lead to
+   the person it names. */
+.bridge-signatures__name + .bridge-signatures__name::before {
+  content: ", ";
+}
+
+/* A name the site knows, underlined rather than coloured — the row is a
+   fact about authorship and not a call to go anywhere. */
+.bridge-signatures__person {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--line-strong);
+  transition:
+    color var(--speed) ease,
+    text-decoration-color var(--speed) ease;
+}
+
+.bridge-signatures__person:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}

@@ -10,6 +10,7 @@ import {
 } from "@vibe-docs/design";
 
 import { href } from "../lib/href.ts";
+import { LINKED_PEOPLE } from "../lib/people.ts";
 import { SITE_LANGUAGE_LABEL } from "../lib/site-language.ts";
 import { findInDocumentation } from "../reader/search.ts";
 import { rememberSiteLanguage } from "../reader/site-language.ts";
@@ -221,7 +222,7 @@ export const LandingChrome = component$<LandingChromeProps>((props) => {
         <Slot />
       </main>
 
-      <Footer copyright={t.copyright}>
+      <Footer copyright={t.copyright} people={LINKED_PEOPLE}>
         <div class="landing-footer__brand">VibeVM — {t.footerTagline}</div>
         <div class="landing-footer__links">
           {footerLinks.map((one) => (

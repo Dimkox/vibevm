@@ -1,7 +1,13 @@
 /** @scope spec://org.vibevm.core/vibevm/common/PROP-023#AUTHORSHIP-SEPARATION */
 
-import { component$, useStyles$ } from "@qwik.dev/core";
+import { component$, useStyles$, type JSXOutput } from "@qwik.dev/core";
 import styles from "./styles.css?inline";
+
+/** Somebody named in a signature, and the site they keep. */
+export type BridgePerson = {
+  readonly name: string;
+  readonly href: string;
+};
 
 /** The two authorships a bridge holds, as a page is handed them. */
 export type BridgeAuthorship = {
@@ -15,6 +21,17 @@ export type BridgeAuthorship = {
   readonly upstreamAuthors: ReadonlyArray<string>;
   /** The licence of those bytes, when every source states the same one. */
   readonly upstreamLicense?: string;
+  /**
+   * Which of the names above lead to the person, and where.
+   *
+   * It arrives with the data because WHO the site is prepared to link is
+   * the site's own statement and never this component's: a name in either
+   * list is a package's word for somebody, and a link the site invented
+   * for one of them would be an address the package never gave. Absent is
+   * the ordinary case — every name is then text, which is what a name in
+   * a manifest is.
+   */
+  readonly people?: ReadonlyArray<BridgePerson>;
 };
 
 export type BridgeSignaturesProps = {
@@ -59,19 +76,11 @@ export const BridgeSignatures = component$<BridgeSignaturesProps>((props) => {
     <dl class="bridge-signatures">
       <div class="bridge-signatures__row">
         <dt>Bridge maintainer</dt>
-        <dd>
-          {bridge.maintainers.length === 0
-            ? NOBODY
-            : bridge.maintainers.join(", ")}
-        </dd>
+        <dd>{signatures(bridge.maintainers, bridge.people)}</dd>
       </div>
       <div class="bridge-signatures__row">
         <dt>Destination author</dt>
-        <dd>
-          {bridge.upstreamAuthors.length === 0
-            ? NOBODY
-            : bridge.upstreamAuthors.join(", ")}
-        </dd>
+        <dd>{signatures(bridge.upstreamAuthors, bridge.people)}</dd>
       </div>
       {bridge.upstreamLicense === undefined ? null : (
         <div class="bridge-signatures__row">
@@ -84,3 +93,37 @@ export const BridgeSignatures = component$<BridgeSignaturesProps>((props) => {
     </dl>
   );
 });
+
+/**
+ * One list of names, with the people the site knows leading to them.
+ *
+ * The comma between two names is drawn by the stylesheet rather than
+ * written here: each name stands in an element of its own so that one of
+ * them can be a link and the language switch can move the one it knows,
+ * and a separator inside a joined string would have made both impossible.
+ *
+ * An empty list is still the dash it was — a bridge that names no
+ * maintainer says so (`##AUTHORSHIP-SEPARATION`), and a row that fell
+ * silent would read as «this is not a bridge».
+ */
+function signatures(
+  names: ReadonlyArray<string>,
+  people: ReadonlyArray<BridgePerson> | undefined,
+): JSXOutput {
+  if (names.length === 0) return NOBODY;
+  const known = people ?? [];
+  return names.map((name) => {
+    const person = known.find((one) => one.name === name.trim());
+    return (
+      <span key={name} class="bridge-signatures__name">
+        {person === undefined ? (
+          name
+        ) : (
+          <a class="bridge-signatures__person" href={person.href}>
+            {name}
+          </a>
+        )}
+      </span>
+    );
+  });
+}

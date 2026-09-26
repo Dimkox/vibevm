@@ -62,7 +62,13 @@ export const RUSSIAN_CHROME: Readonly<Record<string, string>> = {
   Search: "Поиск",
   "Nothing here carries that word.": "Здесь нет ничего с этим словом.",
   "Site language": "Язык сайта",
-  "© 2026 Oleg Chirukhin": "© 2026 Олег Чирухин",
+  /* The site's own signature. The NAME is a row of its own because it is
+     a link now and stands in a text node of its own; «© 2026 » is a
+     symbol and a year and needs no language. It is also the one row that
+     can reach a value a package wrote — the maintainer of a bridge this
+     publisher maintains is this same person, and a reader should meet him
+     under the same name on both halves of the catalogue. */
+  "Oleg Chirukhin": "Олег Чирухин",
 
   /* The catalogue behind the door, and its three shelves. */
   Documentation: "Документация",
