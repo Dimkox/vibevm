@@ -115,10 +115,11 @@ test("a policy that cannot be quoted is refused", () => {
 
 /**
  * The ceiling, measured in the image the site is served from: nginx
- * stops reading a parameter at 4096 bytes and refuses to start. A site
- * of one manual never reaches it; a site of the whole registry passes it
- * twenty times over on its first render, which is X-044's revision
- * trigger arriving rather than a bug.
+ * stops reading a parameter at 4096 bytes and refuses to start. This
+ * package's own build now sits just past it, a site of one manual is well
+ * past it, and a site of the whole registry passes it twenty times over
+ * on its first render, which is X-044's revision trigger arriving rather
+ * than a bug.
  *
  * What the generator does about it is the only thing it can do without
  * taking somebody else's decision: it writes no policy, says so in the
@@ -143,20 +144,38 @@ test("a policy the server cannot parse becomes no policy, loudly", () => {
  * The generator over the real thing: the `csp.txt` this package's own
  * build wrote, with every hash it found in the pages it rendered. A
  * fixture would prove the shape; only the build's own output proves that
- * what the build writes is what the generator accepts — which is the one
- * failure that would reach a reader rather than a test.
+ * what the build writes is what the generator does with it — which is
+ * the one failure that would reach a reader rather than a test.
+ *
+ * Which of the two documented answers is correct depends on the length of
+ * that line, so the test asks the length and holds the behaviour that
+ * belongs to it: the acceptance below the ceiling, and above it the same
+ * loud refusal the synthetic policy gets, because the ceiling is a fact
+ * about nginx and not about where a policy came from. The site of the
+ * whole manual crossed it long ago and this package's own build crossed
+ * it too the moment the roadmap pages joined it — a test that insisted on
+ * acceptance would be a test insisting the generator take the domain
+ * down.
  *
  * It runs when a build has been made. A clone with nothing built has no
  * output to read, and a test that invented one would be testing the
  * fixture above a second time.
  */
-test("the generator accepts the policy this package's build wrote", () => {
+test("the generator answers the policy this package's build wrote", () => {
   const built = new URL("../../dist/csp.txt", import.meta.url);
   if (!existsSync(built)) return;
-  const policy = readFileSync(built, "utf8");
+  const policy = readFileSync(built, "utf8").trim();
   const hashes = hashesIn(policy);
   assert.ok(hashes.length > 0, "the built policy names at least one hash");
   const conf = cspConf(policy);
+  if (policy.length > CSP_CONF_LIMIT) {
+    assert.match(conf, /map \$sent_http_content_type \$vibe_csp \{/);
+    assert.match(conf, /NO POLICY IS SERVED/);
+    assert.match(conf, new RegExp(`${policy.length}`));
+    assert.equal(conf.includes("text/html"), false);
+    assert.equal(hashesIn(conf).length, 0);
+    return;
+  }
   for (const hash of hashes) assert.ok(conf.includes(hash));
   assert.equal(hashesIn(conf).length, hashes.length);
   /* The fragment is one map and one line inside it: a policy of a

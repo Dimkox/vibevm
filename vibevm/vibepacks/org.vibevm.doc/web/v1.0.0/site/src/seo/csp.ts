@@ -158,12 +158,15 @@ const NGINX_PARAMETER_LIMIT = 4096;
  * The longest policy this serving arrangement can carry, with room for
  * the directive around it.
  *
- * A site of one manual is comfortably inside it and a site of a whole
- * registry is not: 47 hashes over the package's own fixture library
- * (3.4 kB), about 150 over the manual (11 kB), and 1641 over the 48
- * libraries of the live registry (87 kB). The first fits, the second
- * does not, and the third misses by more than twenty times — which is
- * the ceiling X-044 wrote down before anyone had measured where it was.
+ * Only the smallest site is comfortably inside it, and the ones anybody
+ * reads are not: 47 hashes over the package's own fixture library alone
+ * (3.4 kB), 73 over the build this package makes today (4.1 kB — 4093
+ * bytes, over the ceiling since the two roadmap pages joined it), about
+ * 150 over the manual (11 kB), and 1641 over the 48 libraries of the
+ * live registry (87 kB). The first fits, the second misses by
+ * ninety-three bytes, and the last misses by more than twenty times —
+ * which is the ceiling X-044 wrote down before anyone had measured where
+ * it was.
  */
 export const CSP_CONF_LIMIT = 4000;
 
