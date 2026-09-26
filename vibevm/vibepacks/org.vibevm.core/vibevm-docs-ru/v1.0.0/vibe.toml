@@ -108,6 +108,10 @@ id = "getting-started"
 title = "Первые шаги"
 
 [[navigation.chapter]]
+id = "advanced-tutorial"
+title = "Продвинутый урок"
+
+[[navigation.chapter]]
 id = "how-a-project-works"
 title = "Как устроен проект"
 
@@ -118,10 +122,6 @@ title = "Повседневная работа с пакетами"
 [[navigation.chapter]]
 id = "through-your-agent"
 title = "Работа через агента"
-
-[[navigation.chapter]]
-id = "advanced-tutorial"
-title = "Продвинутый урок"
 
 [[navigation.chapter]]
 id = "build-and-ship"
