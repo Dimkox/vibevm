@@ -4,6 +4,7 @@ What changed for a reader, by date. This package carries one number and is repub
 
 ## 1.0.0 — 2026-09-26
 
+- **A roadmap.** The site gains a page of what comes after Developer Preview 1, in order and without dates: Developer Preview 2, Zap, the first community packages, plugins for IntelliJ IDEA and VS Code, a library and marketplace, and Spec-Driven Linux. The header lists it after Vision, and the home page leads to it from the release pill and from its own plate on the map.
 - **Long lines wrap.** Code, command output and the request at the top of a task page now wrap at the edge of their block instead of running off it; line breaks and indentation stay, and the copy button still copies the exact text.
 - **The way on comes first.** A page now ends with the previous and the next page, the next one tinted to invite you on, then the rules the page cites, and only then the block written for agents.
 - **Contents you can find.** On a phone or a tablet, Contents is now a button you can see and press; the ≡ button beside the text size opens the contents, and on a wide screen it brings the current page into view in the column beside it.
