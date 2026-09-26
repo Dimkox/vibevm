@@ -31,11 +31,32 @@ export type HeroProps = {
    * saying nothing would still draw the eye to itself.
    */
   readonly badge?: string | undefined;
+  /**
+   * Where the pill leads, when the stage it names has somewhere to be
+   * read about: the plan this release is a point on.
+   *
+   * Optional, because a pill is a statement before it is a control — the
+   * 404's hero has one and nothing to say about it — and a badge that led
+   * nowhere would still take a reader's click.
+   */
+  readonly badgeHref?: string | undefined;
+  /**
+   * The one link beside the pill: where a reader who has just read what
+   * stage this is goes to find out what the thing is.
+   *
+   * Beside the pill and not among the two buttons above, because it is
+   * not a third call to action — those two lead to the source, this one
+   * leads to a page of the manual — and the row the pill stands in has
+   * the room. Optional, for the pages that have a pill and nowhere in
+   * particular to send anybody.
+   */
+  readonly badgeAction?: HeroAction | undefined;
 };
 
 /**
  * The top of the landing: label, headline, lead, two buttons, a status
- * pill, and whatever the page hangs below and beside them.
+ * pill with one link beside it, and whatever the page hangs below and
+ * beside them.
  *
  * Two slots, because the hero owns the shape and not the contents. The
  * default slot takes the install block, which is copy and commands the
@@ -102,10 +123,50 @@ export const Hero = component$<HeroProps>((props) => {
 
         {props.badge !== undefined && (
           <div class="hero__run">
-            <p class="hero__release">
-              <span class="hero__release-dot" aria-hidden="true" />
-              {props.badge}
-            </p>
+            {/* The pill is a link when the release has a plan behind it,
+                and the same pill either way: what changes is that it can
+                be pressed, which it says with its own hover and focus
+                rather than by looking like a second button. */}
+            {props.badgeHref === undefined ? (
+              <p class="hero__release">
+                <span class="hero__release-dot" aria-hidden="true" />
+                {props.badge}
+              </p>
+            ) : (
+              <a
+                class="hero__release hero__release--link"
+                href={props.badgeHref}
+                data-hero-release
+              >
+                <span class="hero__release-dot" aria-hidden="true" />
+                {props.badge}
+              </a>
+            )}
+            {props.badgeAction === undefined ? null : (
+              <a
+                class="hero__btn hero__btn--ghost hero__btn--compact"
+                href={props.badgeAction.href}
+                data-hero-guide
+              >
+                {props.badgeAction.label}
+                <svg
+                  class="hero__arrow"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2.5 7H11.5M11.5 7L8 3.5M11.5 7L8 10.5"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            )}
           </div>
         )}
 

@@ -121,8 +121,24 @@
   background: var(--bg-raise);
 }
 
+/* The small one, beside the release pill: the ghost button's own look,
+   at the pill's size and in the pill's shape, so the pair reads as one
+   row and not as a label with a button dropped next to it. It stays a
+   secondary control — the two calls to action are above — and its arrow
+   points along the page rather than off it, because that is where it
+   leads: a page of this site's own manual. */
+.hero__btn--compact {
+  padding: 9px 16px;
+  font-size: 14px;
+  border-radius: var(--radius-pill);
+}
+
 .hero__arrow {
   transition: transform var(--speed) ease;
+}
+
+.hero__btn--compact:hover .hero__arrow {
+  transform: translateX(2px);
 }
 
 .hero__btn--primary:hover .hero__arrow {
@@ -155,6 +171,21 @@
   border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
   border-radius: var(--radius-pill);
   padding: 10px 18px;
+}
+
+/* The pill as a control. It keeps its ground and its shape — a reader
+   who has met it once must not have to work out whether this is the same
+   thing — and answers the pointer with its line and its ink, which is how
+   every other quiet control on this site says it can be pressed. */
+.hero__release--link {
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.hero__release--link:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
 }
 
 .hero__release-dot {
@@ -369,6 +400,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero__btn:hover {
+    transform: none;
+  }
+
+  /* A reader who asked for stillness gets the arrow and not the step:
+     the base stylesheet takes the duration away, which leaves a jump
+     rather than nothing, so the movement itself is refused here. */
+  .hero__btn:hover .hero__arrow {
     transform: none;
   }
 }

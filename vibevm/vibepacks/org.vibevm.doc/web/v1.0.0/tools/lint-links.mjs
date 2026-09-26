@@ -123,6 +123,13 @@ const EXCEPTIONS = [
       "The island golden cites `media/diagram.svg` beside the DOCUMENT, and the pipeline publishes a package's media at the root of its tree under a content name — so the address misses at whatever depth the page is served, and the fixture package carries no such file in either place. SVG is not an allowed medium in this wave (D-20-6). Filed as an island-golden finding; the picture is the only broken one on the fixture page.",
     matches: (miss) => miss.target.endsWith("/media/diagram.svg"),
   },
+  {
+    id: "L-02",
+    reason:
+      "The hero's release pill leads to the roadmap in both languages (owner, 2026-09-26), and the page itself is being written on another branch and lands after this change. The two addresses are the site's own and are built by the address map, so they will answer the moment that page is merged — and this entry goes with it. Until then the pill is the one link on the domain with nothing behind it.",
+    matches: (miss) =>
+      miss.target === "/roadmap/" || miss.target === "/ru/roadmap/",
+  },
 ];
 
 /**

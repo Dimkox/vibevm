@@ -106,8 +106,19 @@ export type Strings = {
    */
   readonly navNews: string;
   readonly eyebrow: string;
-  /** The small status pill beside the install block. */
+  /**
+   * The small status pill beside the install block. It carries the
+   * RELEASE's name, which is one name in both languages: «Developer
+   * Preview 1» is what this build is called, not a description of it.
+   */
   readonly badge: string;
+  /**
+   * The one link beside that pill, to the page of the manual that
+   * answers the question a reader who has just met the product has
+   * (owner, 2026-09-26). A label and not a sentence: the page it leads
+   * to is called «What VibeVM is», and this is the reader's own question.
+   */
+  readonly badgeAction: string;
   /** May contain a single `<em>` around the accent word. */
   readonly headlineHtml: string;
   /** Contains the mandated descriptor, verbatim, inside `<strong>`. */
@@ -175,7 +186,8 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     navVision: "Vision",
     navNews: "News & support",
     eyebrow: "Open source · Spec-driven development",
-    badge: "Early Access",
+    badge: "Developer Preview 1",
+    badgeAction: "What is VibeVM?",
     headlineHtml: "Install the <em>context</em> your agents run on.",
     leadHtml:
       "VibeVM is <strong>an ultimate prompt library, package manager, and agentic system for Spec-Driven Development</strong> — declarative context assembled from versioned stacks, flows, and skills.",
@@ -269,7 +281,8 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     navVision: "Видение",
     navNews: "Новости и поддержка",
     eyebrow: "Открытый код · Spec-Driven Development",
-    badge: "Ранний доступ",
+    badge: "Developer Preview 1",
+    badgeAction: "Что такое VibeVM?",
     headlineHtml: "Установите <em>контекст</em> для вашего агента",
     leadHtml:
       "VibeVM — <strong>ультимативная библиотека промптов, пакетный менеджер и агентная система для Spec-Driven Development</strong>: декларативный контекст, собранный из версионируемых стеков, флоу и навыков.",

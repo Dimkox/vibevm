@@ -9,6 +9,7 @@ import {
   InstallBlock,
 } from "@vibe-docs/design";
 
+import { docHref, href } from "../lib/href.ts";
 import { LandingField } from "./field.tsx";
 import {
   GITHUB_URL,
@@ -16,6 +17,7 @@ import {
   INSTALL,
   type Locale,
   STRINGS,
+  localePath,
 } from "./i18n.ts";
 import { LandingMap } from "./map.tsx";
 
@@ -57,6 +59,34 @@ const CAPABILITIES_LABEL = "What VibeVM is";
 /** The id the install panel's heading carries, and its `aria-labelledby`. */
 const INSTALL_HEADING_ID = "install-title";
 
+/**
+ * Where the release on the pill leads: the plan it is a point on (owner,
+ * 2026-09-26). The page is the site's own, in the reader's language, and
+ * its address is built like every other one here.
+ */
+function roadmapHref(locale: Locale): string {
+  return href(`${localePath(locale)}roadmap/`);
+}
+
+/**
+ * And the page of the manual the button beside it sends a reader to:
+ * what the thing they are looking at is (owner, 2026-09-26).
+ *
+ * It is an address and not a string, built by the address map like every
+ * other address on this site — the same page in the reader's own edition,
+ * which for Russian is the source package under a language segment (D-06)
+ * and never a package of its own.
+ */
+function guideHref(locale: Locale): string {
+  return docHref({
+    lang: locale === "en" ? null : locale,
+    group: "org.vibevm.core",
+    name: "vibevm-docs",
+    version: "latest",
+    document: "start/what-vibevm-is",
+  });
+}
+
 export const Landing = component$<LandingProps>((props) => {
   const t = STRINGS[props.locale];
   return (
@@ -72,6 +102,11 @@ export const Landing = component$<LandingProps>((props) => {
         primary={{ label: t.ctaPrimary, href: GITHUB_URL }}
         secondary={{ label: t.ctaSecondary, href: GITVERSE_URL }}
         badge={t.badge}
+        badgeHref={roadmapHref(props.locale)}
+        badgeAction={{
+          label: t.badgeAction,
+          href: guideHref(props.locale),
+        }}
       >
         <InstallBlock
           headingId={INSTALL_HEADING_ID}
