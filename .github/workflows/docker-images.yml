@@ -108,8 +108,11 @@ jobs:
           curl --fail --silent http://127.0.0.1:18081/doc/ >/dev/null
           curl --fail --silent http://127.0.0.1:18081/doc/org.vibevm.core/vibevm-docs/latest/ >/dev/null
           if [ -n "$UMAMI_WEBSITE_ID" ]; then
-            for page in / /doc/org.vibevm.core/vibevm-docs/latest/; do
-              curl --fail --silent "http://127.0.0.1:18081$page" | grep -q "data-website-id=\"$UMAMI_WEBSITE_ID\""
+            # Capture the page before matching: `curl | grep -q` fails under
+            # pipefail when grep stops reading early (curl exits 23).
+            for path in / /doc/org.vibevm.core/vibevm-docs/latest/; do
+              body="$(curl --fail --silent "http://127.0.0.1:18081$path")"
+              grep -q "data-website-id=\"$UMAMI_WEBSITE_ID\"" <<<"$body"
             done
           fi
 
