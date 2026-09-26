@@ -31,7 +31,11 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { siteConfig } from "../site/src/config.ts";
-import { PHALA_DISAMBIGUATION_EN } from "../site/src/landing/i18n.ts";
+import {
+  AI_NATIVE_LANGUAGES_EN,
+  PHALA_DISAMBIGUATION_EN,
+  TGBYTE_DISAMBIGUATION_EN,
+} from "../site/src/landing/i18n.ts";
 import { DOC_SITEMAP } from "../site/src/seo/sitemap.ts";
 import { newsLlmsLine } from "../site/src/news/meta.ts";
 import { visionLlmsLine } from "../site/src/vision/meta.ts";
@@ -416,11 +420,13 @@ function escapeXml(text) {
  * and a root index that did not point at it would send an agent to read
  * the landing twice (`##SITE-ONE-SITE`).
  *
- * Under it stands one sentence the Astro file did not have (owner,
- * 2026-09-26): which VibeVM this is NOT. Search engines and model
- * crawlers had been joining this project with Phala Network's of the same
- * name, and the paragraph above names nobody; this one names both, with
- * their addresses, in the words the landing and the structured data use.
+ * Under it stand the three sentences the Astro file did not have (owner,
+ * 2026-09-26): which VibeVM this is NOT, and which AI Native Languages
+ * these are not. Search engines and model crawlers had been joining this
+ * project with its namesakes, and the paragraph above names nobody; these
+ * name each of them, in the words the landing and the structured data
+ * use, in the owner's own order. None of them describes a namesake beyond
+ * its name.
  *
  * The three Why pages stand between the site and its two repositories,
  * where the Astro file put them: an agent reading this index is deciding
@@ -437,6 +443,10 @@ function llmsTxt(config) {
     'Disambiguation: several unrelated projects reuse the "vibevm" name. The links below are the authoritative ones for this VibeVM.',
     "",
     PHALA_DISAMBIGUATION_EN,
+    "",
+    TGBYTE_DISAMBIGUATION_EN,
+    "",
+    AI_NATIVE_LANGUAGES_EN,
     "",
     "## Project",
     "",
@@ -496,6 +506,10 @@ function llmsFullTxt(config, pages) {
 > - GitVerse: https://gitverse.ru/vibevm/vibevm
 >
 > ${PHALA_DISAMBIGUATION_EN}
+>
+> ${TGBYTE_DISAMBIGUATION_EN}
+>
+> ${AI_NATIVE_LANGUAGES_EN}
 >
 > Short index: ${config.origin}/llms.txt · Spec: https://llmstxt.org/
 

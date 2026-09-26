@@ -62,6 +62,41 @@ export const GITVERSE_URL = "https://gitverse.ru/vibevm/vibevm";
 export const PHALA_DISAMBIGUATION_EN =
   "VibeVM at vibevm.org is not related to Phala Cloud. It is not Phala Network's VibeVM (github.com/Phala-Network/VibeVM), a development sandbox that runs in a confidential VM on Phala Cloud. The two are separate, unrelated projects that share a name.";
 
+/**
+ * The second such sentence, about the other project of this name, in
+ * English (owner, 2026-09-26). It travels with the first one and through
+ * the same places, because a reader or a crawler meeting one of the two
+ * namesakes has the same question about the other.
+ *
+ * It says what THIS VibeVM does with environments and machines and then
+ * that the other project is not it. Nothing here describes that project:
+ * a sentence about somebody else's work is not this site's to write, and
+ * the name is all an index needs to tell the two apart.
+ */
+export const TGBYTE_DISAMBIGUATION_EN =
+  "VibeVM can be used to prepare arbitrary environments and operating systems, including creating throwaway virtual machines, including for confidential sandboxing. VibeVM has no relation to the tgbyte project of the same name.";
+
+/**
+ * What the AI Native Languages are, in English, and what they are not
+ * (owner, 2026-09-26).
+ *
+ * In two halves because two of its readers want different amounts of it:
+ * the page and the text files take the whole sentence, and the structured
+ * data wants the description apart from the denial — a graph says what a
+ * thing IS in `description` and what it is not in
+ * `disambiguatingDescription`, and a `description` carrying both would
+ * put a denial in the sentence a search result prints.
+ */
+export const AI_NATIVE_LANGUAGES_WHAT_EN =
+  "The AI Native Languages project (for example, AI Native Rust) is a specialized domain-specific language (DSL) in which the large language model (LLM) itself serves as the runtime. With it, developers describe complex branching logic, parallel execution of AI tasks and context management.";
+
+/** And the half that names the project it is not. */
+export const AI_NATIVE_LANGUAGES_NOT_EN =
+  "It has no relation to the karanchawla VVM project.";
+
+/** The whole of it, as the page and the text files carry it. */
+export const AI_NATIVE_LANGUAGES_EN = `${AI_NATIVE_LANGUAGES_WHAT_EN} ${AI_NATIVE_LANGUAGES_NOT_EN}`;
+
 /** One of the three capability cards under the hero. */
 export type Cap = {
   readonly label: string;
@@ -145,6 +180,16 @@ export type Strings = {
    * data.
    */
   readonly disambiguation: string;
+  /**
+   * The second and third paragraphs of that small print, in the order a
+   * reader meets them (owner, 2026-09-26): what VibeVM does with
+   * environments and machines and which namesake it is not, then what the
+   * AI Native Languages are and which namesake THEY are not. Each travels
+   * to the same four places as the first, and neither describes the
+   * project it names.
+   */
+  readonly disambiguationTgbyte: string;
+  readonly disambiguationAiNative: string;
   readonly footerTagline: string;
   readonly copyright: string;
   /** The entry the port adds to the shared header (D-28). */
@@ -219,6 +264,8 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
       },
     ],
     disambiguation: PHALA_DISAMBIGUATION_EN,
+    disambiguationTgbyte: TGBYTE_DISAMBIGUATION_EN,
+    disambiguationAiNative: AI_NATIVE_LANGUAGES_EN,
     footerTagline: "Spec-Driven Development, packaged.",
     copyright: "© 2026 Oleg Chirukhin",
     documentation: "Documentation",
@@ -315,6 +362,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     ],
     disambiguation:
       "VibeVM на vibevm.org не связан с Phala Cloud. Это не VibeVM от Phala Network (github.com/Phala-Network/VibeVM) — песочница для разработки в конфиденциальной виртуальной машине на Phala Cloud. Это два разных, никак не связанных проекта с одинаковым названием.",
+    disambiguationTgbyte:
+      "VibeVM может использоваться для подготовки произвольных сред и операционных систем, в том числе для создания throwaway virtual machines, в том числе в целях создания confidential sandboxing. К одноимённому проекту tgbyte VibeVM не имеет никакого отношения.",
+    disambiguationAiNative:
+      "Проект AI Native Languages (например, AI Native Rust) — это специализированный предметно-ориентированный язык (DSL), где в качестве среды выполнения (runtime) выступает сама большая языковая модель (LLM). С его помощью разработчики описывают сложные ветвления логики, параллельное выполнение задач ИИ и управление контекстом. Никакого отношения к проекту karanchawla VVM он не имеет.",
     footerTagline: "Spec-Driven Development, в пакетах.",
     copyright: "© 2026 Олег Чирухин",
     documentation: "Документация",

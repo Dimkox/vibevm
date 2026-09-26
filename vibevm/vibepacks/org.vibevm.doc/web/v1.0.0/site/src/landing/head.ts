@@ -6,14 +6,18 @@ import { SITE } from "../config.ts";
 import { href } from "../lib/href.ts";
 import { analytics } from "../seo/analytics.ts";
 import {
+  AI_NATIVE_LANGUAGES_NOT_EN,
+  AI_NATIVE_LANGUAGES_WHAT_EN,
   GITHUB_URL,
   GITVERSE_URL,
   type Locale,
   PHALA_DISAMBIGUATION_EN,
   STRINGS,
+  TGBYTE_DISAMBIGUATION_EN,
   localePath,
 } from "./i18n.ts";
 import { CHANNEL_URLS } from "../news/i18n.ts";
+import { whyPath } from "../why/paths.ts";
 import { THEME_COLOR } from "./theme-color.ts";
 
 /**
@@ -57,14 +61,19 @@ function absolute(locale: Locale, path = ""): string {
  * so the parity test can say so, and so the decision to change it is
  * taken deliberately rather than absorbed into a move.
  *
- * One field was added since, deliberately (owner, 2026-09-26):
+ * Two things were added since, deliberately (owner, 2026-09-26). One is
  * `disambiguatingDescription`, the property schema.org keeps for exactly
- * this — search engines had been joining this VibeVM with Phala
- * Network's, and the graph now says in its own vocabulary that they are
- * two things. `sameAs` lists the project's own channels beside its two
- * repositories — the Telegram news channel and the Reddit community — so
- * the graph says which accounts are this VibeVM's; the creator's own
- * account is a person's and stays off it.
+ * this — search engines had been joining this VibeVM with the projects
+ * that share its name, and the graph now says in its own vocabulary that
+ * they are different things. The other is the `ComputerLanguage` beside
+ * the application: the AI Native Languages are a thing of their own with
+ * a namesake of their own, and a crawler asking what they are should not
+ * have to read it out of a sentence about something else.
+ *
+ * `sameAs` lists the project's own channels beside its two repositories —
+ * the Telegram news channel and the Reddit community — so the graph says
+ * which accounts are this VibeVM's; the creator's own account is a
+ * person's and stays off it.
  */
 function siteGraph(): string {
   return JSON.stringify({
@@ -78,7 +87,11 @@ function siteGraph(): string {
         url: SITE.origin,
         description:
           "An ultimate prompt library, package manager, and agentic system for Spec-Driven Development.",
-        disambiguatingDescription: PHALA_DISAMBIGUATION_EN,
+        /* Both namesakes in one property, because the property answers
+           one question — «which of these is this» — and a graph carrying
+           two of it would leave a crawler to choose. The words are the
+           landing's own, in the landing's order. */
+        disambiguatingDescription: `${PHALA_DISAMBIGUATION_EN} ${TGBYTE_DISAMBIGUATION_EN}`,
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
         sameAs: [
           GITHUB_URL,
@@ -86,6 +99,20 @@ function siteGraph(): string {
           CHANNEL_URLS.news,
           CHANNEL_URLS.reddit,
         ],
+      },
+      /* The AI Native Languages are an entity of their own and not a
+         sentence about the application: they are a LANGUAGE, they have a
+         namesake of their own, and the page that argues for them is on
+         this domain. So the graph says what they are where a crawler
+         looks for a language, and says which project they are not in the
+         property schema.org keeps for exactly that (owner, 2026-09-26). */
+      {
+        "@type": "ComputerLanguage",
+        name: "AI Native Languages",
+        alternateName: ["AI Native Rust", "AI-Native Rust"],
+        url: absolute("en", whyPath("ai-native")),
+        description: AI_NATIVE_LANGUAGES_WHAT_EN,
+        disambiguatingDescription: AI_NATIVE_LANGUAGES_NOT_EN,
       },
       {
         "@type": "WebSite",

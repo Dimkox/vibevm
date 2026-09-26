@@ -151,11 +151,21 @@ export const Landing = component$<LandingProps>((props) => {
           prints, for the reader who does not read the header. */}
       <LandingMap locale={props.locale} />
 
-      {/* The small print, last on the page: which VibeVM this is not.
-          Search engines and model crawlers have been joining this project
-          with Phala Network's of the same name, and a sentence that names
-          both, with their addresses, is what an index can split them on. */}
+      {/* The small print, last on the page: which VibeVM this is not, and
+          which AI Native Languages these are not. Search engines and
+          model crawlers have been joining this project with the namesakes
+          below, and a sentence that names both, with their addresses, is
+          what an index can split them on.
+
+          Three paragraphs and not one, in the order the owner gave them:
+          each names one namesake, and a reader who has met only one of
+          them should not have to read past the other two. None of them
+          says anything ABOUT the other project beyond its name — what a
+          namesake does is not this page's to describe — and none of them
+          links to it. */}
       <p class="landing-disambiguation">{t.disambiguation}</p>
+      <p class="landing-disambiguation">{t.disambiguationTgbyte}</p>
+      <p class="landing-disambiguation">{t.disambiguationAiNative}</p>
     </>
   );
 });

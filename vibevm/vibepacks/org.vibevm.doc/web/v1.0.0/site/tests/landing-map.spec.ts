@@ -138,7 +138,8 @@ for (const one of PAGES) {
     await page.goto(one.route);
 
     /* The order of the page's own content, read off the document: the
-       hero, the three cards, the map, the small print. Nothing the owner
+       hero, the three cards, the map, the three notes of small print.
+       Nothing the owner
        placed moved, and the map came after all of it. The ground behind
        the page is decorative, says so, and is not content. */
     const order = await page.evaluate(() =>
@@ -151,6 +152,10 @@ for (const one of PAGES) {
       "hero",
       "capability-row",
       "landing-map",
+      /* Three paragraphs of small print now, one per namesake (owner,
+         2026-09-26); they are still the last of the page's content. */
+      "landing-disambiguation",
+      "landing-disambiguation",
       "landing-disambiguation",
     ]);
 
