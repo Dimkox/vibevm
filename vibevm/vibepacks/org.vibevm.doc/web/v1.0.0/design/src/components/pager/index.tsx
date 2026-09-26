@@ -54,13 +54,18 @@ export type PagerProps = {
  * Where the path leads from here: the page before this one and the page
  * after it (`##NAV-CHAPTERS-READER`).
  *
- * It is the last thing in the reading column, after everything the page
- * itself carries, because that is where a reader who has finished
- * reading arrives — and a reader who has finished a page of a textbook is
- * asking one question. The first page of the path offers only the way
- * on and the last only the way back; neither draws an empty card in the
- * other's place, because a card that led nowhere would be a promise the
- * path cannot keep.
+ * It stands immediately where the text ends — before the citations and
+ * before the agent block, which a reader does not read — because that is
+ * where a reader who has finished reading arrives, and a reader who has
+ * finished a page of a textbook is asking one question. The first page of
+ * the path offers only the way on and the last only the way back; neither
+ * draws an empty card in the other's place, because a card that led
+ * nowhere would be a promise the path cannot keep.
+ *
+ * The two ways are not drawn alike. The way ON carries a tint of the
+ * accent, because it is the one thing on the page that invites a reader
+ * to keep going; the way back is the neutral card it always was. A
+ * reader looking for «what now» finds it without reading either label.
  *
  * The chapter caption appears only when the neighbour is in ANOTHER
  * chapter, which is the moment it says something: inside a chapter every

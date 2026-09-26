@@ -191,22 +191,11 @@ const DocumentationPage = component$<{ view: PageView }>((props) => {
         <CodeChrome>
           <Island html={ISLAND_PLACEHOLDER} />
         </CodeChrome>
-        <ForAgent
-          title="For an agent"
-          lead={AGENT_LEAD}
-          uri={view.uri}
-          links={[...view.links]}
-          copyLabel="copy"
-          compact={false}
-        />
-        {/* Last in the column, folded: what the page stands on, for a
-            reader who has finished reading it. The markers in the text
-            are where a rule is read — this is only the list of them. */}
-        <CitedRules label="Rules this page cites" />
-        {/* And after everything the page carries, the way on: a reader
-            who has reached the end of a page of a textbook is asking
-            where the next lesson is (`##NAV-CHAPTERS-READER`). A
-            documentation that declared no path shows nothing here. */}
+        {/* Straight after the text, the way on: a reader who has reached
+            the end of a page of a textbook is asking where the next
+            lesson is (`##NAV-CHAPTERS-READER`), and the answer is the
+            first thing under it rather than the third. A documentation
+            that declared no path shows nothing here. */}
         {view.path === null ? null : (
           <Pager
             label={PATH_LABEL}
@@ -219,6 +208,24 @@ const DocumentationPage = component$<{ view: PageView }>((props) => {
             {...(view.path.next === undefined ? {} : { next: view.path.next })}
           />
         )}
+        {/* Then what the page stands on, folded, for a reader who has
+            finished it. The markers in the text are where a rule is
+            read — this is only the list of them. */}
+        <CitedRules label="Rules this page cites" />
+        {/* And the machine's half of the page LAST, always: the address
+            and the projections are what a reader hands to an agent, not
+            what a reader reads, and standing where the text ends they
+            pushed the way on and the citations below themselves — the
+            two things somebody who has just finished reading is looking
+            for. Nothing of the page follows it. */}
+        <ForAgent
+          title="For an agent"
+          lead={AGENT_LEAD}
+          uri={view.uri}
+          links={[...view.links]}
+          copyLabel="copy"
+          compact={false}
+        />
       </Prose>
       <RulePanel
         label="The rule this page quotes"

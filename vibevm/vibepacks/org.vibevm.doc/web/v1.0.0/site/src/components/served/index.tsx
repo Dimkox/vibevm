@@ -126,9 +126,14 @@ export const ServedReader = component$(() => {
         <CodeChrome>
           <Island html={ISLAND_PLACEHOLDER} />
         </CodeChrome>
-        <ServedAgent served={served} compact={false} />
-        <CitedRules label="Rules this page cites" />
+        {/* The same order the site's own route ends a page in: the way
+            on first, then what the page stands on, and the machine's
+            half of it last — a reader does not read the agent block, and
+            standing where the text ends it hid the two things a reader
+            who has just finished IS looking for. */}
         <ServedPager served={served} />
+        <CitedRules label="Rules this page cites" />
+        <ServedAgent served={served} compact={false} />
       </Prose>
       <RulePanel
         label="The rule this page quotes"
@@ -178,8 +183,8 @@ const ServedContents = component$<{ served: Signal<ServedPage | null> }>(
 );
 
 /**
- * Where the learning path leads from the page being served, at the end of
- * the reading column.
+ * Where the learning path leads from the page being served, immediately
+ * where the text ends.
  *
  * Nothing until the manifest is in, for the reason the column shows
  * nothing meanwhile: the fixture's path names documents this reader does

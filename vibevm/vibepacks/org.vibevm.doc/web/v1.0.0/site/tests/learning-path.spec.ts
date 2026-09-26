@@ -237,22 +237,107 @@ test("the pager names the chapter the path crosses into", async ({ page }) => {
   );
 });
 
-test("the pager stands after everything the page itself carries", async ({
+/**
+ * What a page ends with, in the order a reader meets it.
+ *
+ * The way on comes first, then what the page stands on, then the
+ * machine's half of it — and the owner's report is why it is pinned:
+ * «people do not read» the agent block, and it stood where the text ended
+ * with the two things somebody who has just finished reading IS looking
+ * for underneath it (owner, 2026-09-26). Read off the document's own
+ * order rather than off geometry, because the order is the claim; the
+ * pager is also asked to be INSIDE the reading column, since it is the
+ * end of the text and not a panel about the page.
+ */
+test("a page ends with the way on, then the rules, then the agent block", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await read(page, FIRST);
 
-  const rules = await page
-    .locator("[data-page-rules]")
-    .evaluate((block) => block.getBoundingClientRect().bottom);
-  const pager = await page
-    .locator("[data-pager]")
-    .evaluate((block) => block.getBoundingClientRect().top);
-  expect(pager).toBeGreaterThan(rules);
-  /* Inside the reading column and not beside it: it is the end of the
-     text, not a panel about the page. */
   await expect(page.locator(".prose [data-pager]")).toHaveCount(1);
+  const order = await page.evaluate(() => {
+    const at = (selector: string): number =>
+      [...document.querySelectorAll(".prose *")].indexOf(
+        document.querySelector(selector) ?? document.body,
+      );
+    return {
+      pager: at("[data-pager]"),
+      rules: at("[data-page-rules]"),
+      agent: at(".prose [data-for-agent]"),
+    };
+  });
+  expect(order.pager).toBeGreaterThan(-1);
+  expect(order.rules).toBeGreaterThan(order.pager);
+  expect(order.agent).toBeGreaterThan(order.rules);
+
+  /* And nothing of the page after the agent block: it is the last block
+     of the content, with only the site's own footer below it. */
+  const after = await page.evaluate(() => {
+    const agent = document.querySelector(".prose [data-for-agent]");
+    if (agent === null) return ["no agent block"];
+    const column = agent.parentElement;
+    if (column === null) return ["no column"];
+    return [...column.children]
+      .slice([...column.children].indexOf(agent) + 1)
+      .map((element) => element.className);
+  });
+  expect(after).toEqual([]);
+});
+
+/**
+ * The way ON invites: the accent's own ground under it, its line around
+ * it and its colour in the arrow — and the way back stays the neutral
+ * card it was (owner, 2026-09-26). Computed rather than by class name,
+ * because what the owner asked for is what a reader sees.
+ */
+test("the way on is tinted and the way back is not", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await read(page, LAST);
+
+  const drawn = await page.evaluate(() => {
+    const of = (selector: string): Record<string, string> => {
+      const element = document.querySelector(selector);
+      if (element === null) return {};
+      const style = getComputedStyle(element);
+      return {
+        background: style.backgroundColor,
+        border: style.borderTopColor,
+      };
+    };
+    const arrow = document.querySelector("[data-pager-previous] .pager__arrow");
+    return {
+      previous: of("[data-pager-previous]"),
+      neutralArrow: arrow === null ? "" : getComputedStyle(arrow).color,
+    };
+  });
+
+  await page.goto(FIRST);
+  const next = await page.evaluate(() => {
+    const link = document.querySelector("[data-pager-next]");
+    const arrow = document.querySelector("[data-pager-next] .pager__arrow");
+    if (link === null || arrow === null) return null;
+    const style = getComputedStyle(link);
+    const raised = getComputedStyle(document.documentElement).getPropertyValue(
+      "--bg-raise",
+    );
+    const accent = getComputedStyle(document.documentElement).getPropertyValue(
+      "--accent",
+    );
+    return {
+      background: style.backgroundColor,
+      border: style.borderTopColor,
+      arrow: getComputedStyle(arrow).color,
+      raised: raised.trim(),
+      accent: accent.trim(),
+    };
+  });
+  expect(next).not.toBeNull();
+  /* The two cards do not stand on the same ground, and the tinted one is
+     not the neutral surface the other one uses. */
+  expect(next?.background).not.toBe(drawn.previous["background"]);
+  expect(next?.border).not.toBe(drawn.previous["border"]);
+  expect(next?.arrow).not.toBe(drawn.neutralArrow);
 });
 
 test("a package's own page opens the documentation at the path's first page", async ({
