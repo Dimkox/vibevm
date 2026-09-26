@@ -42,10 +42,10 @@ lifecycle `package`:
   → validate: ok
   → install: fresh
   → generate: no-op
-  → build: no-op
+  → build: ok
   → test: no-op
   → create: no-op
-  → verify: no-op
+  → verify: ok
   → package: ok
   → verification: unavailable (0 input(s), 0 artifact(s))
 vibe lifecycle: package completed (8 phases, 1 contribution(s) selected, 1 executed, 1 ok, 0 fresh, 0 notice(s))</expect>
