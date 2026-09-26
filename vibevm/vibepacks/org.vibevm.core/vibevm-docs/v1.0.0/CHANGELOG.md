@@ -4,6 +4,11 @@ What changed for a reader, by date. This package carries one number and is repub
 
 ## 1.0.0 — 2026-09-26
 
+- **Long lines wrap.** Code, command output and the request at the top of a task page now wrap at the edge of their block instead of running off it; line breaks and indentation stay, and the copy button still copies the exact text.
+- **The way on comes first.** A page now ends with the previous and the next page, the next one tinted to invite you on, then the rules the page cites, and only then the block written for agents.
+- **Contents you can find.** On a phone or a tablet, Contents is now a button you can see and press; the ≡ button beside the text size opens the contents, and on a wide screen it brings the current page into view in the column beside it.
+- **The advanced tutorial comes second.** On the learning path, Build Hello VibeVM in AI-Native Rust now follows Getting started directly.
+- **The home page names the release.** Its pill reads Developer Preview 1 and leads to the roadmap; the button beside it opens What VibeVM is, in the page's language.
 - **Your first project installs the redbook.** Create your first project now installs `org.vibevm.world/redbook`, shows the result in `vibe tree`, invites you to look at how the packages landed on disk, opens your agent inside the project, and writes the specification of a small calculator in Markdown, by hand or by asking the agent.
 - **An advanced tutorial in AI-Native Rust.** Build Hello VibeVM in AI-Native Rust installs Rust on Windows, macOS or Linux, has the agent build the calculator from its specification, and shows how a changed rule leads a machine to every piece of code and every test that depended on it.
 - **Page views are counted again.** The domain carries the same self-hosted Umami tag the old landing did, with no cookies and no personal data; the move to the documentation site had dropped it on 2026-09-12.
