@@ -2,220 +2,224 @@
   "schema": 1,
   "derived": {
     "architecture/how-this-manual-is-maintained.xml#cli-help:vibe doc todo --help": {
-      "sha256": "84e83b75a490955d7165307f599142d9d2a0c054e8f0c90fc9922d82e6109b8b",
-      "bytes": 4967
+      "sha256": "fb6c41eb540c59231c438e72e74c6be76668d80327c55a8cc3e03178d057950c",
+      "bytes": 5290
     },
     "reference/commands.xml#cli-help:vibe --help": {
-      "sha256": "150f0ba20ff558ca58a49c4edd1b3f15341e3382e4df2951dd4e89caa849f937",
-      "bytes": 14964
+      "sha256": "c6f4d69d206a6641096d1e948b68fe9ad7346e40225062e21761f0c6ce75c101",
+      "bytes": 15374
     },
     "reference/commands.xml#cli-help:vibe agentic --help": {
-      "sha256": "26f6e98e1eda31671caf5f33a02367397653ccfa19f774499591da1820140c8d",
-      "bytes": 3818
+      "sha256": "a131562359be5517fe7983d4b439f1e54ef98025b07bc229dba0c119a3e2f2ae",
+      "bytes": 4141
     },
     "reference/commands.xml#cli-help:vibe aiui --help": {
-      "sha256": "b597764b2c10d8ea9ac3045021c0d23c8cddd2f8b835a75d14c95af760f7e897",
-      "bytes": 5528
+      "sha256": "c32d9e8e5276fac92c1a22cebfa1a2b011813b243f42902b0518ee0c8f03f663",
+      "bytes": 5851
     },
     "reference/commands.xml#cli-help:vibe bin --help": {
-      "sha256": "3d8de4b4d9b6390b8315d8c6e38b22f8c3b208297545066aebbbdbd36e3545b4",
-      "bytes": 3974
+      "sha256": "9b8cd767670f8ad0fdbf80101e4cbd368ea69993981576f219c6c7bc94f3b616",
+      "bytes": 4297
     },
     "reference/commands.xml#cli-help:vibe build --help": {
-      "sha256": "0d746614007a54c24ca28aa1343a263ceab1d4b336f0f894215a909137c55300",
-      "bytes": 4969
+      "sha256": "ff16bda91666e14db19321bc2c0c2ea86efe39f765d93a2167b4169d0b74620d",
+      "bytes": 5292
     },
     "reference/commands.xml#cli-help:vibe cache --help": {
-      "sha256": "e0b623615f675a3d86f9c68e4da8926d1fab6764e32c574a3d02bbac1e9d263f",
-      "bytes": 5340
+      "sha256": "4cf473063ec084d6c47446b2897ac57e3b8ee0b29ba85a5f159fdbd4990b4b76",
+      "bytes": 5663
     },
     "reference/commands.xml#cli-help:vibe check --help": {
-      "sha256": "f8b79999f1d43ced039091697edacf74596f52c891bccccb5d023900a04ceac7",
-      "bytes": 3705
+      "sha256": "f7293fd8f374dc0a164b37f4df2ad1432684b93b34689bdab7b2b33eb034ce6a",
+      "bytes": 4028
     },
     "reference/commands.xml#cli-help:vibe clean --help": {
-      "sha256": "8cc4d073e83c44a6ca892eb5ce968e4789d6363812910b0307a075217e5c5322",
-      "bytes": 4471
+      "sha256": "3a16e9c686678c1c9c85dc57ac4b5a241ecce1354178cff6a5724e32903f2f80",
+      "bytes": 4794
     },
     "reference/commands.xml#cli-help:vibe command --help": {
-      "sha256": "0c47add41bc6a3bcd855be78dd829984d7036cd4bae0b93bce6918fe463aab11",
-      "bytes": 3562
+      "sha256": "6de0a26cd0ce2f588edeadc0e357b0b9bbe29e6790b8dd47582e9da8c951e342",
+      "bytes": 3885
     },
     "reference/commands.xml#cli-help:vibe create --help": {
-      "sha256": "ccffde6dc4a430879c4aca5241d26336942699ef178f6376e94ea21850468cef",
-      "bytes": 4962
+      "sha256": "99adfedca88332b872cf5432c67a4136b59f297ecfc24c6c97a4c37aa195b973",
+      "bytes": 5285
     },
     "reference/commands.xml#cli-help:vibe deploy --help": {
-      "sha256": "b8249d3dedf60def44e1cc6ca2bb28877137566134b875cb5b79ded8a676ccc9",
-      "bytes": 5601
+      "sha256": "1c90cb4e7034623cef7281b5dbbc992589c8028528232f678d1a6d036c925b89",
+      "bytes": 5924
     },
     "reference/commands.xml#cli-help:vibe deployments --help": {
-      "sha256": "447dc046f684c518b58937d8388215b23998e424bceb7dd1d158c4b717a99aad",
-      "bytes": 3358
+      "sha256": "cc68f3e37d72fb1025e4cd22eca2f036740c2c337e9ffa63996caa01ebc9c1b8",
+      "bytes": 3681
     },
     "reference/commands.xml#cli-help:vibe doc --help": {
-      "sha256": "3ed56b995bd21798dcd3bebdefd31753d0418711bcfd402cff5733919c18777a",
-      "bytes": 6054
+      "sha256": "d2426d846294fbebfd40732c8dc43f2757b7449e9d4578caca9feadd0765f344",
+      "bytes": 6377
     },
     "reference/commands.xml#cli-help:vibe explain --help": {
-      "sha256": "59ac9c5190c56d753f61060a63fd00ba9ebb49d1164390bb83999c613db5c2be",
-      "bytes": 4417
+      "sha256": "36c6f11d383946434add150e4c8a50ded214a08e6ef932420889ba3f41d96036",
+      "bytes": 4740
     },
     "reference/commands.xml#cli-help:vibe extensions --help": {
-      "sha256": "ce91360c3250a443c4afa2dd2efcf67447e574a90e0f9fba1a63619e6c72d497",
-      "bytes": 3722
+      "sha256": "f1887230d9edcd3ace42c82273a7c439b85f4db84c3410a17fd4a43c07cd64ab",
+      "bytes": 4045
     },
     "reference/commands.xml#cli-help:vibe facts --help": {
-      "sha256": "1bfa9d13539fba24c34b9cd8c12f1ff5f8b4998ffd87e608d4701b59e61758a9",
-      "bytes": 3947
+      "sha256": "6f19fd28139a2f7a17b05860fa5187a24741bdcc107b1d3288ef14628cac783b",
+      "bytes": 4270
     },
     "reference/commands.xml#cli-help:vibe frame --help": {
-      "sha256": "ae0da35227c9d758919b6c825865f9df4a32d737926a358173ae9ad7dd4b7c8a",
-      "bytes": 3735
+      "sha256": "dcdeb48ee1c0651c4e6085d4ff5cf5e7c074943b0544f6e151d7bca16e365c33",
+      "bytes": 4058
     },
     "reference/commands.xml#cli-help:vibe friends --help": {
-      "sha256": "6b11b40662a00603395d749a0e0dc2c8cfb216e411c99c9a04f4a5a957c8b98a",
-      "bytes": 3633
+      "sha256": "68c68f9910e79f61392c8604947d283fcb61742b68637b7bcad07090a35e7821",
+      "bytes": 3956
     },
     "reference/commands.xml#cli-help:vibe generate --help": {
-      "sha256": "62cbfaaeb9adeae3b9790d69b914d5f73ae8437f6254146620d664b9c4e4f9a5",
-      "bytes": 4975
+      "sha256": "da3939ea477563ed9390ca3ae25b067f69e4c7b40552fff2dedd24c96fa88eeb",
+      "bytes": 5298
     },
     "reference/commands.xml#cli-help:vibe init --help": {
-      "sha256": "35bc2298e8761612f7d33388df998851d14692b7479e25dc0c761ac4207a82d8",
-      "bytes": 5430
+      "sha256": "fb20d99fc2c4129f7995a74894613c101ac8146b209e7e6beacc1f1f1baa6d64",
+      "bytes": 5753
     },
     "reference/commands.xml#cli-help:vibe install --help": {
-      "sha256": "09d20d6e26c3be5abcacf8e57eb7a7b3480b129165ec1e1eeeb9980b7003ac77",
-      "bytes": 10092
+      "sha256": "ad77e5e8d473133f3ebdea32e4b180b22e2199257c26986559805c70d2bf9e6b",
+      "bytes": 10911
     },
     "reference/commands.xml#cli-help:vibe list --help": {
-      "sha256": "7dd17f2423e8064d47d103f8bb6bdec832d15ab5012afebf5a3921b0b4acc882",
-      "bytes": 3622
+      "sha256": "a58a051b4d79dea18b8b12c80e3f19a96b73ec3f3a1ef86f80127d1f15ca96e7",
+      "bytes": 3794
     },
     "reference/commands.xml#cli-help:vibe mcp --help": {
-      "sha256": "eddbbc52359ba4b19296a11d768675f292723f420500fcc173a69a5e8d8da1fd",
-      "bytes": 4925
+      "sha256": "64faf09002050d6fd42f0ad6473f5241c1e138b0f97be9e8796869411e4745ff",
+      "bytes": 5248
     },
     "reference/commands.xml#cli-help:vibe outdated --help": {
-      "sha256": "ea336ad2d04319649255522374cf5f987ce5a6d0ff5883186ae81d31880f4b73",
-      "bytes": 4100
+      "sha256": "ffded077e2d3724652c31ceec6d70b6cd09516612d30a5065a281a0c9cd2f9ce",
+      "bytes": 4423
     },
     "reference/commands.xml#cli-help:vibe package --help": {
-      "sha256": "8f370b94403e8131e01deea6cca88ec0ed6ec7532f54111c0fde8d4dfef14868",
-      "bytes": 4969
+      "sha256": "0df6c940ce6d5caf35d58f3504b9473d56f652aceab19cedcea86b7a63aae836",
+      "bytes": 5292
     },
     "reference/commands.xml#cli-help:vibe prefs --help": {
-      "sha256": "b55db110271f0560f7ae6b54a89623e73d92b1241071592205c8865231ffc44d",
-      "bytes": 4432
+      "sha256": "354bd8d119f4899cce44c0e5a9efb409b6ffac76374a9c84012ebb5699f4a4eb",
+      "bytes": 4755
     },
     "reference/commands.xml#cli-help:vibe progress --help": {
-      "sha256": "af990472347de748f158b601e0935c5a7ff5f526e933c0aa732fb5d3a5fa6029",
-      "bytes": 5199
+      "sha256": "9a4073ed70a4a40ce100b9dbf32693d403ebdaa02e561b08fe7f87dae51fc598",
+      "bytes": 5522
     },
     "reference/commands.xml#cli-help:vibe query --help": {
-      "sha256": "ed62e6117325c59f82a9f4ea98cb61b1198135153282a71f97f8d233564e0654",
-      "bytes": 4689
+      "sha256": "ea6116d297a2cc4e1971fa95baa956d61d49259f6dd18172f49513eab5d210c2",
+      "bytes": 5012
     },
     "reference/commands.xml#cli-help:vibe refactor --help": {
-      "sha256": "1b39866751b7ae51e90ab372b1acab8a6f291a64551e0475591cd41391364dc8",
-      "bytes": 3630
+      "sha256": "e3bb9660d002e0c5042b9728ed81aee80a91fc8b4738c6ae51e76563c96f7120",
+      "bytes": 3953
     },
     "reference/commands.xml#cli-help:vibe registry --help": {
-      "sha256": "08a1b526786af401155962fc5d8d6bac5612809c93316dad8ddc6fb635c5fe9d",
-      "bytes": 6112
+      "sha256": "35022c91bc005f8dd2eac675a691faab1bd89c653fb06f940a1bd7c131c71257",
+      "bytes": 6435
     },
     "reference/commands.xml#cli-help:vibe reinstall --help": {
-      "sha256": "feae4612243b83127da068f8694184e4438f86cabb64be396c85f889bfedb870",
-      "bytes": 4557
+      "sha256": "ae78fc5f2bb801bc27b6651674083b640a3c327d426eb0715b7d22795421c992",
+      "bytes": 4880
     },
     "reference/commands.xml#cli-help:vibe requirements --help": {
-      "sha256": "83b99b145a3fee5b79860fb37c9446ffbc65af585e73930cfda2b15a7c0280f9",
-      "bytes": 4541
+      "sha256": "9468c2eabcb6908f3180752e26ad2ae2745a3a30fd244ce372a6409e5853057c",
+      "bytes": 4864
+    },
+    "reference/commands.xml#cli-help:vibe run --help": {
+      "sha256": "224e3007bd872a83e24c83badd03a1be2783c39cc428b7d051272064c1afee62",
+      "bytes": 3840
     },
     "reference/commands.xml#cli-help:vibe scrape --help": {
-      "sha256": "b45f1e0b96b61d49a8921217cf88327dc1fc72971e6c3ee34df9f5e15d2f03ca",
-      "bytes": 4138
+      "sha256": "908ad691f1d62c47dcd9fcf93f42c1bc3f3c0acbbff51fe2101ce3cee95077ff",
+      "bytes": 4461
     },
     "reference/commands.xml#cli-help:vibe search --help": {
-      "sha256": "ba3c0f934c4abed7615dc7ae00474707d3ce3974fc36a2f0e8e57c9d000dffbb",
-      "bytes": 5932
+      "sha256": "9f761cc50268c45dc3e04597411ae0037e26019514d408c59fa12e5b0b34020a",
+      "bytes": 6255
     },
     "reference/commands.xml#cli-help:vibe select --help": {
-      "sha256": "f67fbe0cd6db6f3efe6d690bffd0eaa809065fe8df46292ca98c42b3971aec2b",
-      "bytes": 4715
+      "sha256": "b760362a22d7121aee9b4daecf9714491cccc8e956a32b00c0f2ff4948d53a64",
+      "bytes": 5038
     },
     "reference/commands.xml#cli-help:vibe self --help": {
-      "sha256": "14f9c96db4d8ed3fe3f6e4b658057811fad6729f6f8b9ef5fbce0a14e6fcdc5e",
-      "bytes": 5166
+      "sha256": "4e16a816c05273f1be54dbf9ffc0598071d192edf7205262b24f45d619335290",
+      "bytes": 5489
     },
     "reference/commands.xml#cli-help:vibe show --help": {
-      "sha256": "89348a7ce83c36baab7b9ef29c0662d5a7fcd91b46a0014d852731f0e28bb7d7",
-      "bytes": 4158
+      "sha256": "2608d2bdd53859bfba905dc2e93cd1e83425d5e23aba799688d6ecdf5ff332bc",
+      "bytes": 4481
     },
     "reference/commands.xml#cli-help:vibe skill --help": {
-      "sha256": "a5f15c3cce9dc847fe9343492718fa4f404bb4d2d386f39ff4be0cd56b22ba3b",
-      "bytes": 4107
+      "sha256": "f8d8eadb372c97e031afc52cbb407c984192f53da3c05c83f4cd883d33395d47",
+      "bytes": 4430
     },
     "reference/commands.xml#cli-help:vibe specmap --help": {
-      "sha256": "46fca85ecb865c5db220587151816fc161efb22979a44175d42bd174e1c42d05",
-      "bytes": 3884
+      "sha256": "8b7654a979a21cca5f5b0da0178ddcd2fb697e0214e345ba5fb0ed7c5cbe400f",
+      "bytes": 4207
     },
     "reference/commands.xml#cli-help:vibe term --help": {
-      "sha256": "a95e81cec3ffaea77411d76b64f0bd2ee9a8927db4b95f3a214bc045484b1b99",
-      "bytes": 3760
+      "sha256": "dce1b8bfd214382e7acafd449fedf94e103806e5f14032f665f9abb21eb01424",
+      "bytes": 4083
     },
     "reference/commands.xml#cli-help:vibe test --help": {
-      "sha256": "2970c529e686acdedcc8b842ce172b240822aaa3541072ec6d217377f8680448",
-      "bytes": 4963
+      "sha256": "c80f1d4a81858c06860848ea3a6c241e5b9a811ec51af8b1f94a42d8a37c837e",
+      "bytes": 5286
     },
     "reference/commands.xml#cli-help:vibe tools --help": {
-      "sha256": "7f49b407d286564cb7abf9f63b6c3a5516b6ff8c3d658479d7058f62bb856f5b",
-      "bytes": 3452
+      "sha256": "3c6697f3b324b3e1e739231f892cf225cf2d7efe33109bc86b6e92454568d472",
+      "bytes": 3775
     },
     "reference/commands.xml#cli-help:vibe trace --help": {
-      "sha256": "738dc7e88195d70597773cb18faaa3692441c2a528bad529aa8400a0578a896c",
-      "bytes": 3577
+      "sha256": "823c2b140b2cf725b12dc07f1199fe4459ee995e48164e34b7767520a3020783",
+      "bytes": 3900
     },
     "reference/commands.xml#cli-help:vibe tree --help": {
-      "sha256": "1ac6d87511ffb2777cb8841005a3a2468d1ee7fa197823ec67419f5bc0fb9099",
-      "bytes": 4274
+      "sha256": "1da682daed9aa52b6eebaca4848173eec40cbaa8c26135deb7d971efd91b7811",
+      "bytes": 4597
     },
     "reference/commands.xml#cli-help:vibe undeploy --help": {
-      "sha256": "a637437d3d13b36ed91948ec225e224d7950c33e5e568511bb897c341dbfeb85",
-      "bytes": 3584
+      "sha256": "e297350bf968581e2d81006c95a59e5aadbc48a18efd57f3133ca645c947cb01",
+      "bytes": 3907
     },
     "reference/commands.xml#cli-help:vibe uninstall --help": {
-      "sha256": "c332a052f1174bf43bae85e2831bac6baff24d91d7c7f1d20c885839c6d541d5",
-      "bytes": 3511
+      "sha256": "383d5e1d53bb841116eb35897a28ead1b00f8cf4f4746ace6d123233cc0336ed",
+      "bytes": 3918
     },
     "reference/commands.xml#cli-help:vibe update --help": {
-      "sha256": "8bb9c6008f9a045cc79e8d2b85a5b2151d511e87db55b24062dc60447af90e95",
-      "bytes": 4773
+      "sha256": "292b13ff130df95539cab80efc61fa30799604946ebf0fd578d7a15b8dae84f5",
+      "bytes": 5871
     },
     "reference/commands.xml#cli-help:vibe validate --help": {
-      "sha256": "d80aa26ae298f19db5251cc2277a44be4a38b374f0b77783f2600dac145bf9ca",
-      "bytes": 4979
+      "sha256": "704333cee5422a64f532731d1a46e51a733347dea475d45171886ae0ab05ecfc",
+      "bytes": 5302
     },
     "reference/commands.xml#cli-help:vibe vars --help": {
-      "sha256": "e53c9bb6c915f17853ac5908cc8b432994a7f6c602033e31ab1259e22ae3b171",
-      "bytes": 3641
+      "sha256": "50f2f1d2b45ffdce1d7442e523c7acdc500401e67129c6b1cd654507c4e7421d",
+      "bytes": 3964
     },
     "reference/commands.xml#cli-help:vibe verify --help": {
-      "sha256": "7c0dd1afbf96338292665ccc0f2d6067abadc15c2fd29b3789818af1de343192",
-      "bytes": 4965
+      "sha256": "1952deca1d0b8158fdb828739e1abf2e8ee4d2135d17dd47d03708848e8b24f8",
+      "bytes": 5288
     },
     "reference/commands.xml#cli-help:vibe version --help": {
-      "sha256": "b94b559737c764a8cb8205e59db071190962f77748eebed58f677ca3bcdbeaeb",
-      "bytes": 3197
+      "sha256": "883eba58a5040af7eedf868bf754ec90d274be286b0f6eecf9b95b83165bcead",
+      "bytes": 3520
     },
     "reference/commands.xml#cli-help:vibe why --help": {
-      "sha256": "683431fd66477e12eb62ef899419c3002aa708e80f7573d2fe6334fd493854f1",
-      "bytes": 3569
+      "sha256": "00b5392063891fb667d9f0343cb8835892564693d6fc7683fe7c7c7d9a3ee28c",
+      "bytes": 3892
     },
     "reference/commands.xml#cli-help:vibe workspace --help": {
-      "sha256": "c9c3f00c0e1f65bb3cda744cc5ba07a86974bfb5901a29f05c3f08f4a1642fa5",
-      "bytes": 4286
+      "sha256": "b776149b22fa8a37d68cb9cbb02a1a9cef702960d06e342c99da5922dcf2dbde",
+      "bytes": 4609
     },
     "reference/machine-formats.xml#jtd-schema:schemas/deploy_intent.jtd.json": {
       "sha256": "32b0980d086fa1f818db9c7c8a3aee16241fb548d7b371b4b692f974e18f8930",
@@ -226,8 +230,8 @@
       "bytes": 4193
     },
     "reference/machine-formats.xml#jtd-schema:schemas/doc_manifest.jtd.json": {
-      "sha256": "65b16beedcaafc8fdeb144b3f62dc98138ac981a4a896c878bdf92917ee73462",
-      "bytes": 12224
+      "sha256": "be47f19dd2294818048f2ca3779d4e5a11468fe2f8add66ad08d80c6efeb4cf6",
+      "bytes": 14364
     },
     "reference/machine-formats.xml#jtd-schema:schemas/doc_surface.jtd.json": {
       "sha256": "4070a2e8d810f2a7d7d5792f18e69795e12614498dbb75d153be3a76459ccb14",
@@ -302,8 +306,8 @@
       "bytes": 3136
     },
     "reference/manifest.xml#manifest-field:org.vibevm.core/vibevm-docs": {
-      "sha256": "de2dc4ffef6cce2f61938e1897686684b50d9c9e1bf72cccd0f17ee3b8b56608",
-      "bytes": 3522
+      "sha256": "263ff45d9ffbaf0977f5a0030225e3b32b4b74c6ed14cdf7367d9ce05dbe0512",
+      "bytes": 6518
     }
   }
 }
