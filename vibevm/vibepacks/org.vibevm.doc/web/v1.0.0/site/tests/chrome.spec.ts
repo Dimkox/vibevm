@@ -54,12 +54,21 @@ const PHONE = 390;
 const ROWS = {
   en: [
     ["Documentation", "GitHub", "GitVerse", "News & support", "search"],
-    ["Vision", "Why VibeVM", "Why Zap", "AI-Native Language", "lang", "theme"],
+    [
+      "Vision",
+      "Roadmap",
+      "Why VibeVM",
+      "Why Zap",
+      "AI-Native Language",
+      "lang",
+      "theme",
+    ],
   ],
   ru: [
     ["Документация", "GitHub", "GitVerse", "Новости и поддержка", "search"],
     [
       "Видение",
+      "Роадмап",
       "Почему VibeVM",
       "Почему Zap",
       "AI-Native Языки",
@@ -217,26 +226,33 @@ for (const one of PAGES) {
            the corner a thumb reaches first — the two nav rows take the
            width under them, and the field steps out, as it always did,
            because the manual's own header carries the same one a tap
-           away. Each row of four becomes two columns of two, which is a
-           shape: neither row fits across one phone line in either
-           language, and one composition for both is the point. What is
+           away. Each row becomes two columns, which is a shape: neither
+           row fits across one phone line in either language, and one
+           composition for both is the point. The software row is four
+           entries on two lines; the argument row, five since the roadmap
+           joined it right after the essay (owner, 2026-09-26), is two
+           lines of two and its last entry alone on a third. What is
            pinned is that shape AND the order inside it — a grid fills
-           row-major, so the two lines of a row read as the row does. */
+           row-major, so the lines of a row read as the row does. */
         expect(named[0], `brand keeps the preferences — ${at}`).toEqual([
           "brand",
           "lang",
           "theme",
         ]);
-        expect(named, `five lines and no more — ${at}`).toHaveLength(5);
-        for (const line of named.slice(1)) {
+        expect(named, `six lines and no more — ${at}`).toHaveLength(6);
+        for (const line of named.slice(1, 5)) {
           expect(line, `two columns — ${at}`).toHaveLength(2);
         }
+        expect(
+          named[5],
+          `the argument row's fifth entry alone on its last line — ${at}`,
+        ).toHaveLength(1);
         expect(
           [...named[1], ...named[2]],
           `the software row, in order — ${at}`,
         ).toEqual(destinations(ROWS[one.locale][0]));
         expect(
-          [...named[3], ...named[4]],
+          [...named[3], ...named[4], ...named[5]],
           `the argument row, in order — ${at}`,
         ).toEqual(destinations(ROWS[one.locale][1]));
         await expect(page.locator(".search-box")).toBeHidden();
@@ -383,22 +399,24 @@ test("the bar is tabbed by kind, and marks where the reader stands", async ({
     ].map((element) => (element.textContent ?? "").trim() || element.tagName);
   });
 
-  /* The brand, then the eight destinations in the two rows' own order —
-     the first row's four, then the second row's four. */
-  expect(order.slice(0, 9)).toEqual([
+  /* The brand, then the nine destinations in the two rows' own order —
+     the first row's four, then the second row's five, the roadmap right
+     after the essay. */
+  expect(order.slice(0, 10)).toEqual([
     "VibeVM",
     "Documentation",
     "GitHub",
     "GitVerse",
     "News & support",
     "Vision",
+    "Roadmap",
     "Why VibeVM",
     "Why Zap",
     "AI-Native Language",
   ]);
   /* Then the field, the two letters and the three themes — the tail the
      documentation's header ends with, in the same sequence. */
-  expect(order.slice(9)).toEqual([
+  expect(order.slice(10)).toEqual([
     "INPUT",
     "EN",
     "RU",

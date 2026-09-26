@@ -134,6 +134,14 @@ export type Strings = {
    */
   readonly navVision: string;
   /**
+   * The roadmap's entry in the header, right after the essay (owner,
+   * 2026-09-26). A pointer's label like the essay's: the page heads
+   * itself «From a preview to an operating system» / «От превью до
+   * операционной системы», and the menu says in one or two words where
+   * the link leads.
+   */
+  readonly navRoadmap: string;
+  /**
    * The channels page's entry in the header. Also a pointer's label: the
    * page heads itself «News & support» / «Новости и поддержка» and the
    * menu says the same, because here the page's name IS where the link
@@ -229,6 +237,7 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     navWhyZap: "Why Zap",
     navWhyAiNative: "AI-Native Language",
     navVision: "Vision",
+    navRoadmap: "Roadmap",
     navNews: "News & support",
     eyebrow: "Open source · Spec-driven development",
     badge: "Developer Preview 1",
@@ -302,6 +311,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
         body: "The essay behind everything on this site: two sources of intention, an expensive probabilistic layer over a cheap deterministic one, and traceable edges between them.",
         alt: "The essay's two sources of intention: a terracotta circle and a tilted cobalt square joined by a gold arc, each dropping an edge to one floor, with smaller nodes traced between them.",
       },
+      roadmap: {
+        body: "Where this is going, in order: a more extensible core, Zap, the first community packages, IDE plugins, a library and marketplace of our own, and a Linux whose package manager is vibevm. No dates.",
+        alt: "A road as one ink diagonal rising to the right from a terracotta circle at its foot; along it six stations grow from a single square into a whole system of squares, over one floor line.",
+      },
       "why-vibevm": {
         body: "The product thesis: discipline you can install. Specs, flows and skills as versioned, pinned packages — and the context an agent boots from, computed from them.",
         alt: "A terracotta wedge entering a field of scattered tilted rectangles and, past it, a lattice of squares pinned in place.",
@@ -326,6 +339,13 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     navWhyZap: "Почему Zap",
     navWhyAiNative: "AI-Native Языки",
     navVision: "Видение",
+    /* «Роадмап» and not «Дорожная карта» in the menu, for the bar's sake:
+       the second row is the widest thing in the header, and the longer
+       label pushed the Russian bar past a tablet held upright, the width
+       the two-row composition is measured at. The page itself says
+       «Дорожная карта» in its eyebrow and its title; the menu says where
+       the link leads in one word, as «Видение» does for the essay. */
+    navRoadmap: "Роадмап",
     navNews: "Новости и поддержка",
     eyebrow: "Открытый код · Spec-Driven Development",
     badge: "Developer Preview 1",
@@ -401,6 +421,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
       vision: {
         body: "Эссе, из которого выросло всё на этом сайте: два источника намерения, дорогой вероятностный слой над дешёвым детерминированным — и трассируемые рёбра между ними.",
         alt: "Два источника намерения из эссе: терракотовый круг и наклонённый кобальтовый квадрат, соединённые золотой дугой; каждый опускает ребро на общий пол, между ними — узлы поменьше.",
+      },
+      roadmap: {
+        body: "Куда всё идёт, по порядку: более расширяемое ядро, Zap, первые пакеты от сообщества, плагины для IDE, своя библиотека и маркетплейс — и Linux, в котором пакетный менеджер — vibevm. Без дат.",
+        alt: "Дорога — одна чернильная диагональ, поднимающаяся вправо от терракотового круга у подножия; вдоль неё шесть станций растут из одного квадрата в целую систему квадратов над одной линией пола.",
       },
       "why-vibevm": {
         body: "Тезис продукта: дисциплина, которую можно установить. Спеки, флоу и навыки — версионируемые, закреплённые пакеты, а из них вычисляется контекст, с которого стартует агент.",

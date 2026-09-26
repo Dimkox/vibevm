@@ -27,14 +27,24 @@ const PAGES = [
     title: "Everything here, on one plane.",
     rows: ["The software", "The argument"],
     zap: "October 2026",
+    roadmap: { name: "Roadmap", href: "/roadmap/" },
   },
   {
     route: "/ru/",
     title: "Весь сайт на одной плоскости.",
     rows: ["Софт", "Смысл"],
     zap: "октябрь 2026",
+    roadmap: { name: "Роадмап", href: "/ru/roadmap/" },
   },
 ] as const;
+
+/**
+ * The map's plates, as the header's rows declare them: nine, in two
+ * bands of four and five (owner's placement of the roadmap right after
+ * the essay, 2026-09-26). The deploy smoke counts these.
+ */
+const PLATES = 9;
+const BANDS = [4, 5] as const;
 
 const WIDTHS = [1440, 834, 390] as const;
 
@@ -107,7 +117,7 @@ for (const one of PAGES) {
 
     const header = await headerDestinations(page);
     const map = await mapDestinations(page);
-    expect(header.length).toBeGreaterThan(0);
+    expect(header.length).toBe(PLATES);
     expect(map).toEqual(header);
 
     /* Two rows in the header, two bands on the map, each band as long as
@@ -123,10 +133,77 @@ for (const one of PAGES) {
         all.map((grid) => grid.querySelectorAll(".landing-map__plate").length),
       );
     expect(bands).toEqual(rows);
+    expect(bands).toEqual([...BANDS]);
     await expect(
       page.locator("main .landing-map .landing-map__row-k"),
     ).toHaveText([...one.rows]);
     await expect(page.locator("main .landing-map h2")).toHaveText(one.title);
+  });
+}
+
+/**
+ * The roadmap's plate: right after the essay's in the argument's band, a
+ * band like the essay's and its mirror image — the essay's drawing stands
+ * on the right, the roadmap's on the left, so the two long plates read as
+ * one Z rather than as a repeat. On a phone both stack their drawing over
+ * their words and the mirroring folds away.
+ */
+for (const one of PAGES) {
+  test(`${one.route} stands the roadmap's plate under the essay's, mirrored`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(one.route);
+
+    const story = page.locator(
+      "main .landing-map .landing-map__band:nth-child(3) .landing-map__plate",
+    );
+    await expect(story.nth(0)).toHaveClass(/\blanding-map__plate--vision\b/);
+    await expect(story.nth(1)).toHaveClass(/\blanding-map__plate--roadmap\b/);
+
+    const plate = story.nth(1);
+    await expect(plate).toHaveClass(/\blanding-map__plate--band\b/);
+    await expect(plate).toHaveAttribute("href", one.roadmap.href);
+    await expect(plate.locator(".landing-map__name")).toHaveText(
+      one.roadmap.name,
+    );
+    await expect(plate.locator(".landing-map__body")).not.toContainText(
+      /\b(19|20)\d\d\b/,
+    );
+
+    const sides = async (which: number) =>
+      story.nth(which).evaluate((element) => {
+        const art = element.querySelector(".landing-map__art");
+        const text = element.querySelector(".landing-map__text");
+        if (art === null || text === null) return null;
+        return art.getBoundingClientRect().left <
+          text.getBoundingClientRect().left
+          ? "art-left"
+          : "text-left";
+      });
+    expect(await sides(0)).toBe("text-left");
+    expect(await sides(1)).toBe("art-left");
+
+    const essayBottom = await story
+      .nth(0)
+      .evaluate((element) => element.getBoundingClientRect().bottom);
+    const roadmapTop = await plate.evaluate(
+      (element) => element.getBoundingClientRect().top,
+    );
+    expect(roadmapTop).toBeGreaterThan(essayBottom);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(one.route);
+    const stacked = await plate.evaluate((element) => {
+      const art = element.querySelector(".landing-map__art");
+      const text = element.querySelector(".landing-map__text");
+      if (art === null || text === null) return false;
+      return (
+        art.getBoundingClientRect().bottom <=
+        text.getBoundingClientRect().top + 1
+      );
+    });
+    expect(stacked).toBe(true);
   });
 }
 

@@ -38,6 +38,7 @@ import {
 } from "../site/src/landing/i18n.ts";
 import { DOC_SITEMAP } from "../site/src/seo/sitemap.ts";
 import { newsLlmsLine } from "../site/src/news/meta.ts";
+import { roadmapLlmsLine } from "../site/src/roadmap/meta.ts";
 import { visionLlmsLine } from "../site/src/vision/meta.ts";
 import { WHY_LLMS, whyLlmsLine } from "../site/src/why/meta.ts";
 import { writeOgCard } from "./og-card.mjs";
@@ -456,7 +457,12 @@ function llmsTxt(config) {
        deciding what to fetch sees the products first and the worldview
        they are pieces of right behind them. */
     visionLlmsLine(origin),
-    /* The project's own channels, after the essay: an agent that has
+    /* Where it is going, right after the worldview — the order the
+       header keeps too: an agent that has read what VibeVM is and why
+       learns next what comes after Developer Preview 1, in order, without
+       fetching the page. */
+    roadmapLlmsLine(origin),
+    /* The project's own channels, after the roadmap: an agent that has
        read what VibeVM is may next want where it speaks and where it
        answers, and which accounts are really its own. */
     newsLlmsLine(origin),

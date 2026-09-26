@@ -338,6 +338,13 @@
     },
     {
       "crate_name": "src",
+      "file": "site/src/landing/art-roadmap.tsx",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/landing/art-roadmap.tsx"
+    },
+    {
+      "crate_name": "src",
       "file": "site/src/landing/art-story.tsx",
       "item_kind": "module",
       "line": 1,
@@ -821,6 +828,69 @@
     },
     {
       "crate_name": "src",
+      "file": "site/src/roadmap/art.tsx",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/art.tsx"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/copy-en.ts",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/copy-en.ts"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/copy-ru.ts",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/copy-ru.ts"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/emblems.tsx",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/emblems.tsx"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/i18n.ts",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/i18n.ts"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/index.tsx",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/index.tsx"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/meta.ts",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/meta.ts"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/paths.ts",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/paths.ts"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/roadmap/strings.ts",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/roadmap/strings.ts"
+    },
+    {
+      "crate_name": "src",
       "file": "site/src/root.tsx",
       "item_kind": "module",
       "line": 1,
@@ -891,6 +961,13 @@
     },
     {
       "crate_name": "src",
+      "file": "site/src/routes/roadmap/index@landing.tsx",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/routes/roadmap/index@landing.tsx"
+    },
+    {
+      "crate_name": "src",
       "file": "site/src/routes/ru/index@landing.tsx",
       "item_kind": "module",
       "line": 1,
@@ -902,6 +979,13 @@
       "item_kind": "module",
       "line": 1,
       "symbol": "site/src/routes/ru/news-and-support/index@landing.tsx"
+    },
+    {
+      "crate_name": "src",
+      "file": "site/src/routes/ru/roadmap/index@landing.tsx",
+      "item_kind": "module",
+      "line": 1,
+      "symbol": "site/src/routes/ru/roadmap/index@landing.tsx"
     },
     {
       "crate_name": "src",
@@ -1633,6 +1717,14 @@
       "verb": "implements"
     },
     {
+      "file": "site/src/landing/art-roadmap.tsx",
+      "from_symbol": "site/src/landing/art-roadmap.tsx",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
       "file": "site/src/landing/art-story.tsx",
       "from_symbol": "site/src/landing/art-story.tsx",
       "line": 1,
@@ -2185,6 +2277,78 @@
       "verb": "implements"
     },
     {
+      "file": "site/src/roadmap/art.tsx",
+      "from_symbol": "site/src/roadmap/art.tsx",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/copy-en.ts",
+      "from_symbol": "site/src/roadmap/copy-en.ts",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/copy-ru.ts",
+      "from_symbol": "site/src/roadmap/copy-ru.ts",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/emblems.tsx",
+      "from_symbol": "site/src/roadmap/emblems.tsx",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/i18n.ts",
+      "from_symbol": "site/src/roadmap/i18n.ts",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/index.tsx",
+      "from_symbol": "site/src/roadmap/index.tsx",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/meta.ts",
+      "from_symbol": "site/src/roadmap/meta.ts",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SEO-STRUCTURED-DATA",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/paths.ts",
+      "from_symbol": "site/src/roadmap/paths.ts",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/roadmap/strings.ts",
+      "from_symbol": "site/src/roadmap/strings.ts",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
       "file": "site/src/root.tsx",
       "from_symbol": "site/src/root.tsx",
       "line": 1,
@@ -2265,6 +2429,14 @@
       "verb": "implements"
     },
     {
+      "file": "site/src/routes/roadmap/index@landing.tsx",
+      "from_symbol": "site/src/routes/roadmap/index@landing.tsx",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
       "file": "site/src/routes/ru/index@landing.tsx",
       "from_symbol": "site/src/routes/ru/index@landing.tsx",
       "line": 1,
@@ -2275,6 +2447,14 @@
     {
       "file": "site/src/routes/ru/news-and-support/index@landing.tsx",
       "from_symbol": "site/src/routes/ru/news-and-support/index@landing.tsx",
+      "line": 1,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
+      "verb": "implements"
+    },
+    {
+      "file": "site/src/routes/ru/roadmap/index@landing.tsx",
+      "from_symbol": "site/src/routes/ru/roadmap/index@landing.tsx",
       "line": 1,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE",
@@ -2967,6 +3147,12 @@
     },
     {
       "code": "dangling-edge",
+      "file": "site/src/landing/art-roadmap.tsx",
+      "line": 1,
+      "message": "edge `site/src/landing/art-roadmap.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
       "file": "site/src/landing/art-story.tsx",
       "line": 1,
       "message": "edge `site/src/landing/art-story.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
@@ -3381,6 +3567,60 @@
     },
     {
       "code": "dangling-edge",
+      "file": "site/src/roadmap/art.tsx",
+      "line": 1,
+      "message": "edge `site/src/roadmap/art.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/copy-en.ts",
+      "line": 1,
+      "message": "edge `site/src/roadmap/copy-en.ts` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/copy-ru.ts",
+      "line": 1,
+      "message": "edge `site/src/roadmap/copy-ru.ts` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/emblems.tsx",
+      "line": 1,
+      "message": "edge `site/src/roadmap/emblems.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/i18n.ts",
+      "line": 1,
+      "message": "edge `site/src/roadmap/i18n.ts` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/index.tsx",
+      "line": 1,
+      "message": "edge `site/src/roadmap/index.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/meta.ts",
+      "line": 1,
+      "message": "edge `site/src/roadmap/meta.ts` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SEO-STRUCTURED-DATA`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/paths.ts",
+      "line": 1,
+      "message": "edge `site/src/roadmap/paths.ts` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/roadmap/strings.ts",
+      "line": 1,
+      "message": "edge `site/src/roadmap/strings.ts` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
       "file": "site/src/root.tsx",
       "line": 1,
       "message": "edge `site/src/root.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#READER-SETTINGS`: no spec unit carries this anchor"
@@ -3441,6 +3681,12 @@
     },
     {
       "code": "dangling-edge",
+      "file": "site/src/routes/roadmap/index@landing.tsx",
+      "line": 1,
+      "message": "edge `site/src/routes/roadmap/index@landing.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
       "file": "site/src/routes/ru/index@landing.tsx",
       "line": 1,
       "message": "edge `site/src/routes/ru/index@landing.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
@@ -3450,6 +3696,12 @@
       "file": "site/src/routes/ru/news-and-support/index@landing.tsx",
       "line": 1,
       "message": "edge `site/src/routes/ru/news-and-support/index@landing.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
+    },
+    {
+      "code": "dangling-edge",
+      "file": "site/src/routes/ru/roadmap/index@landing.tsx",
+      "line": 1,
+      "message": "edge `site/src/routes/ru/roadmap/index@landing.tsx` --implements--> `spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE`: no spec unit carries this anchor"
     },
     {
       "code": "dangling-edge",

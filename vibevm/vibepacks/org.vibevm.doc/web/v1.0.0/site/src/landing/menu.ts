@@ -30,6 +30,7 @@
 
 import { href } from "../lib/href.ts";
 import { isNewsPath, newsHref } from "../news/paths.ts";
+import { isRoadmapPath, roadmapHref } from "../roadmap/paths.ts";
 import { isVisionPath, visionHref } from "../vision/paths.ts";
 import { WHY_PAGES, type WhyPage, whyHref, whyPath } from "../why/paths.ts";
 import {
@@ -43,21 +44,23 @@ import {
 /** The two rows of the header, by what each is about. */
 export type MenuRowId = "tools" | "story";
 
-/** One destination — the same eight the header shows, by name. */
+/** One destination — the same nine the header shows, by name. */
 export type MenuId =
   | "documentation"
   | "github"
   | "gitverse"
   | "news"
   | "vision"
+  | "roadmap"
   | `why-${WhyPage}`;
 
 /**
  * The size of an entry's plate on the map, in the twelve columns of its
  * row: a tower two rows high, a small square, a wide plate, a third of
- * the row, or the whole of it. Five shapes and not eight, because the
+ * the row, or the whole of it. Five shapes and not nine, because the
  * composition repeats them: the two mirrors are two small squares, the
- * three products three thirds.
+ * three products three thirds, the essay and the roadmap two bands —
+ * the second the mirror image of the first (`map.css`).
  */
 export type Plate = "tall" | "small" | "wide" | "third" | "band";
 
@@ -147,6 +150,17 @@ export function landingMenu(locale: Locale, here: string): LandingMenu {
     current: isVisionPath(here),
     plate: "band",
   };
+  /* Right after the essay, by the owner's placement (2026-09-26): the
+     worldview, then where it is going, then the three products it is the
+     worldview of. */
+  const roadmap: MenuEntry = {
+    id: "roadmap",
+    label: t.navRoadmap,
+    href: roadmapHref(locale),
+    offSite: false,
+    current: isRoadmapPath(here),
+    plate: "band",
+  };
   const why = (page: WhyPage): MenuEntry => ({
     id: `why-${page}`,
     label: whyLabel(t, page),
@@ -168,7 +182,7 @@ export function landingMenu(locale: Locale, here: string): LandingMenu {
       { id: "tools", entries: [documentation, github, gitverse, news] },
       {
         id: "story",
-        entries: [vision, ...WHY_PAGES.map((page) => whys[page])],
+        entries: [vision, roadmap, ...WHY_PAGES.map((page) => whys[page])],
       },
     ],
     entries: {
@@ -177,6 +191,7 @@ export function landingMenu(locale: Locale, here: string): LandingMenu {
       gitverse,
       news,
       vision,
+      roadmap,
       "why-vibevm": whys.vibevm,
       "why-zap": whys.zap,
       "why-ai-native": whys["ai-native"],

@@ -269,6 +269,25 @@
   min-height: 200px;
 }
 
+/* The roadmap's band answers the essay's, which stands right over it:
+   the essay puts its words on the left and its drawing on the right, the
+   roadmap the other way round, so the two long plates of the argument's
+   band read as one Z — words, drawing; drawing, words — and not as a
+   repeat. The road itself rises to the right, toward the words. */
+.landing-map__plate--roadmap {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+
+.landing-map__plate--roadmap .landing-map__art {
+  order: 1;
+  border-left: 0;
+  border-right: 1px solid var(--line);
+}
+
+.landing-map__plate--roadmap .landing-map__text {
+  order: 2;
+}
+
 .landing-map__text {
   display: flex;
   flex-direction: column;
@@ -502,6 +521,94 @@
 
 .lm-vision__node-h {
   fill: var(--accent);
+}
+
+/* --- Roadmap: the road ------------------------------------------------------------------- */
+
+.lm-road__horizon {
+  fill: color-mix(in srgb, var(--accent-gold) 8%, transparent);
+}
+
+.lm-road__floor {
+  stroke: var(--text-2);
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+
+.lm-road__drops path {
+  stroke: var(--text);
+  opacity: 0.12;
+  stroke-dasharray: 2 6;
+}
+
+.lm-road__bar {
+  stroke: var(--text);
+  stroke-width: 6;
+  opacity: 0.88;
+}
+
+.lm-road__halo {
+  stroke: color-mix(in srgb, var(--accent) 34%, transparent);
+  stroke-width: 1.4;
+}
+
+.lm-road__here {
+  fill: var(--accent);
+}
+
+.lm-road__node {
+  fill: var(--bg-raise);
+  stroke: var(--text);
+  stroke-width: 1.4;
+}
+
+.lm-road__ink {
+  fill: var(--text);
+}
+
+.lm-road__terra {
+  fill: var(--accent);
+}
+
+.lm-road__gold {
+  fill: var(--accent-gold);
+}
+
+.lm-road__cobalt {
+  fill: var(--intent-machine);
+}
+
+.lm-road__hollow {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.2;
+}
+
+.lm-road__shelf {
+  stroke: var(--text);
+  stroke-width: 1.2;
+  opacity: 0.8;
+}
+
+.lm-road__plane {
+  fill: color-mix(in srgb, var(--text) 6%, transparent);
+  stroke: var(--text);
+  stroke-width: 1.8;
+}
+
+.lm-road__ring {
+  stroke: color-mix(in srgb, var(--accent-zap) 45%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 1.5 5;
+}
+
+.lm-road__orbit {
+  stroke: var(--accent-zap);
+  stroke-width: 1.2;
+}
+
+.lm-road__zap {
+  fill: var(--accent-zap);
 }
 
 /* --- Why VibeVM: the wedge and the lattice ----------------------------------------------- */
@@ -845,6 +952,7 @@
     aspect-ratio: 2 / 1;
     min-height: 0;
     border-left: 0;
+    border-right: 0;
     border-bottom: 1px solid var(--line);
   }
 

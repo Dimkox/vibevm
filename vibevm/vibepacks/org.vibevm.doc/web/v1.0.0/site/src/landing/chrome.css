@@ -120,11 +120,17 @@
   /* The space between two entries, given as a range rather than a
      number: between the widest window and the narrowest desktop the bar
      loses about a third of its room, and spending it on the gaps is
-     cheaper than spending it on the type. */
-  --nav-gap: clamp(0.9rem, 1.5vw, 1.375rem);
+     cheaper than spending it on the type. The floor came down from 0.9rem
+     when the second row gained its fifth entry, the roadmap (owner,
+     2026-09-26): at a tablet held upright the Russian row needed the
+     room back, and the gaps and the field below are where it was found. */
+  --nav-gap: clamp(0.8rem, 1.5vw, 1.375rem);
   /* The field narrows with the window instead of holding 15rem until
-     the row breaks. The design system reads this name (search-box). */
-  --search-box-w: clamp(11rem, 17vw, 15rem);
+     the row breaks. The design system reads this name (search-box). Its
+     floor is 9.5rem rather than 11rem for the reason the gap above gives:
+     at 834px the five-entry Russian row and the brand share a bar with
+     this field, and 152px still holds the word and the shortcut. */
+  --search-box-w: clamp(9.5rem, 17vw, 15rem);
 
   display: grid;
   /* The two flexible flanks around the content-sized middle; the

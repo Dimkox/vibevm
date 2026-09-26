@@ -15,6 +15,7 @@ import { SITE_LANGUAGE_LABEL } from "../lib/site-language.ts";
 import { findInDocumentation } from "../reader/search.ts";
 import { rememberSiteLanguage } from "../reader/site-language.ts";
 import { startThemeSwitch } from "../reader/theme.ts";
+import { isRoadmapPath } from "../roadmap/paths.ts";
 import { isVisionPath } from "../vision/paths.ts";
 import { WHY_PAGES, whyPageOf } from "../why/paths.ts";
 import styles from "./chrome.css?inline";
@@ -79,11 +80,13 @@ export const LandingChrome = component$<LandingChromeProps>((props) => {
   const menu = landingMenu(locale, here);
 
   /* What the footer lists, in the footer's own order: the three product
-     arguments, the essay, the two mirrors. The header leads with the
-     essay; the footer is the older list and keeps its order. */
+     arguments, the essay, the roadmap right after it (owner, 2026-09-26),
+     the two mirrors. The header leads with the essay; the footer is the
+     older list and keeps its order. */
   const footerLinks = [
     ...WHY_PAGES.map((page) => menu.entries[`why-${page}`]),
     menu.entries.vision,
+    menu.entries.roadmap,
     menu.entries.github,
     menu.entries.gitverse,
   ];
@@ -211,10 +214,13 @@ export const LandingChrome = component$<LandingChromeProps>((props) => {
           measure belongs to the page, and this asks the one question it
           can answer from the address — the same address it already read
           the language and the current entry off. A Why page brings its
-          own `.why-shell` to every section that wants the column back. */}
+          own `.why-shell` to every section that wants the column back.
+          The essay and the roadmap are of that kind too. */}
       <main
         class={
-          whyPageOf(here) === null && !isVisionPath(here)
+          whyPageOf(here) === null &&
+          !isVisionPath(here) &&
+          !isRoadmapPath(here)
             ? "landing-shell"
             : "landing-full"
         }

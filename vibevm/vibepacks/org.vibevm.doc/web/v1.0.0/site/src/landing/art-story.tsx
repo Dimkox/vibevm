@@ -21,6 +21,9 @@ import { component$ } from "@qwik.dev/core";
  *     each clamped by the discipline's brackets, on one floor with one
  *     exit notch.
  *
+ * The row's fifth drawing, the roadmap's road, stands in `art-roadmap.tsx`:
+ * these four fill this file to the discipline's budget.
+ *
  * Every element that draws or pops in carries `--at`, its place in the
  * choreography (`map.css`); a rotated shape pops inside a group, so the
  * pop's transform never replaces the rotation it was drawn with.

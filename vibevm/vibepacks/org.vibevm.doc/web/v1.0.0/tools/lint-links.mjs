@@ -69,6 +69,10 @@ const ALLOWED_HOSTS = new Map([
   ["x.com", "the author's account, linked by /news-and-support/"],
   ["www.reddit.com", "the project's subreddit, linked by /news-and-support/"],
   [
+    "specdrivenlinux.org",
+    "the future home of Spec-Driven Linux, the owner's domain, linked by /roadmap/ (owner, 2026-09-26); it has no records yet and nothing requests it",
+  ],
+  [
     "schema.org",
     "the JSON-LD @context: a vocabulary identifier, never fetched",
   ],

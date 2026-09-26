@@ -2,6 +2,7 @@
 
 import { component$ } from "@qwik.dev/core";
 
+import { RoadmapArt } from "./art-roadmap.tsx";
 import {
   VisionArt,
   WhyAiNativeArt,
@@ -22,16 +23,17 @@ export type MenuArtProps = {
 };
 
 /**
- * The drawing of one destination on the map — one of the eight, by the
+ * The drawing of one destination on the map — one of the nine, by the
  * id the header's list names it with (`menu.ts`).
  *
  * A switch and not a table, for the reason the compiler is asked to be
  * in the room at all: the cases are the ids, the switch is exhaustive,
  * and a destination added to the list without a drawing is a type error
  * here rather than a plate with a hole where its picture should be. The
- * drawings themselves live in two files by row — the first row's tools
- * and the second row's argument — because eight of them in one file
- * would cross the discipline's file budget.
+ * drawings themselves live in three files — the first row's tools, the
+ * second row's argument, and the roadmap's road on its own — because
+ * nine of them in one file would cross the discipline's file budget, and
+ * so would five in the argument's.
  *
  * Nothing here is announced: every drawing is `aria-hidden`, and the
  * plate around it carries the description once, on a `role="img"`.
@@ -48,6 +50,8 @@ export const MenuArt = component$<MenuArtProps>((props) => {
       return <NewsArt />;
     case "vision":
       return <VisionArt />;
+    case "roadmap":
+      return <RoadmapArt />;
     case "why-vibevm":
       return <WhyVibevmArt />;
     case "why-zap":
