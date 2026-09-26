@@ -4,6 +4,9 @@ What changed for a reader, by date. This package carries one number and is repub
 
 ## 1.0.0 — 2026-09-26
 
+- **Your first project installs the redbook.** Create your first project now installs `org.vibevm.world/redbook`, shows the result in `vibe tree`, invites you to look at how the packages landed on disk, opens your agent inside the project, and writes the specification of a small calculator in Markdown, by hand or by asking the agent.
+- **An advanced tutorial in AI-Native Rust.** Build Hello VibeVM in AI-Native Rust installs Rust on Windows, macOS or Linux, has the agent build the calculator from its specification, and shows how a changed rule leads a machine to every piece of code and every test that depended on it.
+- **Page views are counted again.** The domain carries the same self-hosted Umami tag the old landing did, with no cookies and no personal data; the move to the documentation site had dropped it on 2026-09-12.
 - **Words explain themselves.** On a wide screen, pointing at a word that links to the glossary shows its definition in a small card beside it; on a phone the link opens the glossary, as before. The manual now declares its glossary in its manifest, and the page for authors tells how to declare one.
 - **Quotations fold.** A quotation from a specification now takes one line — a small triangle, `spec:` and a few words from the rule itself — and opens when you select it. A printed page and the `.md` and `.xml` versions of a page still carry every rule in full.
 
