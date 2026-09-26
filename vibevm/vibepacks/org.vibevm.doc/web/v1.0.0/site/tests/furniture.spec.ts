@@ -300,3 +300,125 @@ test("a generated block says what generated it and from what", async ({
     page.locator(".block-note + pre.derived[data-p='13']"),
   ).toHaveCount(1);
 });
+
+/**
+ * A line longer than the block is FOLDED, not hidden behind a gesture.
+ *
+ * The owner's report was about the live manual: «every code example is
+ * shown without word wrap, so long lines cannot be read», and the request
+ * block at the top of a task page was one single line (2026-09-26). The
+ * block used to scroll sideways inside itself, which on a phone showed
+ * the half of a command that says nothing and on any screen hid the end
+ * of a path.
+ *
+ * The long line is written into the fixture's bare fence here rather than
+ * carried by it, and the reason is in `src/fixtures/README.md`: the
+ * fixture library cannot grow a page (the policy's inline-script ceiling,
+ * X-044) and its own lines are short, so the case a real manual is full
+ * of — a `cargo` command, a `spec://` address — has to be put there.
+ * Nothing about the STYLESHEET is faked by it: the block is the
+ * pipeline's own numbered fence, in the built page, and what is measured
+ * is what the browser does with a line in it. The blocks measured after
+ * it carry the fixture's own words at the width where they are already
+ * too long.
+ */
+const LONG =
+  "cargo install --locked --path crates/vibe-cli --root /usr/local --features full # spec://org.vibevm.core/vibevm/common/PROP-057#READER-NUMBERED-BLOCKS";
+
+/** Whether an element has to be scrolled to be read to the end. */
+async function scrollsInside(page: Page, selector: string): Promise<boolean> {
+  return page.evaluate((one) => {
+    const element = document.querySelector(one);
+    if (element === null) return true;
+    return element.scrollWidth > element.clientWidth + 1;
+  }, selector);
+}
+
+/** How many lines tall a block's text is, by its own line height. */
+async function lines(page: Page, selector: string): Promise<number> {
+  return page.evaluate((one) => {
+    const element = document.querySelector(one);
+    if (!(element instanceof HTMLElement)) return 0;
+    const step = Number.parseFloat(getComputedStyle(element).lineHeight);
+    if (Number.isNaN(step) || step === 0) return 0;
+    return Math.round(element.getBoundingClientRect().height / step);
+  }, selector);
+}
+
+/** Put one line into a block of the page, as a manual's own page carries it. */
+async function write(
+  page: Page,
+  selector: string,
+  text: string,
+): Promise<void> {
+  await page.evaluate(
+    ([one, words]) => {
+      const element = document.querySelector(one ?? "");
+      if (element !== null) element.textContent = words ?? "";
+    },
+    [selector, text],
+  );
+}
+
+test("a fence folds a line too long for it and keeps its number", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(PAGE);
+
+  const fence = "[data-p='8'] code";
+  await write(page, fence, LONG);
+
+  expect(await scrollsInside(page, fence)).toBe(false);
+  expect(await lines(page, fence)).toBeGreaterThan(1);
+
+  /* And the block still says which block it is. The number hangs in the
+     margin of the `pre`, which is why the fold is on the `code`: an
+     overflow box would clip it. */
+  const anchor = page.locator("a.p-anchor#p08");
+  await expect(anchor).toBeVisible();
+  const box = await anchor.boundingBox();
+  expect(box?.width ?? 0).toBeGreaterThan(0);
+  expect(box?.x ?? -1).toBeGreaterThan(0);
+
+  /* Nor does the page itself scroll: a fold inside the column cannot
+     widen the document. */
+  expect(await scrolls(page)).toBe(false);
+});
+
+test("a request folds at its spaces, as prose does", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(PAGE);
+
+  const prompt = "[data-p='17'] .prompt-text code";
+  await write(
+    page,
+    prompt,
+    "Install vibe on this machine, add the redbook stack to it, and then show me the version of every package the lockfile now pins.",
+  );
+
+  expect(await scrollsInside(page, prompt)).toBe(false);
+  expect(await lines(page, prompt)).toBeGreaterThan(1);
+  await expect(page.locator("a.p-anchor#p17")).toBeVisible();
+});
+
+/**
+ * And at the width of a phone the fixture's own lines are already longer
+ * than the column, so nothing is written in: what is measured here is the
+ * page exactly as the pipeline rendered it.
+ */
+test("on a phone the blocks the page carries fold by themselves", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(PAGE);
+
+  for (const selector of [
+    "[data-p='17'] .prompt-text code",
+    "[data-p='15'] .example-stderr code",
+  ]) {
+    expect(await scrollsInside(page, selector), selector).toBe(false);
+    expect(await lines(page, selector), selector).toBeGreaterThan(1);
+  }
+  expect(await scrolls(page)).toBe(false);
+});

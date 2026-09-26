@@ -673,10 +673,15 @@
   color: var(--text-2);
 }
 
+/* The figures fold their long lines, as the reader's own fences do: a
+   signature or a command wider than the figure used to scroll, and on a
+   phone the half of it that fitted was the half that said nothing. The
+   `overflow-x` above stays behind the fold for what cannot be folded. */
 .an-code code {
   font: inherit;
   color: inherit;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .an-codefig--after .an-code {
