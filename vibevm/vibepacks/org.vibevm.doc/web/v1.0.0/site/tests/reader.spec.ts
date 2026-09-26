@@ -323,3 +323,125 @@ test("a documentation's own page offers it as well", async ({ page }) => {
     new RegExp("/doc/com\\.example\\.docs/fixture-manual/latest/$"),
   );
 });
+
+/**
+ * ≡ — the button in the reading controls, and the list it is named after.
+ *
+ * It used to ask for `[data-toc]`, which is the OTHER list: the headings
+ * of the page the reader is already on. So the contents never opened, and
+ * on a wide screen the page scrolled to a sticky column and landed
+ * wherever that column happened to be standing — «does not expand that
+ * very contents, and it sends you to the wrong coordinates» (owner,
+ * 2026-09-26).
+ *
+ * The two shapes of the list get the two answers a reader's question has,
+ * and both are measured: folded, the list opens under the header and the
+ * way back is offered; in the column, the page does not move at all.
+ */
+
+/**
+ * Where the page has come to rest.
+ *
+ * The site scrolls smoothly (`base.css`), so every measurement of a
+ * position has to wait for the movement to end — a reading taken one
+ * frame after a scroll was asked for is a reading of the animation.
+ */
+async function settled(page: Page): Promise<number> {
+  let last = Number.NaN;
+  for (let tries = 0; tries < 40; tries += 1) {
+    const now = await page.evaluate(() => window.scrollY);
+    if (now === last) return now;
+    last = now;
+    await page.waitForTimeout(150);
+  }
+  return last;
+}
+
+/** Get the reader reading, so the quick row with ≡ in it is shown. */
+async function reading(page: Page, at: string = PAGE): Promise<number> {
+  await read(page, at);
+  await page.evaluate(() => window.scrollTo(0, 2200));
+  await expect(page.locator("[data-quick-toc]")).toBeVisible();
+  return settled(page);
+}
+
+test("the contents button opens the contents under the header", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const was = await reading(page);
+  expect(was).toBeGreaterThan(400);
+
+  const contents = page.locator("[data-contents]");
+  await expect(contents.locator("a").first()).toBeHidden();
+  await page.locator("[data-quick-toc]").click();
+
+  /* Open, which is what the button is for. */
+  await expect(contents.locator("a").first()).toBeVisible();
+
+  /* And standing clear of the sticky header rather than behind it, once
+     the movement has ended. */
+  await settled(page);
+  const where = await page.evaluate(() => {
+    const summary = document.querySelector("[data-contents] summary");
+    const header = document.querySelector(".docs-header");
+    if (summary === null || header === null) return null;
+    return {
+      top: summary.getBoundingClientRect().top,
+      under: header.getBoundingClientRect().bottom,
+      window: window.innerHeight,
+    };
+  });
+  expect(where).not.toBeNull();
+  expect(where?.top ?? -1).toBeGreaterThanOrEqual(where?.under ?? 0);
+  expect(where?.top ?? -1).toBeLessThan(where?.window ?? 0);
+
+  /* The keyboard is where the eye is. */
+  await expect(page.locator("[data-contents] summary")).toBeFocused();
+
+  /* Going to the contents is leaving a place, so the way back is offered
+     — and it leads back to the block the reader was standing on. */
+  const back = page.locator("[data-return]").first();
+  await expect(back).toBeVisible();
+  await back.click();
+  await expect
+    .poll(async () => page.evaluate(() => window.scrollY), { timeout: 4000 })
+    .toBeGreaterThan(1000);
+});
+
+test("in the column the contents button moves the column and not the page", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await reading(page);
+
+  const before = await settled(page);
+  await page.locator("[data-quick-toc]").click();
+
+  /* The page is where it was: the list is already on the screen, and a
+     jump to a sticky column is a jump to nowhere in particular. Asked
+     after the page has had time to move, so that «it did not move» is a
+     measurement and not a race. */
+  expect(await settled(page)).toBe(before);
+
+  /* What moved is the column's own scroller, far enough to show the page
+     the reader is on — and that entry is what the keyboard now holds. */
+  const current = page.locator("[data-contents] .contents__link--current");
+  await expect(current.first()).toBeFocused();
+  /* And it says so for a moment, because nothing else on the page did. */
+  await expect(current.first()).toHaveClass(/contents__link--cued/);
+  const inside = await page.evaluate(() => {
+    const column = document.querySelector("[data-contents]");
+    const links = [
+      ...document.querySelectorAll("[data-contents] .contents__link--current"),
+    ].filter(
+      (link) => link instanceof HTMLElement && link.offsetParent !== null,
+    );
+    const link = links[0];
+    if (column === null || link === undefined) return null;
+    const frame = column.getBoundingClientRect();
+    const box = link.getBoundingClientRect();
+    return box.top >= frame.top - 1 && box.bottom <= frame.bottom + 1;
+  });
+  expect(inside).toBe(true);
+});

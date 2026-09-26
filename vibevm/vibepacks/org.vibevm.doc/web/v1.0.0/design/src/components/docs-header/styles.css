@@ -9,6 +9,13 @@
    holding a gap open under nothing. */
 :root {
   --site-header-h: 64px;
+  /* How much of the page the bar actually COVERS: its height plus the gap
+     the reading controls keep under it. It is a second name because the
+     two answers differ on a phone — the bar wraps into two rows there and
+     `--site-header-h` deliberately stays the one-row height (see the note
+     at the foot of this file) — and whatever is scrolled to under the bar
+     has to clear what the bar covers rather than what it says it is. */
+  --site-header-cover: calc(var(--site-header-h) + 0.7rem);
 }
 
 .docs-header {
@@ -86,6 +93,12 @@
    reading controls to stand clear of the bar, and at this width they no
    longer stand under it at all — they are at the bottom of the screen. */
 @media (max-width: 640px) {
+  /* The second row is what it costs, and what it covers says so — this
+     is the one value that does follow the wrap. */
+  :root {
+    --site-header-cover: calc(var(--site-header-h) + 3rem);
+  }
+
   .docs-header__inner {
     flex-wrap: wrap;
     height: auto;
