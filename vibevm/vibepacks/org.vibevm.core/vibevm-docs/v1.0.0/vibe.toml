@@ -111,7 +111,7 @@ pages = ["start/what-vibevm-is", "start/index", "start/install-vibe", "start/fir
 [[navigation.chapter]]
 id = "advanced-tutorial"
 title = "Advanced tutorials"
-pages = ["tutorials/ai-native-rust", "tutorials/markdown-and-xml"]
+pages = ["tutorials/ai-native-rust", "tutorials/obsidian-to-project", "tutorials/markdown-and-xml"]
 
 [[navigation.chapter]]
 id = "how-a-project-works"

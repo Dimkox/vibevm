@@ -179,3 +179,33 @@ page = "tutorials/ai-native-rust.xml"
 id = "hello-rule-change"
 fixture = "hello-vibevm-cwd"
 skip = "the rule change starts from the built calculator of hello-build, which no fixture holds"
+
+[[doc.prompts.prompt]]
+page = "tutorials/obsidian-to-project.xml"
+id = "vault-init"
+fixture = "obsidian-vault"
+
+[[doc.prompts.prompt]]
+page = "tutorials/obsidian-to-project.xml"
+id = "vault-move"
+skip = "the prompt starts where step 1 leaves the vault, and no fixture holds that state yet"
+
+[[doc.prompts.prompt]]
+page = "tutorials/obsidian-to-project.xml"
+id = "vault-package"
+skip = "the prompt starts where step 2 leaves the vault, and no fixture holds that state yet"
+
+[[doc.prompts.prompt]]
+page = "tutorials/obsidian-to-project.xml"
+id = "vault-share"
+skip = "the prompt writes the machine's registry file and a second project under the home folder, which a sandbox run cannot hold apart yet"
+
+[[doc.prompts.prompt]]
+page = "tutorials/obsidian-to-project.xml"
+id = "vault-git"
+skip = "the prompt starts where step 3 leaves the vault, and no fixture holds that state yet"
+
+[[doc.prompts.prompt]]
+page = "tutorials/obsidian-to-project.xml"
+id = "vault-colleague"
+skip = "the prompt needs a clone of the vault and a colleague's machine settings, which no fixture holds yet"
