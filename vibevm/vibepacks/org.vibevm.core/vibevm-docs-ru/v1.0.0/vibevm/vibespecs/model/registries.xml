@@ -76,7 +76,7 @@
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCK-EMBEDDED"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#GUARD-WARN"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#GUARD-CI-OFF"/>
-    <p>Проект, у которого рядом с манифестом лежит папка `packages/`, получает эту папку открытой как локальный реестр вообще без объявления. Пакеты, разрешённые из неё, записываются с `source_kind = "local"`, и это переносимо, потому что каждый чекаут разрешает ту же папку в то же содержимое. `--no-prefer-local` обходит папку на одну команду.</p>
+    <p>Проект, у которого есть папка `vibevm/vibepacks/`, получает эту папку открытой как локальный реестр вообще без объявления; спецификация ниже ещё называет её `packages/` — так она звалась, пока дерево проекта не переехало в `vibevm/`. Пакеты, разрешённые из неё, записываются с `source_kind = "local"`, и это переносимо, потому что каждый чекаут разрешает ту же папку в то же содержимое. `--no-prefer-local` обходит папку на одну команду.</p>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCAL-AUTO-OPEN"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCAL-SOURCE-KIND"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCAL-NO-PREFER-FLAG"/>

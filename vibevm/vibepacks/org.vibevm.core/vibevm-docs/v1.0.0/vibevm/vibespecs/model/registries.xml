@@ -79,7 +79,7 @@
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCK-EMBEDDED"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#GUARD-WARN"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#GUARD-CI-OFF"/>
-    <p>A project that carries a `packages/` folder beside its manifest gets that folder opened as a local registry with no declaration at all. Packages resolved from it record `source_kind = "local"`, which is portable, because every checkout resolves the same folder to the same content. `--no-prefer-local` bypasses the folder for one command.</p>
+    <p>A project that carries a `vibevm/vibepacks/` folder gets that folder opened as a local registry with no declaration at all; the specification below still calls it `packages/`, its name before the project's tree moved into `vibevm/`. Packages resolved from it record `source_kind = "local"`, which is portable, because every checkout resolves the same folder to the same content. `--no-prefer-local` bypasses the folder for one command.</p>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCAL-AUTO-OPEN"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCAL-SOURCE-KIND"/>
     <rule ref="spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-030#LOCAL-NO-PREFER-FLAG"/>
