@@ -110,7 +110,7 @@ pages = ["start/what-vibevm-is", "start/index", "start/install-vibe", "start/fir
 
 [[navigation.chapter]]
 id = "advanced-tutorial"
-title = "Advanced tutorial"
+title = "Advanced tutorials"
 pages = ["tutorials/ai-native-rust"]
 
 [[navigation.chapter]]
