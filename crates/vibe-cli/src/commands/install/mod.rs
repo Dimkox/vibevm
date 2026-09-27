@@ -39,7 +39,8 @@ pub(crate) use draft::InstallDraft;
 pub(crate) use observer::{CliInstallObserver, CliRegistryEnvironment, LifecycleSlotObserver};
 pub(crate) use report::{HookReportPresentation, LifecycleHookView};
 pub(crate) use resolver::{
-    CliGitSourceMutation, CliPackageSourceFactory, InstallResolver, build_install_resolver,
+    CliGitSourceMutation, CliPackageSourceFactory, InstallResolver, any_package_source,
+    build_install_resolver,
 };
 pub(crate) use vibe_install::exact_pinned_pkgref;
 

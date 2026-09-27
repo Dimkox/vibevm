@@ -35,7 +35,7 @@ use super::*;
               parse_str cannot fail on this input; the .unwrap() is a one-off assertion \
               at the test-fixture boundary, not domain logic."
 )]
-fn empty_manifest() -> Manifest {
+pub(super) fn empty_manifest() -> Manifest {
     Manifest::parse_str(
         "[package]\ngroup = \"org.vibevm\"\nname = \"x\"\nkind = \"flow\"\nversion = \"0.1.0\"\n",
     )
@@ -180,7 +180,13 @@ fn project_local_packages_activate_resolver_without_vibe_embedded() {
 /// Write one package into a local-registry-shaped tree rooted at `root`:
 /// `<root>/<group>/<name>/v<version>/vibe.toml`, distinguishable by
 /// `description`.
-fn write_registry_package(root: &Path, group: &str, name: &str, version: &str, description: &str) {
+pub(super) fn write_registry_package(
+    root: &Path,
+    group: &str,
+    name: &str,
+    version: &str,
+    description: &str,
+) {
     let dir = root.join(group).join(name).join(format!("v{version}"));
     std::fs::create_dir_all(&dir).unwrap();
     std::fs::write(
@@ -194,7 +200,11 @@ fn write_registry_package(root: &Path, group: &str, name: &str, version: &str, d
 }
 
 /// A project whose `<root>/packages/` tree carries `group/name @ 0.1.0`.
-fn temp_project_with_packages(group: &str, name: &str, description: &str) -> tempfile::TempDir {
+pub(super) fn temp_project_with_packages(
+    group: &str,
+    name: &str,
+    description: &str,
+) -> tempfile::TempDir {
     let project = tempfile::tempdir().unwrap();
     write_registry_package(
         &project

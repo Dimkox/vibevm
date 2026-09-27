@@ -50,7 +50,8 @@ use vibe_workspace::vibedeps;
 
 use crate::commands::compile_trace::{self, CommandExit, RegisteredReportDraft, carry_measured};
 use crate::commands::install::{
-    build_install_resolver, exact_pinned_pkgref, lane_sizes, resolve_spec_format,
+    any_package_source, build_install_resolver, exact_pinned_pkgref, lane_sizes,
+    resolve_spec_format,
 };
 use crate::commands::short_name;
 use crate::exit_code::InstallError;
@@ -154,24 +155,51 @@ fn run(
     let lanes_before = lane_sizes(&workspace.root);
     let spec_format = resolve_spec_format(&manifest, user_config.install.spec_format);
 
-    if manifest.registries.is_empty() {
-        bail!(
-            "no `[[registry]]` configured in `{}/vibe.toml` — `vibe update` re-fetches \
-             from the registry.",
-            project_root.display()
-        );
-    }
-
-    let roots = qualify_roots(&args.packages, &manifest, &lockfile)?;
-
     // PROP-010 §2.5 — the offline posture reaches `vibe update` through the
     // same ladder as install, resolved ONCE by the command owner: root
     // `--offline` / `VIBE_OFFLINE` / user-config `[net].offline`. A scoped
     // offline update with no local source fails in `build_install_resolver`
     // with the same actionable bail `vibe install --offline` gives.
     let global = vibe_core::GlobalRegistryConfig::load()?;
+    let install_args = install_args_from(&args);
+
+    // The refusal is owed to the ONE question the resolver itself asks — can
+    // ANYTHING serve this project — and never to the project manifest alone.
+    // A project declaring no `[[registry]]` of its own still resolves: the
+    // machine-global `~/.vibe/registry.toml` is merged into the effective set
+    // project-first (PROP-002 `##GLOBAL-REGISTRY-FILE` /
+    // `##MERGE-PROJECT-FIRST`) — the shape recommended for configuring a whole
+    // machine — and so do a project-local packages root, a source build's
+    // embedded registry (PROP-030 §3.3), a declared git source and, under the
+    // offline posture, the warm machine store (PROP-010 §2.5–§2.6). Reading
+    // `manifest.registries` here refused every such project: it could install
+    // and never update.
+    //
+    // The OFFLINE posture keeps its own refusal, the one the note above
+    // promises: `build_install_resolver`'s `--offline` bail names every local
+    // source and the `vibe cache add` warm-up, which is strictly more useful
+    // to an operator with no network than a message about registry files.
+    if !offline
+        && !any_package_source(
+            &install_args,
+            &manifest,
+            embedded_root.as_deref(),
+            &project_root,
+            &global,
+            offline,
+        )
+    {
+        bail!(
+            "no `[[registry]]` configured in `{}` or in `~/.vibe/registry.toml` — \
+             `vibe update` re-fetches from the registry.",
+            project_root.join(Manifest::FILENAME).display(),
+        );
+    }
+
+    let roots = qualify_roots(&args.packages, &manifest, &lockfile)?;
+
     let resolver = build_install_resolver(
-        &install_args_from(&args),
+        &install_args,
         &manifest,
         embedded_root.as_deref(),
         &project_root,

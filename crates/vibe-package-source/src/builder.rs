@@ -64,6 +64,106 @@ fn strip_unc(p: PathBuf) -> PathBuf {
     p
 }
 
+/// The roots of the local-registry family for this invocation, ordered
+/// project-local first (PROP-030 §3.3): `<project_root>/vibevm/vibepacks/`
+/// when that directory exists and `--no-prefer-local` did not disable the
+/// lane, then a source build's embedded registry unless
+/// `--no-default-registry` (or the composition root's CI gate) suppressed it.
+///
+/// The second value is how many LEADING roots are project-local (0 or 1) —
+/// the tag the fetch path needs to call a resolved package portable
+/// (`is_local`) rather than machine-local (`is_embedded`).
+///
+/// Discovery only: nothing here opens a registry, so
+/// [`any_package_source`] can ask which sources exist without paying for
+/// one — and cannot drift from what [`build_install_resolver`] opens,
+/// because that function reads this same list.
+fn local_family_roots(
+    options: &PackageSourceOptions,
+    embedded_root: Option<&Path>,
+    project_root: &Path,
+) -> (Vec<PathBuf>, usize) {
+    let mut roots: Vec<PathBuf> = Vec::new();
+    let mut project_local_count = 0usize;
+    if !options.no_prefer_local
+        && let Some(root) = project_packages_root(project_root)
+    {
+        roots.push(strip_unc(root));
+        project_local_count = 1;
+    }
+    if let Some(root) = embedded_root.filter(|_: &&Path| !options.no_default_registry) {
+        roots.push(strip_unc(root.to_path_buf()));
+    }
+    (roots, project_local_count)
+}
+
+/// Can anything OTHER than the local-registry family serve this invocation?
+///
+/// Three sources answer yes: a declared registry in the merged effective set
+/// (the project's `[[registry]]` entries followed by the machine-global
+/// `~/.vibe/registry.toml`, PROP-002 §2.2.2, already narrowed to local
+/// sources when the posture is offline); a git source, which IS the resolver
+/// and needs no registry; and — under the offline posture — a warm machine
+/// store, a resolution source in its own right (PROP-010 §2.6).
+///
+/// The negation of this predicate is exactly the "nothing can serve" bail in
+/// [`build_install_resolver_with_progress`], which is why both read it.
+fn declared_source_available(
+    effective: &EffectiveRegistryConfig,
+    manifest: &Manifest,
+    options: &PackageSourceOptions,
+    offline: bool,
+) -> bool {
+    !effective.registries.is_empty()
+        || options.has_git_source_flag
+        || !manifest.requires.git_packages.is_empty()
+        || (offline && !vibe_registry::store::list_all().is_empty())
+}
+
+/// Can ANY source serve this invocation — the one question
+/// [`build_install_resolver`]'s "no registry configured" bail answers, asked
+/// without opening a registry and without touching the network.
+///
+/// A command that refuses up front — `vibe update` will not re-fetch a
+/// package nothing can resolve — must refuse on THIS answer rather than on
+/// the project manifest alone. A project that declares no `[[registry]]` of
+/// its own still resolves from the machine-global `~/.vibe/registry.toml`,
+/// merged project-first (PROP-002 `##GLOBAL-REGISTRY-FILE` /
+/// `##MERGE-PROJECT-FIRST`), from a project-local `vibevm/vibepacks/` or a
+/// source build's embedded registry (PROP-030 §3.3), from a declared git
+/// source, or — under the offline posture — from the warm machine store
+/// (PROP-010 §2.5–§2.6).
+///
+/// `false` means [`build_install_resolver`] would bail "no registry
+/// configured"; `true` means it would build a resolver, subject only to the
+/// flag-contradiction guards, which are the caller's own argument errors and
+/// not a missing source.
+pub fn any_package_source(
+    options: &PackageSourceOptions,
+    manifest: &Manifest,
+    embedded_root: Option<&Path>,
+    project_root: &Path,
+    global: &GlobalRegistryConfig,
+    offline: bool,
+) -> bool {
+    // An explicit `--registry <dir>` short-circuits the whole composition.
+    if options.registry.is_some() {
+        return true;
+    }
+    if !local_family_roots(options, embedded_root, project_root)
+        .0
+        .is_empty()
+    {
+        return true;
+    }
+    declared_source_available(
+        &effective_registry_config(manifest, global, offline),
+        manifest,
+        options,
+        offline,
+    )
+}
+
 /// Open the declared multi-registry walk from a precomputed effective config —
 /// shared by the plain multi-registry path and the embedded composition.
 fn open_multi_from(
@@ -199,35 +299,30 @@ pub fn build_install_resolver_with_progress(
     let effective = effective_registry_config(manifest, global, offline);
 
     // PROP-030 §3.3: build the local-registry family. Project-local
-    // (`<project_root>/packages/`) is discovered from the current project —
+    // (`<project_root>/vibevm/vibepacks/`) is discovered from the current project —
     // not gated on the running vibe being source-installed, not CI-suppressed
     // (it is per-project and portable). Vibe-embedded (§2) derives from a
     // source install's `source_path`, suppressed by `--no-default-registry`
     // and the composition-root `CI` / `VIBE_NO_DEFAULT_REGISTRY` gate.
     // The family is ordered project-local first (a developer's own in-tree
-    // packages win a clash), then vibe-embedded.
-    let mut locals: Vec<LocalRegistry> = Vec::new();
-    // project_local_count is the number of leading locals that are
-    // project-local (0 or 1). Tracked so the fetch path can tag the
+    // packages win a clash), then vibe-embedded. WHICH roots those are is
+    // `local_family_roots` — one answer, shared with `any_package_source`, so
+    // a caller asking "is there a source at all" cannot disagree with what is
+    // opened here. `project_local_count` is the number of leading locals that
+    // are project-local (0 or 1), tracked so the fetch path can tag the
     // resolved package is_local (portable) vs is_embedded (machine-local).
-    let mut project_local_count: usize = 0;
-    if !options.no_prefer_local
-        && let Some(root) = project_packages_root(project_root)
-    {
-        let root = strip_unc(root);
+    let (local_roots, project_local_count) =
+        local_family_roots(options, embedded_root, project_root);
+    let mut locals: Vec<LocalRegistry> = Vec::with_capacity(local_roots.len());
+    for (index, root) in local_roots.into_iter().enumerate() {
+        let lane = if index < project_local_count {
+            "project-local"
+        } else {
+            "embedded"
+        };
         locals.push(local_registry(root.clone()).map_err(|e| {
             anyhow!(
-                "failed to open the project-local registry at `{}`: {e}",
-                root.display()
-            )
-        })?);
-        project_local_count = 1;
-    }
-    if let Some(root) = embedded_root.filter(|_: &&Path| !options.no_default_registry) {
-        let root = strip_unc(root.to_path_buf());
-        locals.push(local_registry(root.clone()).map_err(|e| {
-            anyhow!(
-                "failed to open the embedded registry at `{}`: {e}",
+                "failed to open the {lane} registry at `{}`: {e}",
                 root.display()
             )
         })?);
@@ -266,27 +361,20 @@ pub fn build_install_resolver_with_progress(
         });
     }
 
-    // No local source (no project-local packages/, and no vibe-embedded or it
-    // was suppressed) and no explicit registry path. A git-source install (or
-    // a re-install whose manifest already carries a git-source entry) does not
-    // need a registry — the git-source is the resolver, so skip the bail and
-    // fall through to the Multi path (which handles an empty declared set
-    // for a git-source-only resolution).
-    let has_git_source = options.has_git_source_flag || !manifest.requires.git_packages.is_empty();
-    if effective.registries.is_empty() && !has_git_source {
-        // PROP-010 §2.6: under the offline posture the machine store is
-        // a resolution source in its own right — a warm store serves
-        // with zero registries. The old "no local registry" bail fires
-        // only when nothing local can serve: no local registry AND an
-        // empty store.
-        if offline && !vibe_registry::store::list_all().is_empty() {
-            return Ok(InstallResolver::Multi(
-                Box::new(open_multi_from(
-                    &effective, manifest, options, offline, locked, progress,
-                )?),
-                solver,
-            ));
-        }
+    // No local source (no project-local packages root, and no vibe-embedded or
+    // it was suppressed) and no explicit registry path. Whatever the DECLARED
+    // side can still serve lifts the bail and falls through to the Multi walk
+    // below: a merged `[[registry]]`, a git-source install (or a re-install
+    // whose manifest already carries a git-source entry — the git-source IS
+    // the resolver, and the Multi path handles an empty declared set for it),
+    // or, under the offline posture, the warm machine store, which is a
+    // resolution source in its own right (PROP-010 §2.6).
+    if !declared_source_available(&effective, manifest, options, offline) {
+        // The project-local registry, named as the live layout spells it —
+        // `vibevm/vibepacks/` today (`vibe_core::layout`), so the recipe
+        // cannot go stale against a directory the tool no longer reads.
+        let packages_root =
+            vibe_core::machine_json_path(&vibe_core::layout::current_packages_root());
         // PROP-002 §2.2.2.1: under the offline posture (the resolved ladder,
         // PROP-010 §2.5) the remote walk is disabled and no local registry
         // survived, so there is nothing to resolve from — fail with an
@@ -296,7 +384,7 @@ pub fn build_install_resolver_with_progress(
                 "--offline: no local registry available to resolve from. \
                  Offline resolution needs a local (`file://`) `[[registry]]` — in the \
                  project `vibe.toml` or `~/.vibe/registry.toml` — a project-local \
-                 `packages/` directory, the embedded registry of a source install \
+                 `{packages_root}/` directory, the embedded registry of a source install \
                  (check `vibe self doctor`), an explicit `--registry <dir>`, or a \
                  warmed machine store (`vibe cache add <pkgref>`); \
                  remote registries are disabled under --offline."
@@ -305,7 +393,7 @@ pub fn build_install_resolver_with_progress(
         bail!(
             "no registry configured. Pass `--registry <path>`, add a `[[registry]]` \
              entry to `vibe.toml` (or `~/.vibe/registry.toml`), or place the package \
-             in a project-local `packages/` directory."
+             in a project-local `{packages_root}/` directory."
         );
     }
 
@@ -320,3 +408,7 @@ pub fn build_install_resolver_with_progress(
 #[cfg(test)]
 #[path = "flag_tests.rs"]
 mod flag_tests;
+
+#[cfg(test)]
+#[path = "source_tests.rs"]
+mod source_tests;

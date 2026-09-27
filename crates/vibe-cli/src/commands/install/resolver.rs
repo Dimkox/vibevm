@@ -75,6 +75,32 @@ pub(crate) fn build_install_resolver(
     )
 }
 
+/// Would [`build_install_resolver`] find ANY source for this invocation —
+/// the same `&InstallArgs` call shape, projected onto the shared predicate.
+///
+/// A command that refuses before resolving (`vibe update`) asks this rather
+/// than reading `manifest.registries`: the machine-global
+/// `~/.vibe/registry.toml`, a project-local packages root, a source build's
+/// embedded registry, a git source and the warm store each serve a project
+/// whose own `vibe.toml` declares no `[[registry]]` at all.
+pub(crate) fn any_package_source(
+    args: &InstallArgs,
+    manifest: &Manifest,
+    embedded_root: Option<&Path>,
+    project_root: &Path,
+    global: &GlobalRegistryConfig,
+    offline: bool,
+) -> bool {
+    vibe_package_source::any_package_source(
+        &package_source_options(args),
+        manifest,
+        embedded_root,
+        project_root,
+        global,
+        offline,
+    )
+}
+
 #[cfg(test)]
 #[path = "flag_tests.rs"]
 mod flag_tests;
