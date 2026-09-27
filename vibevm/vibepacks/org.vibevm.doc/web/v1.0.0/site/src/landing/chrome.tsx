@@ -82,14 +82,18 @@ export const LandingChrome = component$<LandingChromeProps>((props) => {
 
   /* What the footer lists, in the footer's own order: the three product
      arguments, the essay, the roadmap right after it (owner, 2026-09-26),
-     the two mirrors. The header leads with the essay; the footer is the
-     older list and keeps its order. */
+     the two mirrors, and the law last (owner, 2026-09-27). The header
+     leads with the essay; the footer is the older list and keeps its
+     order. Every entry is the header's own (`menu.ts`) and none of them
+     is written out here — the law page included, which is the one a
+     reader looks for at the foot of a page rather than at the top. */
   const footerLinks = [
     ...WHY_PAGES.map((page) => menu.entries[`why-${page}`]),
     menu.entries.vision,
     menu.entries.roadmap,
     menu.entries.github,
     menu.entries.gitverse,
+    menu.entries.legal,
   ];
 
   /* The two behaviours the landing has. A documentation page starts the
@@ -129,13 +133,13 @@ export const LandingChrome = component$<LandingChromeProps>((props) => {
             every width instead of only at the one that was measured.
 
             What stands on each row, and in which order, is the list's
-            business (`menu.ts`): the first row ends with the channels
-            page because it is the only entry of that row that leads back
-            into the site rather than out of it — after the manual and
-            the two mirrors, the place to ask about them; the second row
-            opens with the essay because it is the worldview the three
-            product arguments after it are pieces of. The same list, in
-            the same order, is drawn large at the foot of the landing. */}
+            business (`menu.ts`): the first row puts the manual and the
+            two mirrors first and the two entries that lead back into the
+            site after them — the place to ask about all of it, then the
+            law the dealings fall under; the second row opens with the
+            essay because it is the worldview the three product arguments
+            after it are pieces of. The same list, in the same order, is
+            drawn large at the foot of the landing. */}
         <nav class="landing-nav">
           {menu.rows.map((row) => (
             <div

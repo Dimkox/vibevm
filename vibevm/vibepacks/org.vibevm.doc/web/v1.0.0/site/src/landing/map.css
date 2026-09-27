@@ -3,11 +3,11 @@
    Two bands, one per header row, each a composition of planes of unequal
    size on twelve columns. The plates are placed by the grid from the size
    each entry declares (`menu.ts`) and never by name: `grid-auto-flow:
-   dense` packs a tower two rows high, two small squares and one wide
-   plate into the first band, and one band across the row with three
-   thirds under it into the second — and it will pack a ninth entry too,
-   at whatever size that entry declares, without a rule being written for
-   it here.
+   dense` packs a tower two rows high, two small squares, one wide plate
+   and one band closing the line under them into the first band, and one
+   band across the row with three thirds under it into the second — and
+   it will pack an eleventh entry too, at whatever size that entry
+   declares, without a rule being written for it here.
 
    Every colour is a semantic token (PROP-057 `##STACK-DESIGN-FLOOR`), and
    the drawings are coloured through the family's own vocabulary — the
@@ -475,6 +475,40 @@
 .lm-news__plane--hollow {
   stroke: var(--text);
   stroke-width: 2;
+}
+
+/* --- Legal: the balance ---------------------------------------------------------------- */
+
+.lm-legal__floor {
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+
+/* A plane rather than a rule: the beam is the thickest stroke on the map,
+   and it lies flat because nothing here is meant to tip. */
+.lm-legal__beam {
+  stroke: var(--text);
+  stroke-width: 7;
+  stroke-linecap: square;
+  opacity: 0.88;
+}
+
+.lm-legal__fulcrum {
+  fill: var(--accent);
+}
+
+.lm-legal__hang path {
+  stroke: var(--text);
+  stroke-width: 1.2;
+  opacity: 0.4;
+}
+
+.lm-legal__weight {
+  fill: var(--text);
+}
+
+.lm-legal__pan {
+  fill: var(--accent);
 }
 
 /* --- Vision: two sources of intention ---------------------------------------------------- */

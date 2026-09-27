@@ -28,6 +28,10 @@ const PAGES = [
     rows: ["The software", "The argument"],
     zap: "October 2026",
     roadmap: { name: "Roadmap", href: "/roadmap/" },
+    legal: {
+      name: "Legal",
+      href: "/doc/org.vibevm.core/vibevm-docs/latest/legal/applicable-law/",
+    },
   },
   {
     route: "/ru/",
@@ -35,16 +39,21 @@ const PAGES = [
     rows: ["Софт", "Смысл"],
     zap: "октябрь 2026",
     roadmap: { name: "Роадмап", href: "/ru/roadmap/" },
+    legal: {
+      name: "Право",
+      href: "/doc/ru/org.vibevm.core/vibevm-docs/latest/legal/applicable-law/",
+    },
   },
 ] as const;
 
 /**
- * The map's plates, as the header's rows declare them: nine, in two
- * bands of four and five (owner's placement of the roadmap right after
- * the essay, 2026-09-26). The deploy smoke counts these.
+ * The map's plates, as the header's rows declare them: ten, in two bands
+ * of five and five — the roadmap right after the essay (owner,
+ * 2026-09-26) and the law page right after the channels (owner,
+ * 2026-09-27). The deploy smoke counts these.
  */
-const PLATES = 9;
-const BANDS = [4, 5] as const;
+const PLATES = 10;
+const BANDS = [5, 5] as const;
 
 const WIDTHS = [1440, 834, 390] as const;
 
@@ -204,6 +213,85 @@ for (const one of PAGES) {
       );
     });
     expect(stacked).toBe(true);
+  });
+}
+
+/**
+ * The law page's plate: last in the software's band, closing its line the
+ * way the essay's opens the band below — one plate across the whole row,
+ * with its drawing beside the words and a drawing of its own to carry.
+ *
+ * Its ADDRESS is what is held here and not the page behind it: the page is
+ * written on another branch and lands after this, and the link lint reads
+ * a `/doc/` address into a package this build does not carry as a citation
+ * rather than a miss. What a test can say now is that the plate leads to
+ * the right coordinate, in the reader's own edition.
+ */
+for (const one of PAGES) {
+  test(`${one.route} closes the software's band with the law page`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(one.route);
+
+    const tools = page.locator(
+      "main .landing-map .landing-map__band:nth-child(2) .landing-map__plate",
+    );
+    await expect(tools).toHaveCount(5);
+    const plate = tools.nth(4);
+    await expect(plate).toHaveClass(/\blanding-map__plate--legal\b/);
+    await expect(plate).toHaveClass(/\blanding-map__plate--band\b/);
+    await expect(plate).toHaveAttribute("href", one.legal.href);
+    await expect(plate.locator(".landing-map__name")).toHaveText(
+      one.legal.name,
+    );
+
+    /* The balance, described once on the frame and drawn inside it. */
+    const art = plate.locator('[role="img"][aria-label]');
+    await expect(art).toHaveCount(1);
+    await expect(art.locator("svg.lm-legal")).toHaveCount(1);
+    await expect(art.locator("svg.lm-legal .lm-legal__beam")).toHaveCount(1);
+
+    /* Level, centred on the fulcrum, the two weights at equal distance —
+       the three things the drawing's own description claims, asked of the
+       drawing rather than looked at. A middle survives the reveal: the
+       pop scales each shape about its centre, so these are the same
+       numbers before and after it. */
+    const balance = await plate.locator("svg.lm-legal").evaluate((svg) => {
+      const ends = (selector: string): readonly [number, number] => {
+        const found = svg.querySelector(selector);
+        return [
+          Number(found?.getAttribute("y1") ?? Number.NaN),
+          Number(found?.getAttribute("y2") ?? Number.NaN),
+        ];
+      };
+      const middle = (selector: string): number => {
+        const found = svg.querySelector(selector);
+        if (found === null) return Number.NaN;
+        const box = found.getBoundingClientRect();
+        return box.x + box.width / 2;
+      };
+      const [from, to] = ends(".lm-legal__beam");
+      return {
+        from,
+        to,
+        beam: middle(".lm-legal__beam"),
+        fulcrum: middle(".lm-legal__fulcrum"),
+        weight: middle(".lm-legal__weight"),
+        pan: middle(".lm-legal__pan"),
+      };
+    });
+    expect(balance.from, "the beam is level").toBe(balance.to);
+    expect(
+      Math.abs(balance.beam - balance.fulcrum),
+      "the beam is centred on the fulcrum",
+    ).toBeLessThan(1);
+    expect(
+      Math.abs(
+        balance.fulcrum - balance.weight - (balance.pan - balance.fulcrum),
+      ),
+      "the two weights hang at equal distance",
+    ).toBeLessThan(1);
   });
 }
 

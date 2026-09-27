@@ -163,37 +163,42 @@ for (const one of PAGES) {
 }
 
 /**
- * The header's first row ends with this page, wherever a reader stands,
- * and leads to the edition they are reading.
+ * The header's first row carries this page fourth, wherever a reader
+ * stands, and leads to the edition they are reading.
+ *
+ * It ended that row until the law page joined it behind the channels
+ * (owner, 2026-09-27); what the position was always about is the order —
+ * the manual, the two mirrors of its source, then the place to ask about
+ * them — and that is what is pinned here rather than «last».
  *
  * Asked on the landing, on a Why page and on the essay, in both
  * languages: the chrome is one component over every landing address, so
- * the entry is either last in that row everywhere or somewhere else on
+ * the entry is either fourth in that row everywhere or somewhere else on
  * one of them.
  */
 for (const one of ELSEWHERE) {
-  test(`${one.route} ends its first header row with the channels page`, async ({
+  test(`${one.route} carries the channels page fourth in its first header row`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(one.route);
 
     /* The first row is the first row: read off the document's order, so
-       that «last in the first row» cannot be satisfied by an entry that
-       is last in the second one. */
+       that «fourth in the first row» cannot be satisfied by an entry that
+       is fourth in the second one. */
     const rows = page.locator("header .landing-nav__row");
     await expect(rows).toHaveCount(2);
     const first = rows.nth(0);
     await expect(first).toHaveClass(/\blanding-nav__row--tools\b/);
 
-    /* Last, and in the language the page is written in: the label and the
-       address are both the reader's edition's, which is what the entry
-       being locale-aware means. */
+    /* Fourth, and in the language the page is written in: the label and
+       the address are both the reader's edition's, which is what the
+       entry being locale-aware means. */
     const entries = first.locator(".landing-nav__link");
-    await expect(entries).toHaveCount(4);
-    const last = entries.nth(3);
-    await expect(last).toHaveText(ENTRY[one.locale].label);
-    await expect(last).toHaveAttribute("href", ENTRY[one.locale].href);
+    await expect(entries).toHaveCount(5);
+    const mine = entries.nth(3);
+    await expect(mine).toHaveText(ENTRY[one.locale].label);
+    await expect(mine).toHaveAttribute("href", ENTRY[one.locale].href);
   });
 }
 

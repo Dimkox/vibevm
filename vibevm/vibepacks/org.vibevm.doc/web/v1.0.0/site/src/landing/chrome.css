@@ -70,8 +70,8 @@
 
 /* The landing's header: a two-row composition, declared.
    ---------------------------------------------------------------------
-   The bar carries more than a bar's width of things — eight
-   destinations, a search field, two languages and three themes — and it
+   The bar carries more than a bar's width of things — ten destinations,
+   a search field, two languages and three themes — and it
    used to carry them as one wrapping list. A wrapping list does not
    compose; it overflows and then reports where the overflow landed. What
    it reported here was the theme switch, alone, on a line of its own
@@ -80,8 +80,8 @@
    So the bar is a grid of two rows and three columns, and every part of
    it is placed by name:
 
-       brand │ Documentation GitHub GitVerse News…  │ [ search   Ctrl K ]
-       brand │ Vision  Why VibeVM  Why Zap  AI-N…   │       EN RU  ☀ ☾ ▣
+       brand │ Documentation GitHub GitVerse News… Legal │ [ search  Ctrl K ]
+       brand │ Vision Roadmap Why VibeVM Why Zap AI-N…   │      EN RU  ☀ ☾ ▣
 
    The brand spans both rows and is centred against them, so it stands
    where it always stood and the composition grows around it rather than
@@ -103,7 +103,7 @@
    centred rather than measure centred; a narrower window shrinks both
    flanks and the lean with them, and below 760px the compact bar takes
    over as before. Within the cluster the two rows centre on one axis,
-   four over four, the shorter of the two symmetric over the longer: one
+   five over five, the shorter of the two symmetric over the longer: one
    composition, not two lists.
 
    The row heights are written down rather than inferred, and that is
@@ -318,26 +318,27 @@
   }
 }
 
-/* A phone. Both rows of four are wider than a phone is, so both are
-   given two columns and two lines — which is a shape, where `flex-wrap`
-   would have given the same two lines as an accident and a different two
-   on the next translation.
+/* A phone. Neither row fits across a phone, so both are given two
+   columns — which is a shape, where `flex-wrap` would have given the same
+   lines as an accident and different ones on the next translation.
    ---------------------------------------------------------------------
-   Measured at 13px, with 40px of the window going to the header's own
-   padding: the second row is 374px of Russian, the first is 372px of it
-   and 329px of English, and a 390px phone offers 350 — a 320px phone,
-   280. So neither row fits across any phone sold, in either language,
-   and the first row stopped fitting the day it gained a fourth entry:
-   «Новости и поддержка» is 140px on its own. In two columns the widest
-   of them is 249px of Russian, which fits the narrowest phone with room
-   to spare.
+   Measured at 13px on the day the shape was chosen, with 40px of the
+   window going to the header's own padding: the second row was 374px of
+   Russian, the first 372px of it and 329px of English, and a 390px phone
+   offers 350 — a 320px phone, 280. So neither row fitted across any phone
+   sold, in either language, and the first row stopped fitting the day it
+   gained a fourth entry: «Новости и поддержка» is 140px on its own. In
+   two columns the widest pair was 249px of Russian, which fits the
+   narrowest phone with room to spare.
 
-   It costs a line. The bar on a phone is five lines and 170px rather
-   than four and 142px, and it is sticky, so that is 28px of every screen
-   a reader scrolls — the price of the fourth destination, paid where it
-   is cheapest. The alternative was the row wrapping 3+1 in Russian and
-   4 across in English at the same width: two compositions, neither
-   chosen, and a bar whose shape depended on which language it was
+   Both rows have carried five entries since the law page joined the first
+   one (owner, 2026-09-27), so each of them takes three lines — two, two,
+   and the fifth alone — and the bar on a phone is seven lines deep. It is
+   sticky, so every destination after the fourth is paid for on every
+   screen a reader scrolls; this is still the cheapest place to pay it,
+   and what is bought is a composition, which a wrap never is: the
+   alternative was a row breaking 3+1 in Russian and 4 across in English
+   at one width, and a bar whose shape depended on the language it was
    read in. */
 @media (max-width: 600px) {
   .landing-nav {
@@ -364,7 +365,7 @@
 
   /* The last thing to go is the search box, and it is the one that is
      still a tap away: the documentation's own header carries the same
-     field. What stays is what only this bar offers — the eight pages,
+     field. What stays is what only this bar offers — the ten pages,
      the language and the theme. Its column goes with it and needs no
      second template to say so: the middle track is the flexible one, so
      with nothing in it the preferences simply take the corner. */

@@ -122,6 +122,15 @@ export type Strings = {
    * leads — there is no shorter true word for «news, and also help».
    */
   readonly navNews: string;
+  /**
+   * The law page's entry in the header, in the first row right after the
+   * channels (owner, 2026-09-27). A pointer's label like its neighbours:
+   * the page of the manual it leads to heads itself «Applicable law», and
+   * the menu says in one word which kind of question is answered there —
+   * which law governs dealings with the project, and what it does with
+   * personal data.
+   */
+  readonly navLegal: string;
   readonly eyebrow: string;
   /**
    * The small status pill beside the install block. It carries the
@@ -229,6 +238,7 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     navVision: "Vision",
     navRoadmap: "Roadmap",
     navNews: "News & support",
+    navLegal: "Legal",
     eyebrow: "Open source · Spec-driven development",
     badge: "Developer Preview 1",
     badgeAction: "What is VibeVM?",
@@ -297,6 +307,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
         body: "Release news on Telegram, a chat for questions and bug reports, the community on Reddit — and the creator on X.",
         alt: "A broadcast: a terracotta circle sends three dashed arcs up and to the right, two small dark planes receive them, and one thin line runs back to the circle.",
       },
+      legal: {
+        body: "Which law governs dealings with VibeVM, and how the project treats personal data.",
+        alt: "Scales as planes: a long dark beam resting level on a small terracotta triangle, a dark square hanging from one end and a terracotta circle from the other, each on two thin lines.",
+      },
       vision: {
         body: "The essay behind everything on this site: two sources of intention, an expensive probabilistic layer over a cheap deterministic one, and traceable edges between them.",
         alt: "The essay's two sources of intention: a terracotta circle and a tilted cobalt square joined by a gold arc, each dropping an edge to one floor, with smaller nodes traced between them.",
@@ -338,6 +352,7 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
        the link leads in one word, as «Видение» does for the essay. */
     navRoadmap: "Роадмап",
     navNews: "Новости и поддержка",
+    navLegal: "Право",
     eyebrow: "Открытый код · Spec-Driven Development",
     badge: "Developer Preview 1",
     badgeAction: "Что такое VibeVM?",
@@ -408,6 +423,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
       news: {
         body: "Новости релизов в Telegram, чат для вопросов и багов, сообщество на Reddit — и создатель в X.",
         alt: "Вещание: терракотовый круг посылает три пунктирные дуги вверх и вправо, две маленькие тёмные плоскости их принимают, и одна тонкая линия возвращается к кругу.",
+      },
+      legal: {
+        body: "Какое право действует в делах с VibeVM и как проект обходится с персональными данными.",
+        alt: "Весы из плоскостей: длинная тёмная балка ровно лежит на маленьком терракотовом треугольнике, с одного её конца свисает тёмный квадрат, с другого — терракотовый круг, каждый на двух тонких линиях.",
       },
       vision: {
         body: "Эссе, из которого выросло всё на этом сайте: два источника намерения, дорогой вероятностный слой над дешёвым детерминированным — и трассируемые рёбра между ними.",

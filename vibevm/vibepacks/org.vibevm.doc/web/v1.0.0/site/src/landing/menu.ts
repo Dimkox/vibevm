@@ -10,8 +10,9 @@
  * destination added to the header is on the map the same moment, and
  * one that leaves the header leaves the map with it. Nothing about the
  * order is decided twice: the first row is the software, where it is
- * kept and where it is spoken about; the second is the argument for it,
- * the essay first and the three products it is the worldview of after.
+ * kept, where it is spoken about and which law the dealings with it fall
+ * under; the second is the argument for it, the essay first and the
+ * three products it is the worldview of after.
  *
  * What an entry carries is what both renderings need and nothing either
  * of them could disagree about: its label in the page's language, its
@@ -28,7 +29,7 @@
  * itself is `art.tsx`'s, keyed the same way and refused the same way.
  */
 
-import { href } from "../lib/href.ts";
+import { docHref, href } from "../lib/href.ts";
 import { isNewsPath, newsHref } from "../news/paths.ts";
 import { isRoadmapPath, roadmapHref } from "../roadmap/paths.ts";
 import { isVisionPath, visionHref } from "../vision/paths.ts";
@@ -44,12 +45,13 @@ import {
 /** The two rows of the header, by what each is about. */
 export type MenuRowId = "tools" | "story";
 
-/** One destination — the same nine the header shows, by name. */
+/** One destination — the same ten the header shows, by name. */
 export type MenuId =
   | "documentation"
   | "github"
   | "gitverse"
   | "news"
+  | "legal"
   | "vision"
   | "roadmap"
   | `why-${WhyPage}`;
@@ -57,10 +59,16 @@ export type MenuId =
 /**
  * The size of an entry's plate on the map, in the twelve columns of its
  * row: a tower two rows high, a small square, a wide plate, a third of
- * the row, or the whole of it. Five shapes and not nine, because the
+ * the row, or the whole of it. Five shapes and not ten, because the
  * composition repeats them: the two mirrors are two small squares, the
  * three products three thirds, the essay and the roadmap two bands —
  * the second the mirror image of the first (`map.css`).
+ *
+ * The law page is the third band, and it is a band because the twelve
+ * columns say so rather than because a fourth shape was wanted: the
+ * tower, the two squares and the wide plate fill the first row's two
+ * lines exactly, so the entry that joined them has a line of its own,
+ * and a plate that took half of it would leave the other half a hole.
  */
 export type Plate = "tall" | "small" | "wide" | "third" | "band";
 
@@ -142,6 +150,27 @@ export function landingMenu(locale: Locale, here: string): LandingMenu {
     current: isNewsPath(here),
     plate: "wide",
   };
+  /* Right after the channels, by the owner's placement (2026-09-27), and
+     in the first row because that is the row of the thing itself rather
+     than of the argument for it: which law the dealings fall under is a
+     fact about the software, beside where it is kept and where it is
+     spoken about. The page is the manual's, in the reader's own edition,
+     so the address is built from a coordinate like every other page of
+     the manual and the entry is never the page the chrome stands over. */
+  const legal: MenuEntry = {
+    id: "legal",
+    label: t.navLegal,
+    href: docHref({
+      lang: locale === "en" ? null : locale,
+      group: "org.vibevm.core",
+      name: "vibevm-docs",
+      version: "latest",
+      document: "legal/applicable-law",
+    }),
+    offSite: false,
+    current: false,
+    plate: "band",
+  };
   const vision: MenuEntry = {
     id: "vision",
     label: t.navVision,
@@ -179,7 +208,7 @@ export function landingMenu(locale: Locale, here: string): LandingMenu {
 
   return {
     rows: [
-      { id: "tools", entries: [documentation, github, gitverse, news] },
+      { id: "tools", entries: [documentation, github, gitverse, news, legal] },
       {
         id: "story",
         entries: [vision, roadmap, ...WHY_PAGES.map((page) => whys[page])],
@@ -190,6 +219,7 @@ export function landingMenu(locale: Locale, here: string): LandingMenu {
       github,
       gitverse,
       news,
+      legal,
       vision,
       roadmap,
       "why-vibevm": whys.vibevm,

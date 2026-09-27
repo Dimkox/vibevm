@@ -50,10 +50,24 @@ const PAGES = [
 const DESKTOP = [1920, 1440, 1280, 1024, 834] as const;
 const PHONE = 390;
 
-/** What each row of the desktop bar carries, left to right. */
+/**
+ * What each row of the desktop bar carries, left to right.
+ *
+ * Five entries in each row since the law page joined the first one right
+ * after the channels (owner, 2026-09-27). The Russian first row is the
+ * tighter of the two at every width below a laptop, which is why both
+ * languages are walked rather than one.
+ */
 const ROWS = {
   en: [
-    ["Documentation", "GitHub", "GitVerse", "News & support", "search"],
+    [
+      "Documentation",
+      "GitHub",
+      "GitVerse",
+      "News & support",
+      "Legal",
+      "search",
+    ],
     [
       "Vision",
       "Roadmap",
@@ -65,7 +79,14 @@ const ROWS = {
     ],
   ],
   ru: [
-    ["Документация", "GitHub", "GitVerse", "Новости и поддержка", "search"],
+    [
+      "Документация",
+      "GitHub",
+      "GitVerse",
+      "Новости и поддержка",
+      "Право",
+      "search",
+    ],
     [
       "Видение",
       "Роадмап",
@@ -228,31 +249,35 @@ for (const one of PAGES) {
            because the manual's own header carries the same one a tap
            away. Each row becomes two columns, which is a shape: neither
            row fits across one phone line in either language, and one
-           composition for both is the point. The software row is four
-           entries on two lines; the argument row, five since the roadmap
-           joined it right after the essay (owner, 2026-09-26), is two
-           lines of two and its last entry alone on a third. What is
-           pinned is that shape AND the order inside it — a grid fills
-           row-major, so the lines of a row read as the row does. */
+           composition for both is the point. Both rows carry five
+           entries — the argument row since the roadmap joined it after
+           the essay (owner, 2026-09-26), the software row since the law
+           page joined it after the channels (owner, 2026-09-27) — so each
+           of them is two lines of two with its fifth entry alone on a
+           third, and the bar is seven lines deep. What is pinned is that
+           shape AND the order inside it: a grid fills row-major, so the
+           lines of a row read as the row does. */
         expect(named[0], `brand keeps the preferences — ${at}`).toEqual([
           "brand",
           "lang",
           "theme",
         ]);
-        expect(named, `six lines and no more — ${at}`).toHaveLength(6);
-        for (const line of named.slice(1, 5)) {
-          expect(line, `two columns — ${at}`).toHaveLength(2);
+        expect(named, `seven lines and no more — ${at}`).toHaveLength(7);
+        for (const pair of [named[1], named[2], named[4], named[5]]) {
+          expect(pair, `two columns — ${at}`).toHaveLength(2);
+        }
+        for (const last of [named[3], named[6]]) {
+          expect(
+            last,
+            `a row's fifth entry alone on its last line — ${at}`,
+          ).toHaveLength(1);
         }
         expect(
-          named[5],
-          `the argument row's fifth entry alone on its last line — ${at}`,
-        ).toHaveLength(1);
-        expect(
-          [...named[1], ...named[2]],
+          [...named[1], ...named[2], ...named[3]],
           `the software row, in order — ${at}`,
         ).toEqual(destinations(ROWS[one.locale][0]));
         expect(
-          [...named[3], ...named[4], ...named[5]],
+          [...named[4], ...named[5], ...named[6]],
           `the argument row, in order — ${at}`,
         ).toEqual(destinations(ROWS[one.locale][1]));
         await expect(page.locator(".search-box")).toBeHidden();
@@ -399,15 +424,16 @@ test("the bar is tabbed by kind, and marks where the reader stands", async ({
     ].map((element) => (element.textContent ?? "").trim() || element.tagName);
   });
 
-  /* The brand, then the nine destinations in the two rows' own order —
-     the first row's four, then the second row's five, the roadmap right
-     after the essay. */
-  expect(order.slice(0, 10)).toEqual([
+  /* The brand, then the ten destinations in the two rows' own order —
+     the first row's five, the law page right after the channels, then the
+     second row's five, the roadmap right after the essay. */
+  expect(order.slice(0, 11)).toEqual([
     "VibeVM",
     "Documentation",
     "GitHub",
     "GitVerse",
     "News & support",
+    "Legal",
     "Vision",
     "Roadmap",
     "Why VibeVM",
@@ -416,7 +442,7 @@ test("the bar is tabbed by kind, and marks where the reader stands", async ({
   ]);
   /* Then the field, the two letters and the three themes — the tail the
      documentation's header ends with, in the same sequence. */
-  expect(order.slice(10)).toEqual([
+  expect(order.slice(11)).toEqual([
     "INPUT",
     "EN",
     "RU",

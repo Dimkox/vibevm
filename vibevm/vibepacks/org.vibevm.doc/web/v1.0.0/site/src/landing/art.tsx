@@ -13,6 +13,7 @@ import {
   DocumentationArt,
   GithubArt,
   GitverseArt,
+  LegalArt,
   NewsArt,
 } from "./art-tools.tsx";
 import type { MenuId } from "./menu.ts";
@@ -23,7 +24,7 @@ export type MenuArtProps = {
 };
 
 /**
- * The drawing of one destination on the map — one of the nine, by the
+ * The drawing of one destination on the map — one of the ten, by the
  * id the header's list names it with (`menu.ts`).
  *
  * A switch and not a table, for the reason the compiler is asked to be
@@ -32,7 +33,7 @@ export type MenuArtProps = {
  * here rather than a plate with a hole where its picture should be. The
  * drawings themselves live in three files — the first row's tools, the
  * second row's argument, and the roadmap's road on its own — because
- * nine of them in one file would cross the discipline's file budget, and
+ * ten of them in one file would cross the discipline's file budget, and
  * so would five in the argument's.
  *
  * Nothing here is announced: every drawing is `aria-hidden`, and the
@@ -48,6 +49,8 @@ export const MenuArt = component$<MenuArtProps>((props) => {
       return <GitverseArt />;
     case "news":
       return <NewsArt />;
+    case "legal":
+      return <LegalArt />;
     case "vision":
       return <VisionArt />;
     case "roadmap":

@@ -4,9 +4,10 @@ import { component$ } from "@qwik.dev/core";
 
 /**
  * The map's drawings for the header's first row — the software, where it
- * is kept and where it is spoken about — authored as JSX for the reason
- * every page's are: each class is a hook the stylesheet colours through a
- * token, so the pictures follow the reader's theme.
+ * is kept, where it is spoken about and which law the dealings with it
+ * fall under — authored as JSX for the reason every page's are: each
+ * class is a hook the stylesheet colours through a token, so the
+ * pictures follow the reader's theme.
  *
  * The vocabulary is the family's and not a new one. Plain INK is the
  * deterministic thing — a page, a commit, the square that stands for the
@@ -233,5 +234,90 @@ export const NewsArt = component$(() => (
         transform="rotate(16 201 147)"
       />
     </g>
+  </svg>
+));
+
+/**
+ * Legal: a balance, in planes. A long ink beam lying level on a small
+ * terracotta wedge, a dark square hanging from one end and a terracotta
+ * circle from the other, each on two thin lines, over the deterministic
+ * floor the other drawings of this row stand on.
+ *
+ * Everything about it is symmetric on purpose, which for once is not a
+ * grid: the beam's middle IS the fulcrum, the two weights hang at the
+ * same distance from it and take the same height, and the floor's two
+ * ticks say so under them. A law one party could tilt would be drawn
+ * leaning; this one is drawn level.
+ *
+ * The terracotta is spent twice and no more — on the fulcrum and on one
+ * of the two weights — because the accent marks what is the project's
+ * own, and what the project brings to a dealing is the ground it rests
+ * on and its own side of the scale.
+ *
+ * It is the row's one band-wide plate, so it takes the essay's viewBox
+ * (`art-story.tsx`) rather than a shape of its own: two plates of the
+ * same width drawn at different scales read as a mistake.
+ */
+export const LegalArt = component$(() => (
+  <svg
+    class="lm-legal"
+    viewBox="0 0 560 200"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <g class="lm-cross" stroke-width="1">
+      <path d="M52 44v12M46 50h12" />
+      <path d="M508 36v12M502 42h12" />
+    </g>
+    <line
+      class="lm-legal__floor lm-draw"
+      x1="28"
+      y1="178"
+      x2="532"
+      y2="178"
+      pathLength="1"
+      style="--at:0"
+    />
+    {/* Equal distance, said on the floor: one tick under each weight. */}
+    <g class="lm-tick" stroke-width="1">
+      <path d="M94 175v6" />
+      <path d="M466 175v6" />
+    </g>
+    <path
+      class="lm-legal__fulcrum lm-pop"
+      d="M280 91 304 178H256Z"
+      style="--at:4"
+    />
+    <line
+      class="lm-legal__beam lm-draw"
+      x1="76"
+      y1="88"
+      x2="484"
+      y2="88"
+      pathLength="1"
+      style="--at:6"
+    />
+    <g class="lm-legal__hang">
+      <path class="lm-draw" d="M80 92v40" pathLength="1" style="--at:10" />
+      <path class="lm-draw" d="M108 92v40" pathLength="1" style="--at:10" />
+      <path class="lm-draw" d="M452 92v46" pathLength="1" style="--at:12" />
+      <path class="lm-draw" d="M480 92v46" pathLength="1" style="--at:12" />
+    </g>
+    <rect
+      class="lm-legal__weight lm-pop"
+      x="74"
+      y="132"
+      width="40"
+      height="40"
+      style="--at:14"
+    />
+    <circle
+      class="lm-legal__pan lm-pop"
+      cx="466"
+      cy="152"
+      r="20"
+      style="--at:16"
+    />
   </svg>
 ));
