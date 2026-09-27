@@ -165,6 +165,49 @@
   transform: rotate(-8deg);
 }
 
+/* --- Every day: the uses, and where each one is shown ----------------- */
+
+/* The same list the problem's points are set in — same mono voice, same
+   terracotta dash — because these are points of the same kind: short
+   statements, read down rather than across. What is added is the link at
+   the end of each one, and a line under the list that admits the list is
+   not exhaustive. */
+.vv-uses li {
+  max-width: 44rem;
+}
+
+/* A destination's name inside a sentence. Underlined rather than lit, as
+   every other name-that-is-a-place on this site is: in a list this quiet a
+   coloured word would read as the point of the line, and the point of the
+   line is the sentence. */
+.vv-uses a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  transition:
+    color var(--speed) ease,
+    text-decoration-color var(--speed) ease;
+}
+
+.vv-uses a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* «And so on.» — aligned with the points rather than with the margin, in
+   their voice and a shade quieter: it belongs to the list and is not a
+   sixth point. */
+.vv-uses__more {
+  margin: 14px 0 0;
+  padding-left: 26px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+
 /* --- Architecture ---------------------------------------------------- */
 
 .vv-arch {

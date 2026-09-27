@@ -3,15 +3,50 @@
 import { component$, useStyles$ } from "@qwik.dev/core";
 
 import { GITHUB_URL, GITVERSE_URL, type Locale } from "../../landing/i18n.ts";
+import { docHref } from "../../lib/href.ts";
 import shared from "../shared.css?inline";
 import { whyHref } from "../paths.ts";
 import { Frieze } from "./frieze.tsx";
-import { COMMANDS, STRINGS } from "./i18n.ts";
+import { COMMANDS, STRINGS, type UseTarget } from "./i18n.ts";
 import styles from "./styles.css?inline";
 
 export type WhyVibevmProps = {
   readonly locale: Locale;
 };
+
+/**
+ * Where one of the everyday uses leads, in the reader's own language.
+ *
+ * A switch and not a table of addresses in the copy, for the reason the
+ * compiler is asked into the room: the cases are the four destinations the
+ * string table names, the switch is exhaustive, and a fifth use added
+ * without a page to send a reader to is a type error here rather than a
+ * sentence with a dead link after it. Three of the four are pages of the
+ * manual, addressed by coordinate like every other documentation link on
+ * this site and in the reader's own edition — which for Russian is the
+ * source package under a language segment (D-06) — and the fourth is a
+ * page of this site.
+ */
+function useHref(target: UseTarget, locale: Locale): string {
+  const page = (document: string): string =>
+    docHref({
+      lang: locale === "en" ? null : locale,
+      group: "org.vibevm.core",
+      name: "vibevm-docs",
+      version: "latest",
+      document,
+    });
+  switch (target) {
+    case "obsidian-to-project":
+      return page("tutorials/obsidian-to-project");
+    case "markdown-and-xml":
+      return page("tutorials/markdown-and-xml");
+    case "ai-native-rust":
+      return page("tutorials/ai-native-rust");
+    case "why-zap":
+      return whyHref("zap", locale);
+  }
+}
 
 /**
  * `/why/vibevm` — the product page for VibeVM itself: the `vibe` CLI and
@@ -23,6 +58,13 @@ export type WhyVibevmProps = {
  * token-economics argument, four capability cards, five commands, the
  * fit-and-not pair, the start block with the tie to Zap, and a closing
  * paragraph. Nothing was reordered and nothing was dropped.
+ *
+ * One section joined it after the port, on the owner's word of 2026-09-27:
+ * the everyday uses, between the hero and the problem. It adds no drawing
+ * and no shape — it is the page's own section, kicker, heading and point
+ * list, with a link at the end of each point — because what it says is
+ * «and also these», and a new visual form would have said «and now
+ * something else».
  *
  * It renders to markup and stays there. Two things on the page move —
  * the frieze draws itself once and the status dot breathes — and both
@@ -89,6 +131,32 @@ export const WhyVibevm = component$<WhyVibevmProps>((props) => {
             {t.friezeCaption}
           </figcaption>
         </figure>
+      </section>
+
+      {/* Right after the hero and before the problem (owner,
+          2026-09-27): the plain, everyday things the same tool is good
+          for. It stands here rather than further down because a reader who
+          has just been told that this is about discipline should learn in
+          the next breath that discipline is not all of it — and each line
+          is one sentence and one page, so the section is a set of doors
+          and not a second argument. */}
+      <section class="vv-section" aria-labelledby="vv-every-h">
+        <div class="why-shell">
+          <p class="vv-k">{t.everyK}</p>
+          <h2 class="vv-h" id="vv-every-h">
+            {t.everyH}
+          </h2>
+          <p class="vv-body vv-body--wide">{t.everyBody}</p>
+          <ul class="vv-symptoms vv-uses">
+            {t.everyUses.map((use) => (
+              <li key={use.to}>
+                {use.body}{" "}
+                <a href={useHref(use.to, props.locale)}>{use.label}</a>
+              </li>
+            ))}
+          </ul>
+          <p class="vv-uses__more">{t.everyMore}</p>
+        </div>
       </section>
 
       <section class="vv-section" aria-labelledby="vv-problem-h">

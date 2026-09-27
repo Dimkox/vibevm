@@ -149,6 +149,112 @@ for (const one of RELEASE) {
 }
 
 /**
+ * The everyday uses on `/why/vibevm/`, right after the hero (owner,
+ * 2026-09-27).
+ *
+ * Three things are held, and each of them is a way the section could be
+ * finished-looking and wrong: WHERE it stands — between the frieze and
+ * «The problem», because a reader who has just been told this is about
+ * discipline has to learn in the next breath that discipline is not all of
+ * it; WHAT it says — the owner's kicker, heading and closing line; and
+ * WHERE each of the four lines leads, in order, in the reader's own
+ * edition. The three manual pages are addressed by coordinate and land
+ * after this batch, so what is pinned is the address: a Russian list that
+ * sent its reader to the English tutorial would look right in both
+ * languages.
+ */
+const EVERY_DAY = [
+  {
+    route: "/why/vibevm/",
+    k: "Every day",
+    h: "Not only discipline",
+    problem: "The copy-paste era of agent context",
+    more: "And so on.",
+    uses: [
+      {
+        label: "From an Obsidian folder to a big project",
+        href: "/doc/org.vibevm.core/vibevm-docs/latest/tutorials/obsidian-to-project/",
+      },
+      {
+        label: "Advanced Markdown & XML",
+        href: "/doc/org.vibevm.core/vibevm-docs/latest/tutorials/markdown-and-xml/",
+      },
+      {
+        label: "Build Hello VibeVM in AI-Native Rust",
+        href: "/doc/org.vibevm.core/vibevm-docs/latest/tutorials/ai-native-rust/",
+      },
+      { label: "Why Zap", href: "/why/zap/" },
+    ],
+  },
+  {
+    route: "/ru/why/vibevm/",
+    k: "Каждый день",
+    h: "Не только дисциплина",
+    problem: "Эпоха copy-paste агентного контекста",
+    more: "И так далее.",
+    uses: [
+      {
+        label: "От папки в Obsidian до большого проекта",
+        href: "/doc/ru/org.vibevm.core/vibevm-docs/latest/tutorials/obsidian-to-project/",
+      },
+      {
+        label: "Продвинутые Markdown и XML",
+        href: "/doc/ru/org.vibevm.core/vibevm-docs/latest/tutorials/markdown-and-xml/",
+      },
+      {
+        label: "Собрать Hello VibeVM на AI-Native Rust",
+        href: "/doc/ru/org.vibevm.core/vibevm-docs/latest/tutorials/ai-native-rust/",
+      },
+      { label: "Почему Zap", href: "/ru/why/zap/" },
+    ],
+  },
+] as const;
+
+for (const one of EVERY_DAY) {
+  test(`${one.route} offers the everyday uses before the problem`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(one.route);
+
+    const section = page.locator("main .why-page > section").nth(1);
+    await expect(section.locator(".vv-k")).toHaveText(one.k);
+    await expect(section.locator("h2")).toHaveText(one.h);
+    await expect(section.locator(".vv-uses__more")).toHaveText(one.more);
+
+    /* Before «The problem», measured down the page rather than counted in
+       the markup — and the section is an `h2` like every other one, so the
+       page's heading order is unbroken. */
+    const top = (selector: string): Promise<number> =>
+      page.locator(selector).evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return box.top + window.scrollY;
+      });
+    await expect(page.locator("#vv-problem-h")).toHaveText(one.problem);
+    expect(await top("#vv-problem-h")).toBeGreaterThan(
+      await top("#vv-every-h"),
+    );
+    await expect(section.locator("#vv-every-h")).toHaveCount(1);
+
+    /* Four lines, each a sentence and one link, and the four links in the
+       owner's order. */
+    const items = section.locator(".vv-uses li");
+    await expect(items).toHaveCount(one.uses.length);
+    for (const [index, use] of one.uses.entries()) {
+      const link = items.nth(index).locator("a");
+      await expect(link).toHaveCount(1);
+      await expect(link).toHaveText(use.label);
+      await expect(link).toHaveAttribute("href", use.href);
+      /* The sentence is not the link: the line says something before it
+         offers the page that shows it. */
+      const line = (await items.nth(index).innerText()).trim();
+      expect(line.startsWith(use.label)).toBe(false);
+      expect(line.endsWith(use.label)).toBe(true);
+    }
+  });
+}
+
+/**
  * What each page tells a crawler about itself.
  *
  * `canonical` names this address and not the landing; the `hreflang` set

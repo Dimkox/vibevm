@@ -21,12 +21,46 @@
  * already the source's, but the diagram is now a picture with a name,
  * and the caption under the frieze was `aria-hidden` in the source and
  * stays so here.
+ *
+ * One GROUP is neither: the `every*` values below are the owner's request
+ * of 2026-09-27, written for this site and never in the Astro source —
+ * the everyday things VibeVM is also good for, said right after the hero
+ * so that a reader who has just been told about discipline learns
+ * immediately that discipline is not all of it. They are marked here
+ * rather than mixed in, so that «every other value came across byte for
+ * byte» stays a claim a reader can check.
  */
 
 export type Cap = {
   readonly label: string;
   readonly head: string;
   readonly body: string;
+};
+
+/**
+ * Which page an everyday use leads to, named rather than addressed.
+ *
+ * A name and not an `href`, because an address depends on the language
+ * the reader is in and the copy table does not: three of the four are
+ * pages of the manual, which carry a language segment in every edition
+ * but the source's (D-06), and the fourth is a Why page of this site.
+ * The table says which page; `useHref` in the component says where it is,
+ * once, for both languages (`index.tsx`).
+ */
+export type UseTarget =
+  "obsidian-to-project" | "markdown-and-xml" | "ai-native-rust" | "why-zap";
+
+/**
+ * One everyday use: the sentence, and the one page that shows how.
+ *
+ * The label is the destination's own name and not a verb — «read more»
+ * four times over tells a reader walking the links by name nothing, and
+ * each of these four leads somewhere with a title of its own.
+ */
+export type Use = {
+  readonly body: string;
+  readonly label: string;
+  readonly to: UseTarget;
 };
 
 export type Step = {
@@ -42,6 +76,22 @@ export type Strings = {
   readonly ctaZap: string;
   readonly friezeAlt: string;
   readonly friezeCaption: string;
+
+  /**
+   * The everyday uses, right after the hero (owner, 2026-09-27): the
+   * kicker, the heading, the line that introduces the list, the four uses
+   * themselves and the line that closes them.
+   *
+   * The owner's words, written for this site — the one group on this page
+   * that did not come across from the Astro source. Four and exactly four,
+   * as a tuple, because each of them names a page and a fifth sentence
+   * without a page to send a reader to would be a promise.
+   */
+  readonly everyK: string;
+  readonly everyH: string;
+  readonly everyBody: string;
+  readonly everyUses: readonly [Use, Use, Use, Use];
+  readonly everyMore: string;
 
   readonly problemK: string;
   readonly problemH: string;
@@ -130,6 +180,34 @@ export const STRINGS: Readonly<Record<"en" | "ru", Strings>> = {
       "A suprematist frieze: scattered tilted rectangles of hand-copied conventions on the left; a large terracotta wedge entering from the right; past the wedge, packages aligned into a resolved dependency lattice, pinned at every node.",
     friezeCaption:
       "Left to right: conventions drifting apart, an installed discipline entering, a resolved graph — pinned at every node.",
+
+    everyK: "Every day",
+    everyH: "Not only discipline",
+    everyBody:
+      "Installing discipline is the headline. VibeVM also solves many plain, everyday problems. With it you can:",
+    everyUses: [
+      {
+        body: "turn a personal Obsidian wiki full of skills into a real, production-ready system.",
+        label: "From an Obsidian folder to a big project",
+        to: "obsidian-to-project",
+      },
+      {
+        body: "write specifications in unusually efficient formats, in ways that are impossible by hand.",
+        label: "Advanced Markdown & XML",
+        to: "markdown-and-xml",
+      },
+      {
+        body: "use AI-native languages.",
+        label: "Build Hello VibeVM in AI-Native Rust",
+        to: "ai-native-rust",
+      },
+      {
+        body: "use agents with a far planning horizon.",
+        label: "Why Zap",
+        to: "why-zap",
+      },
+    ],
+    everyMore: "And so on.",
 
     problemK: "The problem",
     problemH: "The copy-paste era of agent context",
@@ -266,6 +344,34 @@ export const STRINGS: Readonly<Record<"en" | "ru", Strings>> = {
       "Супрематический фриз: слева — разбросанные наклонённые прямоугольники скопированных вручную конвенций; справа входит большой терракотовый клин; за клином пакеты выстроены в разрешённую решётку зависимостей, закреплённую в каждом узле.",
     friezeCaption:
       "Слева направо: расползающиеся конвенции, входящая установленная дисциплина, разрешённый граф — закреплённый в каждом узле.",
+
+    everyK: "Каждый день",
+    everyH: "Не только дисциплина",
+    everyBody:
+      "Установка дисциплины — главное, но VibeVM решает и множество простых бытовых задач. С ним можно:",
+    everyUses: [
+      {
+        body: "превратить личную вики в Obsidian со скиллами в настоящую систему, готовую к продакшену.",
+        label: "От папки в Obsidian до большого проекта",
+        to: "obsidian-to-project",
+      },
+      {
+        body: "писать спецификации в необычайно эффективных форматах — так, как вручную писать невозможно.",
+        label: "Продвинутые Markdown и XML",
+        to: "markdown-and-xml",
+      },
+      {
+        body: "пользоваться AI-native языками.",
+        label: "Собрать Hello VibeVM на AI-Native Rust",
+        to: "ai-native-rust",
+      },
+      {
+        body: "работать с агентами с далёким горизонтом планирования.",
+        label: "Почему Zap",
+        to: "why-zap",
+      },
+    ],
+    everyMore: "И так далее.",
 
     problemK: "Проблема",
     problemH: "Эпоха copy-paste агентного контекста",
