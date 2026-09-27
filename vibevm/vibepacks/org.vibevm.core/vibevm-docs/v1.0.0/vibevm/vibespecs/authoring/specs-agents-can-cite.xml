@@ -54,7 +54,7 @@ dry-run ir-stable-loss vibevm/vibespecs/boot/10-tool-review-notes.md
 --- source
 +++ reverse-projection
 @@ -1,6 +1,5 @@
--&lt;!-- vibe:static org.org.acme/review-notes — boot snippet --&gt;
+-&lt;!-- vibe:static org.acme/review-notes — boot snippet --&gt;
 -
  # review-notes
 
