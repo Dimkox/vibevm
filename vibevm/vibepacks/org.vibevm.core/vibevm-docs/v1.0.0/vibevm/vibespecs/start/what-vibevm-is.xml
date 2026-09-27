@@ -27,6 +27,9 @@
   <where-next title="Where to go next">
     <p>To see it on your own machine, [install vibe](install-vibe.xml) and [create a first project](first-project.xml): the newcomer's route walks through both in ten minutes. To understand the pieces, read the pages on [the two trees](../model/two-trees.xml), [the boot lane](../model/boot-lane.xml) and [packages](../model/packages-and-kinds.xml), in that order.</p>
   </where-next>
+  <the-name title="The name">
+    <p>The correct full name of the project is [Anarchic](https://anarchic.pro) VibeVM. [Oleg Chirukhin](https://oleg.guru) originally conceived and built it as a way to make personal and group vibe coding simpler. For short, this manual calls it VibeVM.</p>
+  </the-name>
   <the-licence title="The licence">
     <p>vibe is open source under the Universal Permissive License 1.0. The licence covers what this repository ships, the program and the packages in its own groups; a package you write or install carries its own.</p>
     <rule ref="spec://org.vibevm.core/vibevm/common/PROP-000#LICENSE-EULA"/>
