@@ -141,7 +141,7 @@ pages = ["authoring/write-a-flow", "authoring/specs-agents-can-cite", "authoring
 [[navigation.chapter]]
 id = "beyond-one-package"
 title = "Beyond one package"
-pages = ["model/dependency-visibility", "authoring/bridge-a-repository", "howto/set-up-a-workspace", "howto/publish-a-package"]
+pages = ["model/dependency-visibility", "authoring/bridge-a-repository", "howto/set-up-a-workspace", "howto/publish-to-the-central-registry", "howto/publish-a-package"]
 
 [[navigation.chapter]]
 id = "documentation"
