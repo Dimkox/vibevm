@@ -70,6 +70,40 @@
   font-weight: 500;
 }
 
+/* The note under the lead: the same measure, so the two read as one
+   column, and quieter in both of the ways a paragraph can be — smaller
+   type and the muted role the site sets captions and meta lines in. It is
+   read after the lead or not at all, and it must never be mistaken for
+   the sentence above it. */
+.hero__note {
+  margin: 14px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-3);
+  max-width: 32rem;
+}
+
+/* A word inside a sentence that is also a place. Underlined rather than
+   coloured, as the footer's signature and a bridge's maintainer are: in a
+   paragraph this quiet a lit word would be the loudest thing in the hero,
+   while an underline says «this is a link» and waits to be hovered. */
+.hero__lead a,
+.hero__note a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--line-strong);
+  transition:
+    color var(--speed) ease,
+    text-decoration-color var(--speed) ease;
+}
+
+.hero__lead a:hover,
+.hero__note a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
 .hero__cta {
   margin-top: 36px;
   display: flex;

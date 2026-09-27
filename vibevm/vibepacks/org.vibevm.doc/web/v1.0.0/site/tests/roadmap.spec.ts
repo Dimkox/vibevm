@@ -241,7 +241,7 @@ for (const one of PAGES) {
     expect(parsed["@type"]).toBe("WebPage");
     expect(parsed.url).toBe(`https://vibevm.org${one.route}`);
     expect(parsed.inLanguage).toBe(one.language);
-    expect(parsed.isPartOf?.name).toBe("VibeVM");
+    expect(parsed.isPartOf?.name).toBe("Anarchic VibeVM");
 
     const list = parsed.mainEntity;
     expect(list?.["@type"]).toBe("ItemList");

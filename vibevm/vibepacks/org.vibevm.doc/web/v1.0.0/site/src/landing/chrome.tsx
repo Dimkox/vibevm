@@ -19,6 +19,7 @@ import { isRoadmapPath } from "../roadmap/paths.ts";
 import { isVisionPath } from "../vision/paths.ts";
 import { WHY_PAGES, whyPageOf } from "../why/paths.ts";
 import styles from "./chrome.css?inline";
+import { PROJECT_NAME } from "./identity.ts";
 import {
   LOCALES,
   type Locale,
@@ -229,7 +230,15 @@ export const LandingChrome = component$<LandingChromeProps>((props) => {
       </main>
 
       <Footer copyright={t.copyright} people={LINKED_PEOPLE}>
-        <div class="landing-footer__brand">VibeVM — {t.footerTagline}</div>
+        {/* The signature is the project's full name and the owner's
+            tagline after it (owner, 2026-09-27) — the same shape in both
+            languages, with only the name coming from the identity table
+            and the words after the dash staying the owner's own. The
+            wordmark at the top of the page is the short name still: a
+            mark is not an assertion, and the corner has no room. */}
+        <div class="landing-footer__brand">
+          {PROJECT_NAME} — {t.footerTagline}
+        </div>
         <div class="landing-footer__links">
           {footerLinks.map((one) => (
             <a

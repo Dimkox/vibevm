@@ -4,16 +4,21 @@ import type { DocumentHeadValue } from "@qwik.dev/router";
 
 import { SITE } from "../config.ts";
 import { href } from "../lib/href.ts";
+import { CREATOR_SITE } from "../lib/people.ts";
 import { analytics } from "../seo/analytics.ts";
 import {
   AI_NATIVE_LANGUAGES_NOT_EN,
   AI_NATIVE_LANGUAGES_WHAT_EN,
+  PHALA_DISAMBIGUATION_EN,
+  PROJECT_NAME,
+  PROJECT_SHORT_NAME,
+  TGBYTE_DISAMBIGUATION_EN,
+} from "./identity.ts";
+import {
   GITHUB_URL,
   GITVERSE_URL,
   type Locale,
-  PHALA_DISAMBIGUATION_EN,
   STRINGS,
-  TGBYTE_DISAMBIGUATION_EN,
   localePath,
 } from "./i18n.ts";
 import { CHANNEL_URLS } from "../news/i18n.ts";
@@ -74,6 +79,12 @@ function absolute(locale: Locale, path = ""): string {
  * the Telegram news channel and the Reddit community — so the graph says
  * which accounts are this VibeVM's; the creator's own account is a
  * person's and stays off it.
+ *
+ * The application's NAME became the full one, with the short form beside
+ * it and the person who made it named (owner, 2026-09-27). Nothing else
+ * in the graph moved: the two other nodes say what the LANGUAGES are and
+ * what the SITE is, and neither of those questions was the one the owner
+ * answered.
  */
 function siteGraph(): string {
   return JSON.stringify({
@@ -81,10 +92,26 @@ function siteGraph(): string {
     "@graph": [
       {
         "@type": "SoftwareApplication",
-        name: "VibeVM",
+        /* The project's full name, and the short one beside it as what it
+           is — an alternate name for the same thing (owner, 2026-09-27).
+           A graph that carried only «VibeVM» would leave a crawler to
+           guess whether «Anarchic VibeVM» is this or a fourth namesake,
+           and a graph that carried only the full name would stop
+           answering for the name the whole web already links. */
+        name: PROJECT_NAME,
+        alternateName: [PROJECT_SHORT_NAME],
         applicationCategory: "DeveloperApplication",
         operatingSystem: "Windows, macOS, Linux",
         url: SITE.origin,
+        /* Who conceived and built it, as a person a graph can resolve:
+           the name and the one address the site links every mention of
+           that name to (`lib/people.ts`), which is the same claim the essay's
+           `Article` already makes about its author. */
+        author: {
+          "@type": "Person",
+          name: "Oleg Chirukhin",
+          url: CREATOR_SITE,
+        },
         description:
           "An ultimate prompt library, package manager, and agentic system for Spec-Driven Development.",
         /* Both namesakes in one property, because the property answers
@@ -114,9 +141,15 @@ function siteGraph(): string {
         description: AI_NATIVE_LANGUAGES_WHAT_EN,
         disambiguatingDescription: AI_NATIVE_LANGUAGES_NOT_EN,
       },
+      /* The site is the project, and it is named the way the project is
+         (owner, 2026-09-27): the full name, with the short one beside it
+         as an alternate name. A graph whose application and whose website
+         disagreed about what this is called would be the disambiguation
+         problem again, in our own words. */
       {
         "@type": "WebSite",
-        name: "VibeVM",
+        name: PROJECT_NAME,
+        alternateName: [PROJECT_SHORT_NAME],
         url: SITE.origin,
         inLanguage: ["en", "ru"],
       },
@@ -152,7 +185,7 @@ function pageGraph(
     url: canonical,
     description,
     inLanguage: language,
-    isPartOf: { "@type": "WebSite", name: "VibeVM", url: SITE.origin },
+    isPartOf: { "@type": "WebSite", name: PROJECT_NAME, url: SITE.origin },
   });
 }
 
@@ -223,7 +256,12 @@ export function pageHead(props: PageHeadProps): DocumentHeadValue {
       { name: "description", content: description },
       { name: "theme-color", content: THEME_COLOR },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "VibeVM" },
+      /* The site's name is the project's full one (owner, 2026-09-27).
+         This is the head of the marketing half; the manual's own head
+         (`seo/head.ts`) is not touched — a page of the documentation
+         announces the manual it belongs to, and its titles were not part
+         of the renaming. */
+      { property: "og:site_name", content: "Anarchic VibeVM" },
       { property: "og:locale", content: t.ogLocale },
       { property: "og:url", content: canonical },
       { property: "og:title", content: title },

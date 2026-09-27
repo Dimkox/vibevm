@@ -1,7 +1,8 @@
 /** @scope spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE */
 
 /**
- * The release the front door is showing, and the one way on beside it.
+ * The front door's hero: the release it is showing, the one way on beside
+ * it, and — since 2026-09-27 — what the project is properly called.
  *
  * The pill said «Early Access» and stood alone in a row with room to
  * spare; it now names the release — «Developer Preview 1», one name in
@@ -16,6 +17,10 @@
  */
 
 import { expect, test } from "@playwright/test";
+
+import { ANARCHIC_URL } from "../src/landing/identity.ts";
+import { STRINGS as LANDING } from "../src/landing/i18n.ts";
+import { CREATOR_SITE } from "../src/lib/people.ts";
 
 const PAGES = [
   {
@@ -108,6 +113,94 @@ for (const one of PAGES) {
       (element) => getComputedStyle(element, ":focus-visible").outlineWidth,
     );
     expect(outline).not.toBe("0px");
+  });
+}
+
+/**
+ * The project's full name, where the owner put it: the note directly under
+ * the lead, and the lead's own first words (owner, 2026-09-27).
+ *
+ * The sentence is compared whole, with its markup taken off, because it is
+ * the owner's sentence and the page is where it is read — and the two
+ * addresses inside it are compared against the tables that own them, not
+ * against a spelling repeated here. A note whose words survived while its
+ * link went to the wrong place would look finished from the outside.
+ */
+const NAMED = [
+  {
+    route: "/",
+    locale: "en",
+    note: "The correct full name of the project is Anarchic VibeVM. It was originally conceived and built by Oleg Chirukhin as a way to make personal and group vibe coding simpler.",
+    person: "Oleg Chirukhin",
+    lead: "Anarchic VibeVM is an ultimate prompt library, package manager, and agentic system for Spec-Driven Development — declarative context assembled from versioned stacks, flows, and skills.",
+  },
+  {
+    route: "/ru/",
+    locale: "ru",
+    note: "Правильное полное название проекта — Anarchic VibeVM. Изначально её придумал и реализовал Олег Чирухин как средство для упрощения персонального и группового вайбкодинга.",
+    person: "Олег Чирухин",
+    lead: "Anarchic VibeVM — ультимативная библиотека промптов, пакетный менеджер и агентная система для Spec-Driven Development: декларативный контекст, собранный из версионируемых стеков, флоу и навыков.",
+  },
+] as const;
+
+for (const one of NAMED) {
+  test(`${one.route} names the project in full under its lead`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(one.route);
+
+    const note = page.locator("main .hero__note");
+    await expect(note).toHaveCount(1);
+    expect((await note.innerText()).replace(/\s+/g, " ").trim()).toBe(one.note);
+
+    /* The brand is a place, and so is the person. */
+    await expect(note.locator(`a[href="${ANARCHIC_URL}"]`)).toHaveText(
+      "Anarchic",
+    );
+    await expect(note.locator(`a[href="${CREATOR_SITE}"]`)).toHaveText(
+      one.person,
+    );
+    await expect(note.locator("a")).toHaveCount(2);
+
+    /* Under the lead and nowhere else, and quieter than it: the note is
+       the second paragraph of the column, not a line inside the first. */
+    const under = await page.evaluate(() => {
+      const lead = document.querySelector(".hero__lead");
+      const note = document.querySelector(".hero__note");
+      if (lead === null || note === null) return null;
+      return {
+        below:
+          note.getBoundingClientRect().top >=
+          lead.getBoundingClientRect().bottom,
+        next: lead.nextElementSibling === note,
+        leadSize: Number.parseFloat(getComputedStyle(lead).fontSize),
+        noteSize: Number.parseFloat(getComputedStyle(note).fontSize),
+      };
+    });
+    expect(under?.below).toBe(true);
+    expect(under?.next).toBe(true);
+    expect(under?.noteSize ?? 99).toBeLessThan(under?.leadSize ?? 0);
+  });
+}
+
+for (const one of NAMED) {
+  test(`${one.route} opens its lead with the full name`, async ({ page }) => {
+    await page.goto(one.route);
+    const lead = page.locator("main .hero__lead");
+    expect((await lead.innerText()).replace(/\s+/g, " ").trim()).toBe(one.lead);
+
+    /* The word in the name that is also a place, and the descriptor that
+       must appear verbatim — one `<a>`, one `<strong>`, and the descriptor
+       is the string table's own. */
+    await expect(lead.locator(`a[href="${ANARCHIC_URL}"]`)).toHaveText(
+      "Anarchic",
+    );
+    await expect(lead.locator("a")).toHaveCount(1);
+    const strong = await lead.locator("strong").innerText();
+    expect(LANDING[one.locale].leadHtml).toContain(
+      `<strong>${strong}</strong>`,
+    );
   });
 }
 

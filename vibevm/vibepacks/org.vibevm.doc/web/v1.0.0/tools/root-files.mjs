@@ -33,9 +33,11 @@ import { fileURLToPath } from "node:url";
 import { siteConfig } from "../site/src/config.ts";
 import {
   AI_NATIVE_LANGUAGES_EN,
+  NAME_STATEMENT_EN,
   PHALA_DISAMBIGUATION_EN,
+  PROJECT_NAME,
   TGBYTE_DISAMBIGUATION_EN,
-} from "../site/src/landing/i18n.ts";
+} from "../site/src/landing/identity.ts";
 import { DOC_SITEMAP } from "../site/src/seo/sitemap.ts";
 import { newsLlmsLine } from "../site/src/news/meta.ts";
 import { roadmapLlmsLine } from "../site/src/roadmap/meta.ts";
@@ -389,7 +391,11 @@ function feedXml(config, pages, heads) {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
     "  <channel>",
-    "    <title>VibeVM</title>",
+    /* The channel is the site, so it carries the site's name (owner,
+       2026-09-27) — read from the identity table rather than typed here,
+       because a feed reader keeps this string and a second spelling of it
+       would sit in somebody's client until they resubscribed. */
+    `    <title>${escapeXml(PROJECT_NAME)}</title>`,
     `    <link>${config.origin}</link>`,
     `    <description>${escapeXml(english.description)}</description>`,
     "    <language>en</language>",
@@ -412,6 +418,12 @@ function escapeXml(text) {
 
 /**
  * The short index for language models.
+ *
+ * It opens with the project's full name and the person who made it (owner,
+ * 2026-09-27), in the sentence the note under the landing's lead says with
+ * links: here the two addresses stand in parentheses, because a text file
+ * has no links and an agent still has to be able to reach them. The
+ * heading carries the full name for the same reason a page title does.
  *
  * The disambiguation paragraph is the owner's, word for word: several
  * unrelated projects reuse the name, and this paragraph is the site's
@@ -437,9 +449,16 @@ function escapeXml(text) {
 function llmsTxt(config) {
   const origin = config.origin;
   return `${[
-    "# VibeVM",
+    "# Anarchic VibeVM",
     "",
     "> An ultimate prompt library, package manager, and agentic system for Spec-Driven Development. VibeVM installs specs, flows, and skills as versioned dependencies and assembles them into the declarative context an AI coding agent reads at session boot.",
+    "",
+    /* The name first, under the summary and before every note about
+       somebody else's project (owner, 2026-09-27): what this is called and
+       who made it is the first thing an index should be able to state, and
+       the three notes below it all begin by saying which project they are
+       about. */
+    NAME_STATEMENT_EN,
     "",
     'Disambiguation: several unrelated projects reuse the "vibevm" name. The links below are the authoritative ones for this VibeVM.',
     "",
@@ -451,7 +470,11 @@ function llmsTxt(config) {
     "",
     "## Project",
     "",
-    `- [Official site](${origin}): VibeVM — spec-driven development, packaged.`,
+    /* The site's own entry names the project the way the footer of every
+       page signs it (owner, 2026-09-27): the full name, then the tagline.
+       The name is the identity table's; the words after the dash are the
+       owner's, and lower-cased here as they always were. */
+    `- [Official site](${origin}): ${PROJECT_NAME} — spec-driven development, packaged.`,
     ...WHY_LLMS.map((entry) => whyLlmsLine(origin, entry)),
     /* The essay stands after the three product arguments: an agent
        deciding what to fetch sees the products first and the worldview
@@ -501,10 +524,12 @@ function llmsTxt(config) {
  * because it is a redirect with nothing to read.
  */
 function llmsFullTxt(config, pages) {
-  const header = `# VibeVM — vibevm.org (full text)
+  const header = `# Anarchic VibeVM — vibevm.org (full text)
 
 > An ultimate prompt library, package manager, and agentic system for Spec-Driven Development.
 > Declarative context assembled for AI agents from versioned stacks, flows, and skills.
+>
+> ${NAME_STATEMENT_EN}
 >
 > Authoritative links (several unrelated projects reuse the "vibevm" name — these are canonical):
 > - Official site: ${config.origin}

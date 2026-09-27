@@ -19,6 +19,16 @@ export type HeroProps = {
   readonly headlineHtml: string;
   /** The lead, as markup: the mandated descriptor sits in `<strong>`. */
   readonly leadHtml: string;
+  /**
+   * One quieter paragraph directly under the lead, as markup — what the
+   * thing being introduced is properly called, or whatever else a reader
+   * should have before the buttons and not instead of the lead.
+   *
+   * Optional and omitted rather than empty: the 404 shares this hero and
+   * has nothing to add under its apology, and a note set in the muted
+   * role with nothing in it would still cost the lead its spacing.
+   */
+  readonly noteHtml?: string | undefined;
   /** The filled button — the project's canonical source. */
   readonly primary: HeroAction;
   /** The outlined button beside it — the mirror. */
@@ -54,9 +64,9 @@ export type HeroProps = {
 };
 
 /**
- * The top of the landing: label, headline, lead, two buttons, a status
- * pill with one link beside it, and whatever the page hangs below and
- * beside them.
+ * The top of the landing: label, headline, lead, an optional quieter note
+ * under it, two buttons, a status pill with one link beside it, and
+ * whatever the page hangs below and beside them.
  *
  * Two slots, because the hero owns the shape and not the contents. The
  * default slot takes the install block, which is copy and commands the
@@ -64,14 +74,15 @@ export type HeroProps = {
  * — today the dependency graph — which on a narrow screen moves above
  * the copy rather than shrinking beside it.
  *
- * The headline and the lead arrive as markup and are written in with
- * `dangerouslySetInnerHTML`, which is the honest name for what happens
- * and deserves a reason. Both strings carry exactly one inline element
- * — `<em>` for the accent word, `<strong>` for the descriptor that must
- * appear verbatim — and both come from the site's own compiled string
- * table, never from a request, a file on disk or a reader. Splitting
- * them into three props each would move the emphasis out of the sentence
- * and into the layout, where a translator could not see it.
+ * The headline, the lead and the note arrive as markup and are written in
+ * with `dangerouslySetInnerHTML`, which is the honest name for what
+ * happens and deserves a reason. Each string carries a few inline
+ * elements and nothing else — `<em>` for the accent word, `<strong>` for
+ * the descriptor that must appear verbatim, an `<a>` around a word that
+ * is also a place — and all of them come from the site's own compiled
+ * string table, never from a request, a file on disk or a reader.
+ * Splitting them into three props each would move the emphasis out of the
+ * sentence and into the layout, where a translator could not see it.
  */
 export const Hero = component$<HeroProps>((props) => {
   useStyles$(styles);
@@ -87,6 +98,9 @@ export const Hero = component$<HeroProps>((props) => {
           dangerouslySetInnerHTML={props.headlineHtml}
         />
         <p class="hero__lead" dangerouslySetInnerHTML={props.leadHtml} />
+        {props.noteHtml === undefined ? null : (
+          <p class="hero__note" dangerouslySetInnerHTML={props.noteHtml} />
+        )}
 
         <div class="hero__cta">
           <a

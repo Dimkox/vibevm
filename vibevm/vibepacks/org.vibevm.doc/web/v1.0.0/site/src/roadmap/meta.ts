@@ -19,6 +19,7 @@
  */
 
 import { SITE } from "../config.ts";
+import { PROJECT_NAME } from "../landing/identity.ts";
 import {
   type Locale,
   STRINGS as LANDING,
@@ -89,7 +90,7 @@ export function roadmapGraph(locale: Locale): string {
     url: canonical,
     description: meta.description,
     inLanguage: LANDING[locale].htmlLang,
-    isPartOf: { "@type": "WebSite", name: "VibeVM", url: SITE.origin },
+    isPartOf: { "@type": "WebSite", name: PROJECT_NAME, url: SITE.origin },
     mainEntity: {
       "@type": "ItemList",
       name: t.stagesH,

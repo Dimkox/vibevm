@@ -198,7 +198,7 @@ for (const one of PAGES) {
     expect(parsed["@type"]).toBe("WebPage");
     expect(parsed.url).toBe(`https://vibevm.org${one.route}`);
     expect(parsed.inLanguage).toBe(one.language);
-    expect(parsed.isPartOf?.name).toBe("VibeVM");
+    expect(parsed.isPartOf?.name).toBe("Anarchic VibeVM");
     /* The page is served from a loopback origin and still names the live
        domain: `canonical` is absolute by specification, and the origin
        comes from the build environment rather than from the request. */

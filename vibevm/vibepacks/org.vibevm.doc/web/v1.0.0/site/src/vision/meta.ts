@@ -18,6 +18,7 @@
  */
 
 import { SITE } from "../config.ts";
+import { PROJECT_NAME } from "../landing/identity.ts";
 import { type Locale, STRINGS as LANDING } from "../landing/i18n.ts";
 import { href } from "../lib/href.ts";
 import { CREATOR_SITE } from "../lib/people.ts";
@@ -68,9 +69,17 @@ export function visionArticleGraph(locale: Locale): string {
        this site carries it (owner, 2026-09-26): a `Person` with a `url`
        is a person a graph can resolve rather than a string. */
     author: { "@type": "Person", name: "Oleg Chirukhin", url: CREATOR_SITE },
-    publisher: { "@type": "Organization", name: "VibeVM", url: SITE.origin },
+    /* The publisher is the site, so it is named the way the site is
+       (owner, 2026-09-27) — the same string the `isPartOf` below carries,
+       because a graph that published under one name and belonged to
+       another would be describing two projects. */
+    publisher: {
+      "@type": "Organization",
+      name: PROJECT_NAME,
+      url: SITE.origin,
+    },
     image: `${SITE.origin}${href("og.png")}`,
-    isPartOf: { "@type": "WebSite", name: "VibeVM", url: SITE.origin },
+    isPartOf: { "@type": "WebSite", name: PROJECT_NAME, url: SITE.origin },
   });
 }
 

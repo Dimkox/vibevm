@@ -40,8 +40,29 @@
  * line, the two rows' names, and for each destination a line about it
  * and its drawing in words. The English is written for the page; the
  * Russian is an adaptation of it and not a gloss.
+ *
+ * The project's full NAME arrived after all of that (owner, 2026-09-27):
+ * it is Anarchic VibeVM, conceived and built by Oleg Chirukhin, and every
+ * formulation that names the project on the front door says so — the
+ * lead, the note under it, the two meta values, and the first mention in
+ * each of the two notes at the foot of the page. Those are the owner's
+ * own words again, in both languages, and the addresses inside them are
+ * the tables' rather than this file's.
+ *
+ * What the whole DOMAIN asserts about which project this is — the name
+ * statement and the three notes about the namesakes — is not here but in
+ * `identity.ts`, because each of those sentences is said in four places
+ * and this file is what one page says. The values below that carry them
+ * read them from there.
  */
 
+import { CREATOR_SITE } from "../lib/people.ts";
+import {
+  AI_NATIVE_LANGUAGES_EN,
+  ANARCHIC_URL,
+  PHALA_DISAMBIGUATION_EN,
+  TGBYTE_DISAMBIGUATION_EN,
+} from "./identity.ts";
 import type { MenuId, MenuRowId } from "./menu.ts";
 
 export const LOCALES = ["en", "ru"] as const;
@@ -49,53 +70,6 @@ export type Locale = (typeof LOCALES)[number];
 
 export const GITHUB_URL = "https://github.com/vibevm/vibevm";
 export const GITVERSE_URL = "https://gitverse.ru/vibevm/vibevm";
-
-/**
- * The sentence that tells this VibeVM apart from Phala Network's, in
- * English (owner, 2026-09-26). One constant, because four places say it
- * and a crawler that meets two wordings has two claims to reconcile: the
- * foot of the English landing, the root `llms.txt` and `llms-full.txt`
- * (`tools/root-files.mjs`), and `disambiguatingDescription` in the
- * structured data (`head.ts`). The Russian landing says the same in its
- * own words, beside the other Russian strings.
- */
-export const PHALA_DISAMBIGUATION_EN =
-  "VibeVM at vibevm.org is not related to Phala Cloud. It is not Phala Network's VibeVM (github.com/Phala-Network/VibeVM), a development sandbox that runs in a confidential VM on Phala Cloud. The two are separate, unrelated projects that share a name.";
-
-/**
- * The second such sentence, about the other project of this name, in
- * English (owner, 2026-09-26). It travels with the first one and through
- * the same places, because a reader or a crawler meeting one of the two
- * namesakes has the same question about the other.
- *
- * It says what THIS VibeVM does with environments and machines and then
- * that the other project is not it. Nothing here describes that project:
- * a sentence about somebody else's work is not this site's to write, and
- * the name is all an index needs to tell the two apart.
- */
-export const TGBYTE_DISAMBIGUATION_EN =
-  "VibeVM can be used to prepare arbitrary environments and operating systems, including creating throwaway virtual machines, including for confidential sandboxing. VibeVM has no relation to the tgbyte project of the same name.";
-
-/**
- * What the AI Native Languages are, in English, and what they are not
- * (owner, 2026-09-26).
- *
- * In two halves because two of its readers want different amounts of it:
- * the page and the text files take the whole sentence, and the structured
- * data wants the description apart from the denial — a graph says what a
- * thing IS in `description` and what it is not in
- * `disambiguatingDescription`, and a `description` carrying both would
- * put a denial in the sentence a search result prints.
- */
-export const AI_NATIVE_LANGUAGES_WHAT_EN =
-  "The AI Native Languages project (for example, AI Native Rust) is a specialized domain-specific language (DSL) in which the large language model (LLM) itself serves as the runtime. With it, developers describe complex branching logic, parallel execution of AI tasks and context management.";
-
-/** And the half that names the project it is not. */
-export const AI_NATIVE_LANGUAGES_NOT_EN =
-  "It has no relation to the karanchawla VVM project.";
-
-/** The whole of it, as the page and the text files carry it. */
-export const AI_NATIVE_LANGUAGES_EN = `${AI_NATIVE_LANGUAGES_WHAT_EN} ${AI_NATIVE_LANGUAGES_NOT_EN}`;
 
 /** One of the three capability cards under the hero. */
 export type Cap = {
@@ -164,8 +138,23 @@ export type Strings = {
   readonly badgeAction: string;
   /** May contain a single `<em>` around the accent word. */
   readonly headlineHtml: string;
-  /** Contains the mandated descriptor, verbatim, inside `<strong>`. */
+  /**
+   * Contains the mandated descriptor, verbatim, inside `<strong>`, and
+   * opens with the project's full name — whose first word is a link
+   * (owner, 2026-09-27).
+   */
   readonly leadHtml: string;
+  /**
+   * The note directly under the lead: what the project is properly
+   * called, who made it and what for (owner, 2026-09-27).
+   *
+   * Markup for the reason the lead above it is: the sentence carries two
+   * links inside itself — the brand in the name, and the person — and
+   * cutting it into five props would move the sentence into the layout,
+   * where a translator could not see it. The two addresses are
+   * interpolated from the tables that own them, never typed here.
+   */
+  readonly nameNoteHtml: string;
   readonly ctaPrimary: string;
   readonly ctaSecondary: string;
   readonly installTitle: string;
@@ -230,9 +219,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
   en: {
     htmlLang: "en",
     ogLocale: "en_US",
-    metaTitle: "VibeVM — a package manager for Spec-Driven Development",
+    metaTitle:
+      "Anarchic VibeVM — a package manager for Spec-Driven Development",
     metaDescription:
-      "An ultimate prompt library, package manager, and agentic system for Spec-Driven Development.",
+      "Anarchic VibeVM: an ultimate prompt library, package manager, and agentic system for Spec-Driven Development.",
     navWhyVibevm: "Why VibeVM",
     navWhyZap: "Why Zap",
     navWhyAiNative: "AI-Native Language",
@@ -243,8 +233,8 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     badge: "Developer Preview 1",
     badgeAction: "What is VibeVM?",
     headlineHtml: "Install the <em>context</em> your agents run on.",
-    leadHtml:
-      "VibeVM is <strong>an ultimate prompt library, package manager, and agentic system for Spec-Driven Development</strong> — declarative context assembled from versioned stacks, flows, and skills.",
+    leadHtml: `<a href="${ANARCHIC_URL}">Anarchic</a> VibeVM is <strong>an ultimate prompt library, package manager, and agentic system for Spec-Driven Development</strong> — declarative context assembled from versioned stacks, flows, and skills.`,
+    nameNoteHtml: `The correct full name of the project is <a href="${ANARCHIC_URL}">Anarchic</a> VibeVM. It was originally conceived and built by <a href="${CREATOR_SITE}">Oleg Chirukhin</a> as a way to make personal and group vibe coding simpler.`,
     ctaPrimary: "View on GitHub",
     ctaSecondary: "Browse on GitVerse",
     installTitle: "Install VibeVM",
@@ -332,9 +322,10 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
   ru: {
     htmlLang: "ru",
     ogLocale: "ru_RU",
-    metaTitle: "VibeVM — пакетный менеджер для Spec-Driven Development",
+    metaTitle:
+      "Anarchic VibeVM — пакетный менеджер для Spec-Driven Development",
     metaDescription:
-      "Ультимативная библиотека промптов, пакетный менеджер и агентная система для Spec-Driven Development.",
+      "Anarchic VibeVM — ультимативная библиотека промптов, пакетный менеджер и агентная система для Spec-Driven Development.",
     navWhyVibevm: "Почему VibeVM",
     navWhyZap: "Почему Zap",
     navWhyAiNative: "AI-Native Языки",
@@ -351,8 +342,8 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     badge: "Developer Preview 1",
     badgeAction: "Что такое VibeVM?",
     headlineHtml: "Установите <em>контекст</em> для вашего агента",
-    leadHtml:
-      "VibeVM — <strong>ультимативная библиотека промптов, пакетный менеджер и агентная система для Spec-Driven Development</strong>: декларативный контекст, собранный из версионируемых стеков, флоу и навыков.",
+    leadHtml: `<a href="${ANARCHIC_URL}">Anarchic</a> VibeVM — <strong>ультимативная библиотека промптов, пакетный менеджер и агентная система для Spec-Driven Development</strong>: декларативный контекст, собранный из версионируемых стеков, флоу и навыков.`,
+    nameNoteHtml: `Правильное полное название проекта — <a href="${ANARCHIC_URL}">Anarchic</a> VibeVM. Изначально её придумал и реализовал <a href="${CREATOR_SITE}">Олег Чирухин</a> как средство для упрощения персонального и группового вайбкодинга.`,
     ctaPrimary: "Открыть на GitHub",
     ctaSecondary: "Открыть на GitVerse",
     installTitle: "Установите VibeVM",
@@ -381,9 +372,9 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
       },
     ],
     disambiguation:
-      "VibeVM на vibevm.org не связан с Phala Cloud. Это не VibeVM от Phala Network (github.com/Phala-Network/VibeVM) — песочница для разработки в конфиденциальной виртуальной машине на Phala Cloud. Это два разных, никак не связанных проекта с одинаковым названием.",
+      "Anarchic VibeVM на vibevm.org не связан с Phala Cloud. Это не VibeVM от Phala Network (github.com/Phala-Network/VibeVM) — песочница для разработки в конфиденциальной виртуальной машине на Phala Cloud. Это два разных, никак не связанных проекта с одинаковым названием.",
     disambiguationTgbyte:
-      "VibeVM может использоваться для подготовки произвольных сред и операционных систем, в том числе для создания throwaway virtual machines, в том числе в целях создания confidential sandboxing. К одноимённому проекту tgbyte VibeVM не имеет никакого отношения.",
+      "Anarchic VibeVM может использоваться для подготовки произвольных сред и операционных систем, в том числе для создания throwaway virtual machines, в том числе в целях создания confidential sandboxing. К одноимённому проекту tgbyte VibeVM не имеет никакого отношения.",
     disambiguationAiNative:
       "Проект AI Native Languages (например, AI Native Rust) — это специализированный предметно-ориентированный язык (DSL), где в качестве среды выполнения (runtime) выступает сама большая языковая модель (LLM). С его помощью разработчики описывают сложные ветвления логики, параллельное выполнение задач ИИ и управление контекстом. Никакого отношения к проекту karanchawla VVM он не имеет.",
     footerTagline: "Spec-Driven Development, в пакетах.",

@@ -99,6 +99,11 @@ export const Landing = component$<LandingProps>((props) => {
         eyebrow={t.eyebrow}
         headlineHtml={t.headlineHtml}
         leadHtml={t.leadHtml}
+        /* What the project is properly called, who made it and what for
+           (owner, 2026-09-27) — under the lead, in the lead's own measure
+           and a quieter voice, because a reader who came for the software
+           should meet the descriptor first and the name's history second. */
+        noteHtml={t.nameNoteHtml}
         primary={{ label: t.ctaPrimary, href: GITHUB_URL }}
         secondary={{ label: t.ctaSecondary, href: GITVERSE_URL }}
         badge={t.badge}

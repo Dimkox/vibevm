@@ -115,7 +115,12 @@ for (const one of PAGES) {
     expect(parsed.mainEntityOfPage).toBe(`https://vibevm.org${one.route}`);
     expect(parsed.inLanguage).toBe(one.language);
     expect(parsed.author?.name).toBe("Oleg Chirukhin");
-    expect(parsed.isPartOf?.name).toBe("VibeVM");
+    /* The site under both of the names this graph has for it: who
+       published the essay, and which site it is part of. They are one
+       string in `landing/identity.ts`, and a graph that let them drift
+       would be describing two projects (owner, 2026-09-27). */
+    expect(parsed.publisher?.name).toBe("Anarchic VibeVM");
+    expect(parsed.isPartOf?.name).toBe("Anarchic VibeVM");
   });
 }
 

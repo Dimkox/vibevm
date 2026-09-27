@@ -73,6 +73,10 @@ const ALLOWED_HOSTS = new Map([
     "the future home of Spec-Driven Linux, the owner's domain, linked by /roadmap/ (owner, 2026-09-26); it has no records yet and nothing requests it",
   ],
   [
+    "anarchic.pro",
+    "the owner's brand, the word Anarchic in the project's full name on the home page (owner, 2026-09-27)",
+  ],
+  [
     "schema.org",
     "the JSON-LD @context: a vocabulary identifier, never fetched",
   ],

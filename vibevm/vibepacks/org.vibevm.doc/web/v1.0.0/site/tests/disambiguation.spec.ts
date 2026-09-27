@@ -1,7 +1,8 @@
 /** @scope spec://org.vibevm.core/vibevm/common/PROP-057#SITE-ONE-SITE */
 
 /**
- * Which VibeVM this is not, everywhere a crawler reads it.
+ * Which VibeVM this is — and which it is not — everywhere a crawler reads
+ * it.
  *
  * Search engines and model crawlers had been joining this project with
  * its namesakes — Phala Network's VibeVM, a development sandbox on Phala
@@ -17,6 +18,15 @@
  * and says nothing further about it, and nothing on the site links to
  * one; the tests below check the words this site publishes, in the exact
  * form it publishes them.
+ *
+ * Since 2026-09-27 the other half of that question is held here too: what
+ * the project IS called. The name is one string in `landing/identity.ts`
+ * and several surfaces print it — the note under the lead, the two meta
+ * values, the signature at the foot of every landing page, the graph's
+ * application and website nodes, the `isPartOf` of every subpage, and the
+ * title of the feed. A surface that kept the short name while its
+ * neighbours took the full one is the same defect as a missing note: an
+ * index with two answers to one question.
  */
 
 import { expect, test } from "@playwright/test";
@@ -25,10 +35,12 @@ import {
   AI_NATIVE_LANGUAGES_EN,
   AI_NATIVE_LANGUAGES_NOT_EN,
   AI_NATIVE_LANGUAGES_WHAT_EN,
+  NAME_STATEMENT_EN,
   PHALA_DISAMBIGUATION_EN,
-  STRINGS,
   TGBYTE_DISAMBIGUATION_EN,
-} from "../src/landing/i18n.ts";
+} from "../src/landing/identity.ts";
+import { STRINGS } from "../src/landing/i18n.ts";
+import { CREATOR_SITE } from "../src/lib/people.ts";
 
 const LANDINGS = [
   { route: "/", locale: "en", says: "Phala Network's VibeVM" },
@@ -71,6 +83,233 @@ test("/ carries the two English notes exactly as they are written", async ({
   await expect(notes.nth(1)).toHaveText(TGBYTE_DISAMBIGUATION_EN);
   await expect(notes.nth(2)).toHaveText(AI_NATIVE_LANGUAGES_EN);
 });
+
+/**
+ * The first two notes identify this project by its full name (owner,
+ * 2026-09-27), and only at the first mention.
+ *
+ * Which is what these sentences are FOR: they exist to be read by
+ * somebody who has arrived holding the wrong project, and the first thing
+ * such a reader needs is the name of the right one. The rest of each
+ * paragraph goes on in the short form — a note that said «Anarchic
+ * VibeVM» five times would be arguing with the reader rather than telling
+ * them apart.
+ */
+const NAMED_NOTES = [
+  { route: "/", locale: "en" },
+  { route: "/ru/", locale: "ru" },
+] as const;
+
+for (const one of NAMED_NOTES) {
+  test(`${one.route} opens its first two notes with the full name`, async ({
+    page,
+  }) => {
+    await page.goto(one.route);
+    const notes = page.locator("main .landing-disambiguation");
+    for (const index of [0, 1]) {
+      const text = await notes.nth(index).innerText();
+      expect(text.startsWith("Anarchic VibeVM")).toBe(true);
+      expect(text.slice("Anarchic VibeVM".length)).not.toContain("Anarchic");
+    }
+    /* And the third note is about the languages and says nothing about
+       the project's name: it was not the owner's to change here. */
+    await expect(notes.nth(2)).toHaveText(
+      STRINGS[one.locale].disambiguationAiNative,
+    );
+  });
+}
+
+/**
+ * The two text files an agent reads open with the name too: the heading
+ * carries it, and the sentence that states it stands before every note
+ * about somebody else's project.
+ */
+test("the root llms.txt is headed by the full name and states it first", async ({
+  request,
+}) => {
+  const text = await (await request.get("/llms.txt")).text();
+  expect(text.startsWith("# Anarchic VibeVM\n")).toBe(true);
+
+  const statement = text.indexOf(NAME_STATEMENT_EN);
+  expect(statement).toBeGreaterThan(-1);
+  expect(text.indexOf("Disambiguation:")).toBeGreaterThan(statement);
+  expect(text.indexOf(PHALA_DISAMBIGUATION_EN)).toBeGreaterThan(statement);
+
+  /* Plain text, so the two addresses are in parentheses rather than
+     behind words, and they are the tables' own. */
+  expect(NAME_STATEMENT_EN).toContain("(https://anarchic.pro)");
+  expect(NAME_STATEMENT_EN).toContain(`(${CREATOR_SITE})`);
+});
+
+test("the root llms-full.txt is headed by the full name and states it first", async ({
+  request,
+}) => {
+  const text = await (await request.get("/llms-full.txt")).text();
+  expect(text.startsWith("# Anarchic VibeVM — vibevm.org (full text)\n")).toBe(
+    true,
+  );
+  const header = text.slice(0, text.indexOf("\n---\n"));
+  const statement = header.indexOf(NAME_STATEMENT_EN);
+  expect(statement).toBeGreaterThan(-1);
+  expect(header.indexOf(PHALA_DISAMBIGUATION_EN)).toBeGreaterThan(statement);
+  expect(header.indexOf(TGBYTE_DISAMBIGUATION_EN)).toBeGreaterThan(statement);
+  expect(header.indexOf(AI_NATIVE_LANGUAGES_EN)).toBeGreaterThan(statement);
+});
+
+/**
+ * And the graph says it in its own vocabulary: the application's name is
+ * the full one, the short one is an alternate name for the same thing, and
+ * the person who conceived and built it is a `Person` a crawler can
+ * resolve (owner, 2026-09-27).
+ */
+test("the structured data names the project in full and names its author", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const nodes = graphNodes(
+    await page.locator('script[type="application/ld+json"]').allTextContents(),
+  );
+  const software = nodes.find(
+    (node) => node["@type"] === "SoftwareApplication",
+  );
+  expect(software?.["name"]).toBe("Anarchic VibeVM");
+  expect(software?.["alternateName"]).toEqual(["VibeVM"]);
+  expect(software?.["author"]).toEqual({
+    "@type": "Person",
+    name: "Oleg Chirukhin",
+    url: CREATOR_SITE,
+  });
+});
+
+/**
+ * And the site is named the way the project is (owner, 2026-09-27): the
+ * `WebSite` node carries the full name with the short one beside it, and
+ * every subpage that says which site it belongs to repeats the same name.
+ *
+ * The subpages are asked one per kind of graph the marketing half writes
+ * — the default `WebPage`, the roadmap's `WebPage` with its list, and the
+ * essay's `Article` — because each of them spells `isPartOf` in its own
+ * file and a name that moved in one is a name that can stay behind in the
+ * other two.
+ */
+test("the site graph names the site in full", async ({ page }) => {
+  await page.goto("/");
+  const nodes = graphNodes(
+    await page.locator('script[type="application/ld+json"]').allTextContents(),
+  );
+  const site = nodes.find((node) => node["@type"] === "WebSite");
+  expect(site?.["name"]).toBe("Anarchic VibeVM");
+  expect(site?.["alternateName"]).toEqual(["VibeVM"]);
+});
+
+for (const route of [
+  "/why/vibevm/",
+  "/ru/why/vibevm/",
+  "/roadmap/",
+  "/ru/roadmap/",
+  "/vision/",
+  "/ru/vision/",
+  "/news-and-support/",
+]) {
+  test(`${route} says it is part of the site by its full name`, async ({
+    page,
+  }) => {
+    await page.goto(route);
+    const graph = await page
+      .locator('script[type="application/ld+json"]')
+      .first()
+      .textContent();
+    const parsed = JSON.parse(graph ?? "{}") as {
+      isPartOf?: { name?: string };
+    };
+    expect(parsed.isPartOf?.name).toBe("Anarchic VibeVM");
+  });
+}
+
+/**
+ * The signature at the foot of every landing page: the project's full
+ * name, then the owner's tagline in the reader's own language.
+ *
+ * The wordmark in the corner of the header is deliberately NOT this — it
+ * is a mark and stays the short name — and the two standing side by side
+ * on one page is exactly the kind of thing that gets "tidied" by somebody
+ * who has not read why. So both are pinned, together.
+ */
+const SIGNED = [
+  { route: "/", says: "Anarchic VibeVM — Spec-Driven Development, packaged." },
+  {
+    route: "/ru/",
+    says: "Anarchic VibeVM — Spec-Driven Development, в пакетах.",
+  },
+  {
+    route: "/why/zap/",
+    says: "Anarchic VibeVM — Spec-Driven Development, packaged.",
+  },
+] as const;
+
+for (const one of SIGNED) {
+  test(`${one.route} signs itself with the full name`, async ({ page }) => {
+    await page.goto(one.route);
+    const brand = page.locator("footer .landing-footer__brand");
+    expect((await brand.innerText()).replace(/\s+/g, " ").trim()).toBe(
+      one.says,
+    );
+    await expect(page.locator("header .docs-header__brand")).toHaveText(
+      "VibeVM",
+    );
+  });
+}
+
+/** The feed is the site's, so its channel carries the site's name. */
+test("the feed names its channel in full", async ({ request }) => {
+  const xml = await (await request.get("/feed.xml")).text();
+  expect(xml).toContain("<title>Anarchic VibeVM</title>");
+});
+
+/**
+ * And the index an agent reads names the site the way the footer signs it
+ * (owner, 2026-09-27): the entry under «## Project» that points at this
+ * domain carries the full name and the tagline after it.
+ *
+ * `llms-full.txt` has no such line to follow — its header lists the three
+ * authoritative addresses bare, without a tagline — so what is held there
+ * is that the heading and the name statement above it still carry the
+ * name, which the two tests above already do.
+ */
+test("the root llms.txt names the site in full under Project", async ({
+  request,
+}) => {
+  const text = await (await request.get("/llms.txt")).text();
+  const line = text
+    .split("\n")
+    .find((one) => one.startsWith("- [Official site]"));
+  expect(line).toBe(
+    "- [Official site](https://vibevm.org): Anarchic VibeVM — spec-driven development, packaged.",
+  );
+  expect(text.indexOf("## Project")).toBeLessThan(text.indexOf(line ?? ""));
+});
+
+/** The same name is the site's, where a share card reads it. */
+for (const one of NAMED_NOTES) {
+  test(`${one.route} shares itself under the full name`, async ({ page }) => {
+    await page.goto(one.route);
+    const site = await page.getAttribute(
+      'meta[property="og:site_name"]',
+      "content",
+    );
+    expect(site).toBe("Anarchic VibeVM");
+    await expect(page).toHaveTitle(STRINGS[one.locale].metaTitle);
+    expect(STRINGS[one.locale].metaTitle.startsWith("Anarchic VibeVM")).toBe(
+      true,
+    );
+    const description = await page.getAttribute(
+      'meta[name="description"]',
+      "content",
+    );
+    expect(description).toBe(STRINGS[one.locale].metaDescription);
+    expect(description?.startsWith("Anarchic VibeVM")).toBe(true);
+  });
+}
 
 test("the root llms.txt names each namesake, in order, before the index", async ({
   request,
