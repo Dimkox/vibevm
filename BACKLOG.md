@@ -2152,3 +2152,113 @@ structure, and it goes when the file does.
 | @fact:B193-SEVERITY **severity** | P2 — on the most common Windows setup, the discipline's gate goes red after an ordinary git operation, with a message that points elsewhere. |
 | @fact:B193-DISPOSITION **disposition** | `open` — compare the parsed index, or normalise line endings before comparing; have `rust-ai-native init` add `specmap.json text eol=lf` to `.gitattributes`; name the cause when only the bytes differ. The advanced tutorial tells Windows readers to add the attribute meanwhile. |
 | @fact:B193-FILED **filed by** | DOCS-AI-NATIVE-TUTORIAL (M-025), 2026-09-26. |
+
+## B-194 — `vibe registry add` cannot add a local folder, and its refusal speaks of publishing {#b-194}
+
+| field | value |
+|---|---|
+| @fact:B194-WHAT **what** | `vibe registry add my-vault file:///C:/…/vibevm/vibepacks` fails with «publish refused: cannot derive an organization segment from `file:///…`»: the command requires a host and an organisation (`crates/vibe-cli/src/commands/registry/config/add.rs:58-61`) and borrows the publisher's error (`crates/vibe-publish/src/lib.rs:143`). A hand-written `[[registry]]` with the same URL works everywhere else, the manual's own root fixture included. The command also has no way to write the machine file `~/.vibe/registry.toml`, only a project's manifest. `model/registries.xml` tells the reader to add a registry with it, and `vibe workspace publish` names it in its own refusal. |
+| @fact:B194-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, steps 4b–4c. |
+| @fact:B194-SEVERITY **severity** | P2 — the machine-wide local registry the tutorial teaches can only be written by hand. |
+| @fact:B194-DISPOSITION **disposition** | `open` — accept a `file:///` root (no organisation to derive), add a machine scope that writes `~/.vibe/registry.toml`, and word the refusal as the command's own. The Obsidian tutorial writes the entry by hand meanwhile. |
+| @fact:B194-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-195 — `--registry` and `[[registry]] url` take opposite forms of a local address {#b-195}
+
+| field | value |
+|---|---|
+| @fact:B195-WHAT **what** | `vibe install --registry` takes a folder's path and fails on a `file:///` URL with a raw operating-system error (`os error 123`, `os error 3`); a `[[registry]] url` requires the `file:///` form and sends a bare path to the git back end. A reader who learns one form and applies it to the other gets an error that names neither rule. |
+| @fact:B195-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, step 4a. |
+| @fact:B195-SEVERITY **severity** | P3 — one form works in each place; the cost is a confusing message. |
+| @fact:B195-DISPOSITION **disposition** | `open` — accept both forms in both places, or refuse the wrong one with a sentence that names the right one. The Obsidian tutorial states the difference in its edge cases. |
+| @fact:B195-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-196 — `vibe reinstall --force` leaves the lock's content hash stale {#b-196}
+
+| field | value |
+|---|---|
+| @fact:B196-WHAT **what** | After a package's source changed, `vibe reinstall --force --assume-yes` copies the new bytes into `vibevm/vibedeps/` and updates the slot's `source_hash`, but `vibe.lock` keeps the old `content_hash`. The project then holds two records that disagree, and `vibe check` and `vibe validate` are both clean. A later verified install from the lock would meet a fingerprint that no longer matches. |
+| @fact:B196-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, steps 4d and 6 (the lock still `f5199e11…`, the slot `43239f8a…`). |
+| @fact:B196-SEVERITY **severity** | P2 — a lock that no longer describes what is installed, reported by nothing. |
+| @fact:B196-DISPOSITION **disposition** | `open` — have a forced reinstall re-record the hash, or refuse to change bytes the lock pins; have `vibe check` compare the slot's hash with the lock. The Obsidian tutorial teaches `vibe update` instead. |
+| @fact:B196-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-197 — a user-scope skill install writes into the real home on Windows, whatever `HOME` says {#b-197}
+
+| field | value |
+|---|---|
+| @fact:B197-WHAT **what** | With `HOME` and `USERPROFILE` pointed at a sandbox, `vibe skill install --scope user` still plans `C:/Users/<name>/.claude/skills/…`, `.config/opencode/skills/…` and `.agents/skills/…`: the user-scope paths go through `dirs::home_dir()` (`crates/vibe-agent-projection/src/agents.rs`), which on Windows asks the operating system and ignores the environment. Helpers that take an injected home exist (`agents/home_paths.rs`) and this command does not use them. |
+| @fact:B197-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, step 3 (`vibe skill install --dry-run --scope both`). |
+| @fact:B197-SEVERITY **severity** | P2 — no sandbox, the documentation's own example runner included, can contain a user-scope projection on Windows. |
+| @fact:B197-DISPOSITION **disposition** | `open` — route the user scope through the injectable home, honouring `VIBE_SETTINGS` or an explicit override. The tutorial uses `--scope project`. |
+| @fact:B197-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-198 — `vibe list` prints no boot snippet for any package {#b-198}
+
+| field | value |
+|---|---|
+| @fact:B198-WHAT **what** | The BOOT SNIPPET column of `vibe list` shows `—` for a package whose `[boot_snippet]` is declared and whose snippet stands in `INDEX.md`. The installer never writes the lock's `boot_snippet` field (`crates/vibe-core/src/manifest/lockfile.rs:371`), and `crates/vibe-cli/src/commands/list.rs:205` falls back to `—`. The manual's example in `model/packages-and-kinds.xml` shows the same dash. |
+| @fact:B198-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, step 3 (`vibe list` after installing `org.example/my-skills`). |
+| @fact:B198-SEVERITY **severity** | P3 — a column that has never carried a value. |
+| @fact:B198-DISPOSITION **disposition** | `open` — record the snippet at install, or drop the column. |
+| @fact:B198-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-199 — an install from a local folder waits for every remote registry listed before it {#b-199}
+
+| field | value |
+|---|---|
+| @fact:B199-WHAT **what** | A package that only a local `file:///` registry holds still costs a round trip to each remote registry the walk meets first: 5.9 s with the local entry last in `~/.vibe/registry.toml`, 1.4 s with it first, 0.15 s with `--offline`. Re-resolving an in-tree package made nine resolver calls of about half a second each; with `--offline` each took no time. |
+| @fact:B199-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, steps 3 and 4c. |
+| @fact:B199-SEVERITY **severity** | P3 — seconds per install, and a network dependency for work that needs none. |
+| @fact:B199-DISPOSITION **disposition** | `open` — consult local registries before remote ones whatever their order, or cache the «not here» answers of a public registry for the run. The tutorial puts the local entry first. |
+| @fact:B199-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-200 — publishing: a rehearsal that needs a token, and a GitVerse the CLI does not publish to {#b-200}
+
+| field | value |
+|---|---|
+| @fact:B200-WHAT **what** | `vibe registry publish <slot> --dry-run` loads a token and calls the host's API (it fails with «token lacks `repo:create` permission» against an organisation the token cannot write), while `vibe workspace publish --dry-run` needs neither. Publishing to GitVerse is a stub in the CLI (`crates/vibe-cli/src/commands/registry/publish.rs:135-146`) though `howto/publish-a-package.xml` says GitVerse is known, and `vibe registry publish` reads only the project's `[[registry]]` list, never `~/.vibe/registry.toml`. |
+| @fact:B200-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, step 7; the registries survey of the same day. |
+| @fact:B200-SEVERITY **severity** | P2 — the manual's publishing page promises a harmless rehearsal and a second host. |
+| @fact:B200-DISPOSITION **disposition** | `open` — make the rehearsal offline, implement or remove the GitVerse adapter, read the machine list; until then correct `howto/publish-a-package.xml` (see also `B-133`). |
+| @fact:B200-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-201 — the authoring pages disagree with what the scaffold writes {#b-201}
+
+| field | value |
+|---|---|
+| @fact:B201-WHAT **what** | `authoring/write-a-flow.xml` writes the snippet at `vibevm/vibespecs/boot/review-notes.xml`, while `vibe init package` writes `vibevm/vibespecs/boot/10-<kind>-<name>.md` and points `[boot_snippet].source` there; the same page says a package is `simple` by default, while the scaffold writes `format = "normal"`. `start/first-project.xml` says `.vibe-slot.toml` names each file `copied` or `converted`; on the Markdown lane each `[[file]]` carries only a path and a hash. `howto/set-up-a-workspace.xml` and `howto/publish-a-package.xml` do not say that `vibe workspace publish` needs a `[workspace]` table and a `[[registry]]` in the root manifest. |
+| @fact:B201-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, steps 3 and 6. |
+| @fact:B201-SEVERITY **severity** | P2 — a reader who follows the pages to the letter ends with a snippet the manifest does not name. |
+| @fact:B201-DISPOSITION **disposition** | `open` — correct the three pages against the scaffold, or change the scaffold where the page states the intended behaviour. |
+| @fact:B201-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-202 — `vibe init` ends with a hint in a retired syntax {#b-202}
+
+| field | value |
+|---|---|
+| @fact:B202-WHAT **what** | `vibe init` and `vibe init package` end with «install packages with `vibe install <kind>:<name>` (e.g. flow:wal)», a coordinate form the resolver no longer takes, and the package scaffold reports «Done. Project `org.example/my-skills`» about a package. |
+| @fact:B202-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`, steps 1 and 3. |
+| @fact:B202-SEVERITY **severity** | P3 — the first advice a new project gets is wrong. |
+| @fact:B202-DISPOSITION **disposition** | `open` — hint with `vibe install <group>/<name>`, and name a package a package. The tutorials print the output without the hint. |
+| @fact:B202-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-203 — PROP-030 still names the retired `packages/` folder {#b-203}
+
+| field | value |
+|---|---|
+| @fact:B203-WHAT **what** | `PROP-030 ##LOCAL-AUTO-OPEN` says a project carrying `<project_root>/packages/` gets it opened as a local registry; the code opens `vibevm/vibepacks/` (`crates/vibe-core/src/layout.rs`, `crates/vibe-package-source/src/project_local.rs`). The manual's registries page quotes the rule and now says which folder vibe really opens. |
+| @fact:B203-EVIDENCE **evidence** | 2026-09-27, the registries survey and the sandbox walk of `DOCS-OBSIDIAN-TUTORIAL`. |
+| @fact:B203-SEVERITY **severity** | P3 — a normative rule that describes the layout before the move into `vibevm/`. |
+| @fact:B203-DISPOSITION **disposition** | `open` — amend the rule by the owner's hand. |
+| @fact:B203-FILED **filed by** | DOCS-OBSIDIAN-TUTORIAL (M-051), 2026-09-27. |
+
+## B-204 — the example runner's tripwire fires on another session's hook {#b-204}
+
+| field | value |
+|---|---|
+| @fact:B204-WHAT **what** | `vibe doc check --examples` failed with «the runner changed state outside its sandbox: changed: home:steward/contexts/<id>/records» after all 61 examples passed: a pre-compaction hook of another agent session wrote a record under `~/.vibe/steward/` during the run. |
+| @fact:B204-EVIDENCE **evidence** | 2026-09-27, the first full manual check of the batch, while three agents worked in the background. |
+| @fact:B204-SEVERITY **severity** | P3 — a false red for the gate whenever agents work beside it. |
+| @fact:B204-DISPOSITION **disposition** | `open` — run the examples gate only when no other session is live, or keep session records out of `~/.vibe`; widening the tripwire is forbidden by the runner's own rule and needs the owner. |
+| @fact:B204-FILED **filed by** | DOCS-PUBLISH-4 (M-055), 2026-09-27. |
