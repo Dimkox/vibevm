@@ -2,7 +2,7 @@
 <spec xmlns="https://vibevm.org/spec/1">
   <title id="root">Publish a package</title>
   <status stage="doc" state="work" audience="user,author"/>
-  <p>You wrote a package and want others to install it. This page publishes it to the place your projects install from, as its own repository, tags the version, and checks that a fresh project can install it.</p>
+  <p>You wrote a package and want others to install it. This page publishes it, as a repository of its own, to a place where you have full access, such as your own private repositories or your organisation's. It tags the version and checks that a fresh project can install it. Ordinary users have no power over the organisations `vibespecs` on GitHub and GitVerse, the central place every project installs from; to publish there, [ask for a place](publish-to-the-central-registry.xml) first.</p>
   <prompt id="publish-a-package">Publish the in-tree package org.acme/notes of this project, the slot vibevm/vibepacks/org.acme/notes/v0.1.0, to the first registry of this project, using the publish token already in my environment, then create a scratch project elsewhere and install the published package into it to prove it works. Ask me before the actual push.
     <needs>the vibevm skill installed for your agent; a publish token for the registry's host in the environment or under `~/.vibe/`; the package's `vibe.toml` complete, with a version that has not been published before</needs>
     <outcome>a repository named after the package's coordinate exists in the registry organisation with a tag for the version; a scratch project installs it and `vibe list` shows the version</outcome>
