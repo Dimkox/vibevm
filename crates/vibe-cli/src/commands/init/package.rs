@@ -251,8 +251,13 @@ fn create_package_dirs_from_fields(
     let boot_file = boot_dir.join(format!("10-{kind}-{name}.md"));
     let boot_rel = display_pathbuf(boot_file.strip_prefix(project_root).unwrap_or(&boot_file));
     if !boot_file.exists() {
+        // The provenance marker names the package by its OWN coordinate,
+        // `<group>/<name>` — the spelling the generated lane uses for an
+        // origin. A literal `org.` in front of an already-qualified group
+        // minted `org.org.example/my-skills` for the group `org.example`,
+        // and a group outside the `org.` convention was renamed outright.
         let content = format!(
-            "<!-- vibe:static org.{group}/{name} — boot snippet -->\n\n# {name}\n\nA `{kind}` package.\n"
+            "<!-- vibe:static {group}/{name} — boot snippet -->\n\n# {name}\n\nA `{kind}` package.\n"
         );
         fs::write(&boot_file, &content)?;
         ctx.created(&boot_rel);

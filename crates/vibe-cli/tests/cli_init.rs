@@ -265,6 +265,50 @@ fn init_version() {
     user.vibe().arg("--version").assert().success();
 }
 
+/// `vibe init package <group>/<name>` scaffolds a boot snippet whose
+/// provenance marker names the package by its OWN coordinate. The marker used
+/// to be formatted as `org.{group}/{name}`, so the group `org.example` was
+/// written `org.org.example/my-skills` — a coordinate that addresses nothing —
+/// and a group outside the `org.` convention was renamed in the same line.
+/// Both spellings are pinned here: the `org.`-prefixed group and one without.
+#[test]
+fn init_package_boot_snippet_names_the_group_once() {
+    let user = UserScratch::new();
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path();
+
+    // A group must be a reverse-FQDN, so "one that does not start with `org.`"
+    // is `com.acme`, not a bare word.
+    for (group, name) in [("org.example", "my-skills"), ("com.acme", "house-rules")] {
+        user.vibe()
+            .arg("init")
+            .arg("package")
+            .arg(format!("{group}/{name}"))
+            .arg("--kind")
+            .arg("flow")
+            .arg("--path")
+            .arg(path)
+            .assert()
+            .success();
+
+        let snippet = path
+            .join(common::pack_rel(&format!("{group}/{name}/v0.1.0")))
+            .join(common::boot_rel(&format!("10-flow-{name}.md")));
+        let body = fs::read_to_string(&snippet)
+            .unwrap_or_else(|e| panic!("reading the scaffolded snippet {snippet:?}: {e}"));
+        assert!(
+            body.contains(&format!(
+                "<!-- vibe:static {group}/{name} — boot snippet -->"
+            )),
+            "the marker must name `{group}/{name}` verbatim; got:\n{body}"
+        );
+        assert!(
+            !body.contains(&format!("org.{group}/")),
+            "the marker must not prefix the group with a second `org.`; got:\n{body}"
+        );
+    }
+}
+
 #[test]
 fn init_default_has_no_project_registries() {
     // Since the default pair (vibespecs GitHub + GitVerse) moved from
