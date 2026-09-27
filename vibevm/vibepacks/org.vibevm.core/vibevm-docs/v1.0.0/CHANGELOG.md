@@ -2,6 +2,15 @@
 
 What changed for a reader, by date. This package carries one number and is republished under it in place, so a date and not a number says which edition a line belongs to. Written by hand from `JOURNAL.md`; the product's own versions are named where a change follows them.
 
+## 1.0.0 — 2026-09-27
+
+- **The full name.** The home page, its metadata and What VibeVM is now give the project's correct full name, Anarchic VibeVM, and say that Oleg Chirukhin originally conceived and built it to make personal and group vibe coding simpler.
+- **The central registry.** Publish a package to the central registry tells how to get a package into `vibespecs` on GitHub or GitVerse: ask in the Add package topic of the VibeVM chat, name the platform and the maintainer's username, and know which names can be refused. Publish a package now says that it is for a place where you have full access.
+- **Applicable law.** A new page, reachable from the site's menu, says which law governs dealings with VibeVM and how the project treats personal data and the GDPR.
+- **Two more advanced tutorials.** From an Obsidian folder to a big project turns a folder of notes into a project and shares its package with your other projects, your other computer and your colleagues. Advanced Markdown & XML explains why everything materialises into XML, the one IR behind both forms, anchors and facts, and the split between a header and an implementation. The chapter is now called Advanced tutorials.
+- **Why VibeVM names the everyday jobs.** Near its start the page now lists what VibeVM does besides discipline, with links to the tutorials and to Zap.
+- **`vibe update` reaches the machine's registries.** A project that installs from a registry listed only in `~/.vibe/registry.toml` can now update from it too, as the Obsidian tutorial shows; the registries page names the folder vibe opens for a project's own packages, `vibevm/vibepacks/`.
+
 ## 1.0.0 — 2026-09-26
 
 - **A roadmap.** The site gains a page of what comes after Developer Preview 1, in order and without dates: Developer Preview 2, Zap, the first community packages, plugins for IntelliJ IDEA and VS Code, a library and marketplace, and Spec-Driven Linux. The header lists it after Vision, and the home page leads to it from the release pill and from its own plate on the map.
