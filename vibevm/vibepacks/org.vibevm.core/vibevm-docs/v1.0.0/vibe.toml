@@ -92,6 +92,10 @@ id = "faq"
 title = "Questions"
 
 [[navigation.section]]
+id = "legal"
+title = "Legal"
+
+[[navigation.section]]
 id = "glossary"
 title = "Glossary"
 
@@ -153,7 +157,7 @@ pages = ["architecture/how-vibe-is-built", "architecture/traceability", "archite
 id = "appendices"
 title = "Appendices"
 appendix = true
-pages = ["reference/commands", "reference/manifest", "reference/lock-file", "reference/tree", "reference/settings-and-environment", "reference/machine-formats", "diagnostics/errors", "faq/index", "glossary/index"]
+pages = ["reference/commands", "reference/manifest", "reference/lock-file", "reference/tree", "reference/settings-and-environment", "reference/machine-formats", "diagnostics/errors", "faq/index", "legal/applicable-law", "glossary/index"]
 
 [[skill]]
 name = "vibevm-docs"

@@ -98,6 +98,10 @@ id = "faq"
 title = "Вопросы"
 
 [[navigation.section]]
+id = "legal"
+title = "Право"
+
+[[navigation.section]]
 id = "glossary"
 title = "Глоссарий"
 
