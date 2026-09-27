@@ -306,8 +306,8 @@
       "bytes": 3136
     },
     "reference/manifest.xml#manifest-field:org.vibevm.core/vibevm-docs": {
-      "sha256": "f5834ed253d5cad7ad734d4dd1ae84a03deadfef5823db50ccfb4b288917179b",
-      "bytes": 6518
+      "sha256": "90cbad9c378a33d135c42d396ee61cf27a59bdf8ad7d49836332b94a9165bcb4",
+      "bytes": 6700
     }
   }
 }
