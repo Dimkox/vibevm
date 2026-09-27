@@ -2262,3 +2262,83 @@ structure, and it goes when the file does.
 | @fact:B204-SEVERITY **severity** | P3 — a false red for the gate whenever agents work beside it. |
 | @fact:B204-DISPOSITION **disposition** | `open` — run the examples gate only when no other session is live, or keep session records out of `~/.vibe`; widening the tripwire is forbidden by the runner's own rule and needs the owner. |
 | @fact:B204-FILED **filed by** | DOCS-PUBLISH-4 (M-055), 2026-09-27. |
+
+## B-205 — a merge mode is lost when a Markdown heading converts to XML {#b-205}
+
+| field | value |
+|---|---|
+| @fact:B205-WHAT **what** | A heading suffix `:replace` or `:add` (PROP-035 §7.3) does not survive conversion: `vibe refactor convert-source --to xml --dry-run` shows `## Tests before fixes {#tests-first} :replace` becoming `{#tests-first}`, and the installed `details.xml` has no trace of it. The pivot's `Section` carries no field for it (`crates/vibe-specdoc/src/doc.rs:88-103`) and `split_anchor` drops what follows `}` (`crates/progress-core/src/parse/units.rs:46-57`). Under `spec_format = "xml"` the compiler then reads the merge as `:add`, and a redeclared fact fails with «id TESTS-FIRST is declared twice in the merged document». |
+| @fact:B205-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-MD-XML-TUTORIAL` (`a-convert-dry-run-source`, `a-cat-source-xml`, `e-install-xml-replace`). |
+| @fact:B205-SEVERITY **severity** | P2 — `#INHERITANCE-PARITY` promises a format-blind inheritance machinery, and one of its modes is dropped by the conversion itself. |
+| @fact:B205-DISPOSITION **disposition** | `open` — carry the merge mode through the pivot and both printers. The tutorial avoids merge modes and says the merged result does not compile under `xml` today. |
+| @fact:B205-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-206 — the XML static lane refuses a source that shares an anchor with its contract {#b-206}
+
+| field | value |
+|---|---|
+| @fact:B206-WHAT **what** | Under `spec_format = "xml"`, `emit:static-xml` stops with «fact id @fact:org-acme--review--root is defined twice» when a `#source` merge shares any anchor with its contract, two `{#root}` titles included: both qualify to the same label (PROP-035 `#PIPE-QUALIFY`). The same package compiles under the default target. The failed install leaves the slot on disk, `vibe.lock` unwritten and no `STATIC.xml`, and its message names `vibevm/vibespecs/boot/INLINE.md`, the file's name before 2026-07-16. |
+| @fact:B206-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-MD-XML-TUTORIAL` (`a-install`, `c-install-xml-disjoint`, `a-ls-vibedeps`, `a-cat-lock`, `b-cat-static-md`). |
+| @fact:B206-SEVERITY **severity** | P2 — the target the manual recommends rejects the inheritance the specification promises, and a failed install is not atomic. |
+| @fact:B206-DISPOSITION **disposition** | `open` — qualify a merged anchor once, roll a failed install back, and name `STATIC` in the message. The tutorial keeps the anchors of contract and source disjoint and says why in its edge cases. |
+| @fact:B206-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-207 — the shorthand status vocabulary is not closed {#b-207}
+
+| field | value |
+|---|---|
+| @fact:B207-WHAT **what** | `vibe facts check` passes `@status:spec/finished` and `@status:spek/done` as clean: the shorthand is not read as a marker when its values are unknown, while the element form `state="finished"` is refused with the value named. PROP-043 `#VOCAB-CLOSED` and `authoring/facts-and-status-markers.xml` say every vocabulary is closed. |
+| @fact:B207-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-MD-XML-TUTORIAL` (`h-facts-check-bad-shorthand`, `h-facts-check-bad-state-element`). |
+| @fact:B207-SEVERITY **severity** | P2 — a misspelt status in the form most authors type passes the gate silently. |
+| @fact:B207-DISPOSITION **disposition** | `open` — refuse an `@status:` token whose values are outside the vocabulary. The tutorial names the vocabulary and the gap. |
+| @fact:B207-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-208 — every ordinary Markdown file converts with a «loss» {#b-208}
+
+| field | value |
+|---|---|
+| @fact:B208-WHAT **what** | The reverse projection of `vibe refactor convert-source` appends one blank line to a Markdown file, so an ordinary file comes back `ir-stable-loss` and the command refuses it without `--force`. The loss is only that line; `--force` has become the everyday form of the command. |
+| @fact:B208-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-MD-XML-TUTORIAL` (`c2-convert-plain`, the tutorial's `convert-dry-run` example). |
+| @fact:B208-SEVERITY **severity** | P3 — the honesty check cries wolf on every file. |
+| @fact:B208-DISPOSITION **disposition** | `open` — print without the trailing blank line, or treat a final blank line as insignificant. The tutorial shows the diff and explains it. |
+| @fact:B208-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-209 — the compiled lane's header comments show labels in escaped form {#b-209}
+
+| field | value |
+|---|---|
+| @fact:B209-WHAT **what** | `STATIC.xml` explains its qualified labels in comments as `<origin-slug>-%2D<original>`, because XML forbids `--` inside a comment, while the elements below carry `--`. The first lines an agent reads describe a form that appears nowhere else in the file. |
+| @fact:B209-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-MD-XML-TUTORIAL` (`t18-cat-static-xml`; the tutorial's `static-xml` example). |
+| @fact:B209-SEVERITY **severity** | P3 — misleading guidance at the top of the agent's first file. |
+| @fact:B209-DISPOSITION **disposition** | `open` — describe the label without two hyphens in a row, for example with a placeholder word, or state the escape in the comment. The tutorial explains it. |
+| @fact:B209-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-210 — dotted heading ids pass the facts check and resolve nowhere {#b-210}
+
+| field | value |
+|---|---|
+| @fact:B210-WHAT **what** | `{#verification.timeout}` passes `vibe facts check`, but no address reaches it: a dot in a fragment is a tree path (`crates/vibe-spec/src/address.rs:219`, `doctree.rs:263-276`). The addressable-specs protocol still shows such an id as an example. |
+| @fact:B210-EVIDENCE **evidence** | 2026-09-27, the sandbox walk of `DOCS-MD-XML-TUTORIAL` (`d-install-dotted-embed`, `d2-install-tree-path-embed`). |
+| @fact:B210-SEVERITY **severity** | P3 — an id that looks valid and cannot be cited. |
+| @fact:B210-DISPOSITION **disposition** | `open` — refuse a dot in a heading id at the check, and correct the protocol's example. |
+| @fact:B210-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-211 — `vibe init package` ignores `--link` and contradicts its help on `--format` {#b-211}
+
+| field | value |
+|---|---|
+| @fact:B211-WHAT **what** | `vibe init package … --link static` writes `link = "dynamic"`, and without `--format` the scaffold writes `format = "normal"` although `--help` says the default is `simple`. |
+| @fact:B211-EVIDENCE **evidence** | 2026-09-27, the sandbox walks of `DOCS-MD-XML-TUTORIAL` (`f-cat-link-static`, `f-cat-defaults`) and `DOCS-OBSIDIAN-TUTORIAL`. |
+| @fact:B211-SEVERITY **severity** | P3 — two flags that do not do what their help says. |
+| @fact:B211-DISPOSITION **disposition** | `open` — honour `--link`, and make the default and the help agree (see also `B-201`). The tutorials set the link in the manifest. |
+| @fact:B211-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-212 — PROP-035 lags the compiler it describes {#b-212}
+
+| field | value |
+|---|---|
+| @fact:B212-WHAT **what** | PROP-035 `#IR-XML-FUTURE` and `#OPEN-XML-FRONTEND` still call the XML front end future, while PROP-045 and the code convert both ways today; `#DIRECTIVE-MANIFEST-AGREE` has no check in `vibe check`; and no real package under `vibevm/vibepacks/` has a `contract/` folder, only the test fixtures do. |
+| @fact:B212-EVIDENCE **evidence** | 2026-09-27, the authorities map and the sandbox walk of `DOCS-MD-XML-TUTORIAL`. |
+| @fact:B212-SEVERITY **severity** | P3 — a normative text that trails the product. |
+| @fact:B212-DISPOSITION **disposition** | `open` — reconcile PROP-035 with PROP-045 by the owner's hand, and add the agreement check. |
+| @fact:B212-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
