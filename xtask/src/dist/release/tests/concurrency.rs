@@ -26,7 +26,11 @@ fn final_publication_refuses_a_concurrently_reprepared_release_id() {
         .expect_err("a different release ID must never be published")
         .to_string();
     assert!(error.contains("identity changed"));
-    assert_eq!(host.assets.borrow().len(), 12, "the guard is read-only");
+    assert_eq!(
+        host.assets.borrow().len(),
+        SUPPORTED_DISTRIBUTION_TARGETS.len() * 3,
+        "the guard is read-only"
+    );
 }
 
 #[test]
