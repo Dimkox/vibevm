@@ -247,8 +247,56 @@
   position: sticky;
   top: 5rem;
   max-height: calc(100vh - 7rem);
-  overflow-y: auto;
+  overflow-y: scroll;
   margin: 0;
+  scrollbar-gutter: stable;
+  /* A permanent rail under the native control: overlay-scrollbar modes may
+     hide their thumb at rest even for `overflow: scroll`, but the column
+     must still say that it continues. The reserved gutter keeps this six-
+     pixel line out of the links. */
+  background-image: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--line-strong) 38%, transparent) 0 6px,
+    transparent 6px
+  );
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: 6px 100%;
+  /* Firefox keeps the scrollbar atomic; make its compact form use the
+     same muted-to-accent language as the rest of the navigation. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) var(--bg-sink);
+}
+
+.has-sidebar .contents:hover {
+  scrollbar-color: var(--accent) var(--bg-sink);
+}
+
+/* Chromium exposes the vertical scrollbar's pieces. A narrow rounded
+   thumb keeps the column discoverably scrollable without the bright
+   Windows track and arrow buttons cutting a stripe through the reader. */
+.has-sidebar .contents::-webkit-scrollbar {
+  width: 6px;
+}
+
+.has-sidebar .contents::-webkit-scrollbar-track {
+  background: var(--bg-sink);
+}
+
+.has-sidebar .contents::-webkit-scrollbar-thumb {
+  min-height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--line-strong);
+}
+
+.has-sidebar .contents:hover::-webkit-scrollbar-thumb {
+  background: var(--accent);
+}
+
+.has-sidebar .contents::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .has-sidebar .contents__summary {

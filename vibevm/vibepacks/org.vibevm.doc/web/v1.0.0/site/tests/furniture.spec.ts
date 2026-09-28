@@ -74,6 +74,36 @@ test("the manual's pages stand in a column, grouped by their folders", async ({
   );
 });
 
+test("the contents scrollbar belongs to the documentation column", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 600 });
+  await page.goto(PAGE);
+  const column = page.locator("[data-contents]");
+  await expect(page.locator(".doc-view--page")).toHaveClass(/has-sidebar/);
+
+  const styles = await column.evaluate((element) => ({
+    overflow: getComputedStyle(element).overflowY,
+    gutter: getComputedStyle(element).scrollbarGutter,
+    rail: getComputedStyle(element).backgroundImage,
+    firefoxWidth: getComputedStyle(element).scrollbarWidth,
+    webkitWidth: getComputedStyle(element, "::-webkit-scrollbar").width,
+    buttonDisplay: getComputedStyle(element, "::-webkit-scrollbar-button")
+      .display,
+    track: getComputedStyle(element, "::-webkit-scrollbar-track")
+      .backgroundColor,
+  }));
+  expect(styles).toMatchObject({
+    overflow: "scroll",
+    gutter: "stable",
+    firefoxWidth: "thin",
+    webkitWidth: "6px",
+    buttonDisplay: "none",
+  });
+  expect(styles.rail).toContain("linear-gradient");
+  expect(styles.track).not.toBe("rgba(0, 0, 0, 0)");
+});
+
 /**
  * A section's identity is the source's and its name is the reader's
  * edition's: the folder is the same in every language, and what stands
