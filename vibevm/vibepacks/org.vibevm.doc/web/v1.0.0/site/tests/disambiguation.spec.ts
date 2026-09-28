@@ -21,7 +21,7 @@
  *
  * Since 2026-09-27 the other half of that question is held here too: what
  * the project IS called. The name is one string in `landing/identity.ts`
- * and several surfaces print it — the note under the lead, the two meta
+ * and several surfaces print it — the first small-print note, the two meta
  * values, the signature at the foot of every landing page, the graph's
  * application and website nodes, the `isPartOf` of every subpage, and the
  * title of the feed. A surface that kept the short name while its
@@ -48,24 +48,31 @@ const LANDINGS = [
 ] as const;
 
 for (const one of LANDINGS) {
-  test(`${one.route} ends with the three notes, in the owner's order`, async ({
+  test(`${one.route} ends with the four notes, in the owner's order`, async ({
     page,
   }) => {
     await page.goto(one.route);
     const notes = page.locator("main .landing-disambiguation");
-    await expect(notes).toHaveCount(3);
+    await expect(notes).toHaveCount(4);
 
     const strings = STRINGS[one.locale];
     await expect(notes.nth(0)).toBeVisible();
-    await expect(notes.nth(0)).toContainText(one.says);
-    await expect(notes.nth(0)).toContainText("github.com/Phala-Network/VibeVM");
-    await expect(notes.nth(0)).toContainText("Phala Cloud");
+    await expect(notes.nth(0)).toContainText("Anarchic VibeVM");
+    await expect(
+      notes.nth(0).locator('a[href="https://anarchic.pro"]'),
+    ).toHaveCount(1);
+    await expect(notes.nth(0).locator(`a[href="${CREATOR_SITE}"]`)).toHaveCount(
+      1,
+    );
+    await expect(notes.nth(1)).toContainText(one.says);
+    await expect(notes.nth(1)).toContainText("github.com/Phala-Network/VibeVM");
+    await expect(notes.nth(1)).toContainText("Phala Cloud");
 
-    /* The other two, word for word: they are the owner's sentences and
+    /* The last two, word for word: they are the owner's sentences and
        the page is the place they are read, so nothing is matched loosely
        here. */
-    await expect(notes.nth(1)).toHaveText(strings.disambiguationTgbyte);
-    await expect(notes.nth(2)).toHaveText(strings.disambiguationAiNative);
+    await expect(notes.nth(2)).toHaveText(strings.disambiguationTgbyte);
+    await expect(notes.nth(3)).toHaveText(strings.disambiguationAiNative);
 
     /* Last in the page's own content: small print after everything the
        page says, not a line inside it. */
@@ -80,13 +87,13 @@ test("/ carries the two English notes exactly as they are written", async ({
 }) => {
   await page.goto("/");
   const notes = page.locator("main .landing-disambiguation");
-  await expect(notes.nth(1)).toHaveText(TGBYTE_DISAMBIGUATION_EN);
-  await expect(notes.nth(2)).toHaveText(AI_NATIVE_LANGUAGES_EN);
+  await expect(notes.nth(2)).toHaveText(TGBYTE_DISAMBIGUATION_EN);
+  await expect(notes.nth(3)).toHaveText(AI_NATIVE_LANGUAGES_EN);
 });
 
 /**
- * The first two notes identify this project by its full name (owner,
- * 2026-09-27), and only at the first mention.
+ * The two VibeVM disambiguation notes identify this project by its full
+ * name (owner, 2026-09-27), and only at the first mention.
  *
  * Which is what these sentences are FOR: they exist to be read by
  * somebody who has arrived holding the wrong project, and the first thing
@@ -101,19 +108,19 @@ const NAMED_NOTES = [
 ] as const;
 
 for (const one of NAMED_NOTES) {
-  test(`${one.route} opens its first two notes with the full name`, async ({
+  test(`${one.route} opens its two VibeVM notes with the full name`, async ({
     page,
   }) => {
     await page.goto(one.route);
     const notes = page.locator("main .landing-disambiguation");
-    for (const index of [0, 1]) {
+    for (const index of [1, 2]) {
       const text = await notes.nth(index).innerText();
       expect(text.startsWith("Anarchic VibeVM")).toBe(true);
       expect(text.slice("Anarchic VibeVM".length)).not.toContain("Anarchic");
     }
-    /* And the third note is about the languages and says nothing about
+    /* And the fourth note is about the languages and says nothing about
        the project's name: it was not the owner's to change here. */
-    await expect(notes.nth(2)).toHaveText(
+    await expect(notes.nth(3)).toHaveText(
       STRINGS[one.locale].disambiguationAiNative,
     );
   });

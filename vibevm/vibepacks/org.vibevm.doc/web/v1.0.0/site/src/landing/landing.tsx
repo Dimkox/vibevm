@@ -112,11 +112,6 @@ export const Landing = component$<LandingProps>((props) => {
         eyebrow={t.eyebrow}
         headlineHtml={t.headlineHtml}
         leadHtml={t.leadHtml}
-        /* What the project is properly called, who made it and what for
-           (owner, 2026-09-27) — under the lead, in the lead's own measure
-           and a quieter voice, because a reader who came for the software
-           should meet the descriptor first and the name's history second. */
-        noteHtml={t.nameNoteHtml}
         primary={{ label: t.ctaPrimary, href: GITHUB_URL }}
         secondary={{ label: t.ctaSecondary, href: GITVERSE_URL }}
         badge={t.badge}
@@ -211,18 +206,21 @@ export const Landing = component$<LandingProps>((props) => {
           prints, for the reader who does not read the header. */}
       <LandingMap locale={props.locale} />
 
-      {/* The small print, last on the page: which VibeVM this is not, and
-          which AI Native Languages these are not. Search engines and
-          model crawlers have been joining this project with the namesakes
-          below, and a sentence that names both, with their addresses, is
-          what an index can split them on.
+      {/* The small print, last on the page: first what the project is
+          properly called, who made it and what for; then which VibeVM this
+          is not, and which AI Native Languages these are not. The owner
+          moved the first sentence here on 2026-09-28 so provenance and
+          disambiguation are read as one footnote instead of making the
+          first screen carry another paragraph.
 
-          Three paragraphs and not one, in the order the owner gave them:
-          each names one namesake, and a reader who has met only one of
-          them should not have to read past the other two. None of them
-          says anything ABOUT the other project beyond its name — what a
-          namesake does is not this page's to describe — and none of them
-          links to it. */}
+          Four paragraphs and not one, in the order the owner gave them.
+          The first keeps its two proper links. Each later paragraph names
+          one namesake, says nothing about it beyond the owner's sentence,
+          and never links to it. */}
+      <p
+        class="landing-disambiguation"
+        dangerouslySetInnerHTML={t.nameNoteHtml}
+      />
       <p class="landing-disambiguation">{t.disambiguation}</p>
       <p class="landing-disambiguation">{t.disambiguationTgbyte}</p>
       <p class="landing-disambiguation">{t.disambiguationAiNative}</p>

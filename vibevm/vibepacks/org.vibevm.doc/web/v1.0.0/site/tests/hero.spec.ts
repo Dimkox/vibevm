@@ -264,13 +264,16 @@ const NAMED = [
 ] as const;
 
 for (const one of NAMED) {
-  test(`${one.route} names the project in full under its lead`, async ({
+  test(`${one.route} moves the proper-name note into the small print`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(one.route);
 
-    const note = page.locator("main .hero__note");
+    await expect(page.locator("main .hero__note")).toHaveCount(0);
+    const notes = page.locator("main .landing-disambiguation");
+    await expect(notes).toHaveCount(4);
+    const note = notes.first();
     await expect(note).toHaveCount(1);
     expect((await note.innerText()).replace(/\s+/g, " ").trim()).toBe(one.note);
 
@@ -283,24 +286,14 @@ for (const one of NAMED) {
     );
     await expect(note.locator("a")).toHaveCount(2);
 
-    /* Under the lead and nowhere else, and quieter than it: the note is
-       the second paragraph of the column, not a line inside the first. */
-    const under = await page.evaluate(() => {
-      const lead = document.querySelector(".hero__lead");
-      const note = document.querySelector(".hero__note");
-      if (lead === null || note === null) return null;
-      return {
-        below:
-          note.getBoundingClientRect().top >=
-          lead.getBoundingClientRect().bottom,
-        next: lead.nextElementSibling === note,
-        leadSize: Number.parseFloat(getComputedStyle(lead).fontSize),
-        noteSize: Number.parseFloat(getComputedStyle(note).fontSize),
-      };
-    });
-    expect(under?.below).toBe(true);
-    expect(under?.next).toBe(true);
-    expect(under?.noteSize ?? 99).toBeLessThan(under?.leadSize ?? 0);
+    /* Immediately before the Phala disambiguation, exactly where the
+       owner moved it — not merely somewhere else near the page foot. */
+    await expect(notes.nth(1)).toContainText(/Phala/i);
+    expect(
+      await note.evaluate(
+        (element) => element.nextElementSibling?.textContent ?? "",
+      ),
+    ).toMatch(/Phala/i);
   });
 }
 

@@ -154,14 +154,11 @@ export type Strings = {
    */
   readonly leadHtml: string;
   /**
-   * The note directly under the lead: what the project is properly
-   * called, who made it and what for (owner, 2026-09-27).
-   *
-   * Markup for the reason the lead above it is: the sentence carries two
-   * links inside itself — the brand in the name, and the person — and
-   * cutting it into five props would move the sentence into the layout,
-   * where a translator could not see it. The two addresses are
-   * interpolated from the tables that own them, never typed here.
+   * The first sentence in the small print at the foot of the landing: what
+   * the project is properly called, who made it and what for (owner, moved
+   * here 2026-09-28). It carries two links — the brand in the name and the
+   * person — and stays one string so a translator sees the whole sentence.
+   * The two addresses are interpolated from their owning tables.
    */
   readonly nameNoteHtml: string;
   readonly ctaPrimary: string;
