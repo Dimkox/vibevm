@@ -345,6 +345,41 @@
   min-width: 0;
   overflow-x: auto;
   white-space: nowrap;
+  /* Firefox: keep the affordance, but make it belong to the command
+     surface instead of importing the operating system's bright track. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.install__line:hover {
+  scrollbar-color: var(--accent) transparent;
+}
+
+/* Chromium exposes the pieces Firefox intentionally keeps atomic. The
+   thumb is quiet until the command is engaged; the track and the legacy
+   Windows arrow buttons disappear into the code surface. */
+.install__line::-webkit-scrollbar {
+  height: 6px;
+}
+
+.install__line::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.install__line::-webkit-scrollbar-thumb {
+  min-width: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--line-strong);
+}
+
+.install__line:hover::-webkit-scrollbar-thumb {
+  background: var(--accent);
+}
+
+.install__line::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .install__prompt {

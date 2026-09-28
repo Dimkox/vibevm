@@ -157,6 +157,31 @@ for (const one of PAGES) {
     await page.keyboard.press("Enter");
     await expect(drawer).toHaveAttribute("open", "");
   });
+
+  test(`${one.route} styles long command scrollbars as part of the panel`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(one.route);
+    const windows = page.locator('[data-install-drawer="windows"]');
+    await windows.locator("summary").click();
+    const line = windows.locator(".install__line").last();
+
+    const styles = await line.evaluate((element) => ({
+      firefoxWidth: getComputedStyle(element).scrollbarWidth,
+      webkitHeight: getComputedStyle(element, "::-webkit-scrollbar").height,
+      buttonDisplay: getComputedStyle(element, "::-webkit-scrollbar-button")
+        .display,
+      track: getComputedStyle(element, "::-webkit-scrollbar-track")
+        .backgroundColor,
+    }));
+    expect(styles).toEqual({
+      firefoxWidth: "thin",
+      webkitHeight: "6px",
+      buttonDisplay: "none",
+      track: "rgba(0, 0, 0, 0)",
+    });
+  });
 }
 
 for (const one of PAGES) {
