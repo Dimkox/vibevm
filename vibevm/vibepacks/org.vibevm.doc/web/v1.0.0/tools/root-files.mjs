@@ -502,6 +502,7 @@ function llmsTxt(config) {
     "",
     `- Linux, macOS, and WSL: \`curl -fsSL ${origin}/install.sh | bash\``,
     `- Windows PowerShell: \`irm ${origin}/install.ps1 | iex\``,
+    `- Windows cmd.exe: \`curl.exe -fsSL ${origin}/install.cmd -o "%TEMP%\\vibevm-install.cmd" && call "%TEMP%\\vibevm-install.cmd"\``,
     "",
     "The native installer installs `vibe`, the on-premises `vibe-index` service, and the matching VibeVM source tree from the same verified release.",
     "",

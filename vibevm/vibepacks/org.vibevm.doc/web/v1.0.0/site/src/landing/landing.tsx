@@ -128,6 +128,11 @@ export const Landing = component$<LandingProps>((props) => {
               prompt: INSTALL.powerShellPrompt,
               command: INSTALL.powerShellCommand,
             },
+            {
+              label: t.installCmd,
+              prompt: INSTALL.cmdPrompt,
+              command: INSTALL.cmdCommand,
+            },
           ]}
           nextLabel={t.installNext}
           nextCommandHead={INSTALL.nextCommandHead}

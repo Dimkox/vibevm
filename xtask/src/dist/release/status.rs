@@ -30,6 +30,7 @@ pub(crate) fn status(repo_root: &Path, raw_version: &str) -> Result<()> {
         DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME,
         DISTRIBUTION_BASH_INSTALLER_FILENAME,
         DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME,
+        DISTRIBUTION_CMD_INSTALLER_FILENAME,
     ] {
         println!(
             "  {optional}: {}",

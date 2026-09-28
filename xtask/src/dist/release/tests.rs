@@ -311,7 +311,7 @@ fn expected_remote_set_is_three_assets_per_target() {
         })
         .collect::<BTreeMap<_, _>>();
     validate_remote_asset_set(&assets, &version).unwrap();
-    assert_eq!(assets.len(), 12);
+    assert_eq!(assets.len(), SUPPORTED_DISTRIBUTION_TARGETS.len() * 3);
 }
 
 #[test]
@@ -497,7 +497,7 @@ fn upload_replaces_exactly_bundle_bootstrap_and_fragment() {
 }
 
 #[test]
-fn finalize_downloads_and_verifies_all_twelve_target_assets() {
+fn finalize_downloads_and_verifies_all_target_assets() {
     let host = MockHost::draft();
     for target in SUPPORTED_DISTRIBUTION_TARGETS {
         let (fragment, bundle, bootstrap, fragment_bytes) = platform(target);
@@ -512,6 +512,7 @@ fn finalize_downloads_and_verifies_all_twelve_target_assets() {
         DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME,
         DISTRIBUTION_BASH_INSTALLER_FILENAME,
         DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME,
+        DISTRIBUTION_CMD_INSTALLER_FILENAME,
     ] {
         host.seed(
             format!(".vibe-upload-stale-0123456789ab-{name}"),
@@ -525,14 +526,20 @@ fn finalize_downloads_and_verifies_all_twelve_target_assets() {
     };
     let verified = finalize_with(&host, &Version::parse("1.0.0").unwrap(), &identity).unwrap();
     assert_eq!(verified.release_id, 7);
-    assert_eq!(verified.asset_ids.len(), 12);
+    assert_eq!(
+        verified.asset_ids.len(),
+        SUPPORTED_DISTRIBUTION_TARGETS.len() * 3
+    );
     assert!(
         host.assets
             .borrow()
             .iter()
             .all(|asset| !asset.name.starts_with(".vibe-upload-"))
     );
-    assert_eq!(verified.aggregate.platforms.len(), 4);
+    assert_eq!(
+        verified.aggregate.platforms.len(),
+        SUPPORTED_DISTRIBUTION_TARGETS.len()
+    );
     let json = verified.aggregate.to_json_bytes().unwrap();
     let text = String::from_utf8(json).unwrap();
     assert!(text.contains("\"bootstrap\""));

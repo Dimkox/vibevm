@@ -43,6 +43,7 @@ pub const DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME: &str = "DISTRIBUTIONS.json";
 pub const DISTRIBUTION_SOURCE_ARCHIVE_FILENAME: &str = "vibevm-source.zip";
 pub const DISTRIBUTION_BASH_INSTALLER_FILENAME: &str = "install.sh";
 pub const DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME: &str = "install.ps1";
+pub const DISTRIBUTION_CMD_INSTALLER_FILENAME: &str = "install.cmd";
 /// Independent parser limit for a bundle manifest or platform fragment.
 pub const DISTRIBUTION_MANIFEST_MAX_BYTES: u64 = 4 * 1024 * 1024;
 /// Independent parser limit for the five-platform aggregate manifest.

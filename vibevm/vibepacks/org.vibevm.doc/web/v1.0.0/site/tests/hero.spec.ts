@@ -22,9 +22,13 @@ import { ANARCHIC_URL } from "../src/landing/identity.ts";
 import { STRINGS as LANDING } from "../src/landing/i18n.ts";
 import { CREATOR_SITE } from "../src/lib/people.ts";
 
+const CMD_INSTALL =
+  'curl.exe -fsSL https://vibevm.org/install.cmd -o "%TEMP%\\vibevm-install.cmd" && call "%TEMP%\\vibevm-install.cmd"';
+
 const PAGES = [
   {
     route: "/",
+    locale: "en",
     badge: "Developer Preview 1",
     roadmap: "/roadmap/",
     label: "What is VibeVM?",
@@ -32,12 +36,45 @@ const PAGES = [
   },
   {
     route: "/ru/",
+    locale: "ru",
     badge: "Developer Preview 1",
     roadmap: "/ru/roadmap/",
     label: "Что такое VibeVM?",
     href: "/doc/ru/org.vibevm.core/vibevm-docs/latest/start/what-vibevm-is/",
   },
 ] as const;
+
+for (const one of PAGES) {
+  test(`${one.route} offers the exact cmd.exe installer command`, async ({
+    baseURL,
+    context,
+    page,
+  }) => {
+    if (baseURL === undefined)
+      throw new Error("Playwright baseURL is required");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"], {
+      origin: new URL(baseURL).origin,
+    });
+    await page.goto(one.route);
+
+    const command = page.getByText(CMD_INSTALL, { exact: true });
+    await expect(command).toHaveCount(1);
+    const line = command.locator(
+      "xpath=ancestor::*[contains(@class, 'install__command')][1]",
+    );
+    await expect(
+      line.getByText("Windows cmd.exe", { exact: true }),
+    ).toHaveCount(1);
+    await expect(line.getByText(">", { exact: true })).toHaveCount(1);
+
+    await line
+      .getByRole("button", { name: LANDING[one.locale].copyCommand })
+      .click();
+    await expect
+      .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+      .toBe(CMD_INSTALL);
+  });
+}
 
 for (const one of PAGES) {
   test(`${one.route} names the release on its pill`, async ({ page }) => {

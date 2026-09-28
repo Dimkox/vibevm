@@ -440,15 +440,17 @@ their provenance record; the managed `src/.mirror` clone is VVM's to drop.</EXTE
       </facts>
     </introspection>
     <bootstrap title="2.12 Cold-start (bootstrap)">
-      <p><req-bootstrap fact="true" status="spec/done">`req r2`</req-bootstrap></p>
+      <p><req-bootstrap fact="true" status="spec/done">`req r3`</req-bootstrap></p>
       <facts ordered="false">
-        <COLD-START-PATH fact="true" status="impl/done" action="continue" actionstage="doc" audience="user">Stable endpoints provide one-line native cold start: Bash for Linux/macOS/WSL
-  and PowerShell for Windows. Each bounded script downloads
+        <COLD-START-PATH fact="true" status="impl/done" action="continue" actionstage="doc" audience="user">Stable endpoints provide one-line native cold start: Bash for Linux/macOS/WSL,
+  and either PowerShell or cmd.exe for Windows. The CMD entry point first downloads
+  a bounded copy of the PowerShell installer, then invokes that same script, so both
+  Windows shells share one verification and installation path. That path downloads
   `DISTRIBUTIONS.json`, verifies a small raw `vibe` bootstrap by size/SHA-256,
   then that Rust binary verifies and atomically installs the full bundle.</COLD-START-PATH>
-        <BOOTSTRAP-SCRIPT-LATER fact="true" status="impl/done" action="continue" actionstage="doc" audience="user">The scripts are shipped release assets `install.sh` and `install.ps1` and
-  are exposed by stable `https://vibevm.org/install.*` redirects. Homebrew,
-  WinGet, and CMD installers remain outside this slice.</BOOTSTRAP-SCRIPT-LATER>
+        <BOOTSTRAP-SCRIPT-LATER fact="true" status="impl/done" action="continue" actionstage="doc" audience="user">The scripts are shipped release assets `install.sh`, `install.ps1`, and
+  `install.cmd`, and are exposed by stable `https://vibevm.org/install.*`
+  redirects. Homebrew and WinGet remain outside this slice.</BOOTSTRAP-SCRIPT-LATER>
       </facts>
     </bootstrap>
     <security title="2.13 Security and trust">
@@ -598,7 +600,7 @@ held by reference, §2.16), never the shared `build/` cache (that is `self gc`,
 §2.10), and never `~/.cargo`.</RELOCATE-SCOPE></p>
     </relocate>
     <release-production title="2.18 Native release production — five targets, one verified release">
-      <p><req-release-production fact="true" status="impl/done">`req r1`</req-release-production></p>
+      <p><req-release-production fact="true" status="impl/done">`req r2`</req-release-production></p>
       <facts ordered="false">
         <RELEASE-TARGETS fact="true" status="impl/done">The closed native matrix is
   `x86_64-pc-windows-msvc`, `x86_64-unknown-linux-musl`,
@@ -637,8 +639,8 @@ held by reference, §2.16), never the shared `build/` cache (that is `self gc`,
   independently replace their ZIP/bootstrap/fragment triplets. The exact
   direct `refs/tags/vV` → commit binding is verified after prepare and again
   immediately before publication. `dist finalize`
-  requires and remotely verifies all twelve platform assets, publishes
-  `DISTRIBUTIONS.json` + both installers, then publishes with GitHub
+  requires and remotely verifies all fifteen platform assets, publishes
+  `DISTRIBUTIONS.json` + the Bash, PowerShell, and cmd.exe installers, then publishes with GitHub
   `make_latest=legacy` so rebuilding an older SemVer cannot demote a newer one.</RELEASE-MUTABLE>
         <RELEASE-SECRETS fact="true" status="impl/done">Compilation, build scripts, tests, self-check, Git, and built-binary probes
   receive no publish credential. Host wrappers disable command tracing before
@@ -707,8 +709,8 @@ mockable and unit tests never clone, build, or edit the real environment:</SEAMS
       <FB-BINARY-INSTALL fact="true" status="impl/done">**Shipped, no longer backlog:** binary refresh/install is origin-directed
   rather than a separate `--binary` switch; remote labels stay mutable and
   local counter instances immutable.</FB-BINARY-INSTALL>
-      <FB-BOOTSTRAP-SCRIPT fact="true" status="impl/done">**Shipped, no longer backlog:** bounded Bash and PowerShell one-line
-  bootstrap assets (§2.12).</FB-BOOTSTRAP-SCRIPT>
+      <FB-BOOTSTRAP-SCRIPT fact="true" status="impl/done">**Shipped, no longer backlog:** bounded Bash, PowerShell, and cmd.exe
+  one-line bootstrap assets (§2.12).</FB-BOOTSTRAP-SCRIPT>
       <FB-OFFLINE fact="true" status="spec/done">Offline builds via vendoring or a registry mirror.</FB-OFFLINE>
       <FB-REFLINK fact="true" status="spec/done">Reflink/CoW placement where the filesystem supports it (§2.15).</FB-REFLINK>
       <FB-SIGNATURES fact="true" status="spec/done">Signature/provenance verification of the resolved ref.</FB-SIGNATURES>
@@ -726,10 +728,10 @@ mockable and unit tests never clone, build, or edit the real environment:</SEAMS
     </facts>
   </maintenance>
   <acceptance title="8. Acceptance">
-    <p><req-acceptance fact="true" status="spec/done">`req r2`</req-acceptance></p>
+    <p><req-acceptance fact="true" status="spec/done">`req r3`</req-acceptance></p>
     <facts ordered="false">
       <ACC-FRESH-CLONE fact="true" status="impl/done">From a fresh clone, the source lane builds both essential binaries. From a
-  clean machine, the Bash/PowerShell bootstrap installs the verified native
+  clean machine, the Bash/PowerShell/cmd.exe bootstrap installs the verified native
   pair plus source and durably exposes stable shims; output states whether the
   current shell already sees PATH.</ACC-FRESH-CLONE>
       <ACC-USE-NO-RELOAD fact="true" status="spec/done">`self use` switches the active version and the **next** `vibe` in the

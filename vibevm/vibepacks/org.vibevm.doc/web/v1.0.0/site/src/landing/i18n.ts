@@ -15,10 +15,10 @@
  * So the asymmetries travel too, and they are not defects to be tidied
  * here: the English eyebrow lower-cases «driven development» where the
  * Russian one title-cases it; the English headline ends in a full stop
- * and the Russian one does not; `installBash` and `installPowerShell`
- * are technical labels and are not translated in either language. The
- * parity test would report any of these as a difference, which is
- * precisely why they are copied rather than improved.
+ * and the Russian one does not; `installBash`, `installPowerShell` and
+ * `installCmd` are technical labels and are not translated in either
+ * language. The parity test would report any of these as a difference,
+ * which is precisely why they are copied rather than improved.
  *
  * Two texts live here that the Astro site kept in its markup rather than
  * in its string table — the install commands and the 404 page — because
@@ -170,6 +170,7 @@ export type Strings = {
   readonly installLead: string;
   readonly installBash: string;
   readonly installPowerShell: string;
+  readonly installCmd: string;
   readonly installNext: string;
   /** What the copy button beside an install line IS; it shows no word. */
   readonly copyCommand: string;
@@ -252,6 +253,7 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
       "One command installs vibe, vibe-index, and the matching source tree.",
     installBash: "Linux · macOS · WSL",
     installPowerShell: "Windows PowerShell",
+    installCmd: "Windows cmd.exe",
     installNext: "Then add a spec stack:",
     copyCommand: "Copy",
     copied: "Copied",
@@ -366,6 +368,7 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
       "Одна команда установит vibe, vibe-index и соответствующее дерево исходников.",
     installBash: "Linux · macOS · WSL",
     installPowerShell: "Windows PowerShell",
+    installCmd: "Windows cmd.exe",
     installNext: "Затем добавьте стек спецификаций:",
     copyCommand: "Скопировать",
     copied: "Скопировано",
@@ -464,6 +467,9 @@ export const INSTALL = {
   bashCommand: "curl -fsSL https://vibevm.org/install.sh | bash",
   powerShellPrompt: "PS>",
   powerShellCommand: "irm https://vibevm.org/install.ps1 | iex",
+  cmdPrompt: ">",
+  cmdCommand:
+    'curl.exe -fsSL https://vibevm.org/install.cmd -o "%TEMP%\\vibevm-install.cmd" && call "%TEMP%\\vibevm-install.cmd"',
   /** The follow-up line: `vibe` is set apart, the rest is the argument. */
   nextCommandHead: "vibe",
   nextCommandTail: " install org.vibevm.world/redbook",

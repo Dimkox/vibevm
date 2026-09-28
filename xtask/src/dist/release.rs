@@ -8,8 +8,9 @@ use semver::Version;
 use vibe_publish::release_manifest::{
     DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME, DISTRIBUTION_BASH_INSTALLER_FILENAME,
     DISTRIBUTION_BOOTSTRAP_MAX_BYTES, DISTRIBUTION_BUNDLE_MAX_BYTES,
-    DISTRIBUTION_MANIFEST_FILENAME, DISTRIBUTION_MANIFEST_MAX_BYTES,
-    DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME, DISTRIBUTION_SOURCE_ARCHIVE_FILENAME,
+    DISTRIBUTION_CMD_INSTALLER_FILENAME, DISTRIBUTION_MANIFEST_FILENAME,
+    DISTRIBUTION_MANIFEST_MAX_BYTES, DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME,
+    DISTRIBUTION_SOURCE_ARCHIVE_FILENAME,
 };
 use vibe_publish::{
     AggregateDistributionManifest, CreateGithubRelease, GithubGitRef, GithubMakeLatest,
@@ -169,7 +170,12 @@ pub(crate) fn finalize(repo_root: &Path, raw_version: &str, publish: bool) -> Re
         &identity.commit,
         "distribution/install/install.ps1",
     )?;
-    if bash_installer.is_empty() || powershell_installer.is_empty() {
+    let cmd_installer = read_commit_file(
+        repo_root,
+        &identity.commit,
+        "distribution/install/install.cmd",
+    )?;
+    if bash_installer.is_empty() || powershell_installer.is_empty() || cmd_installer.is_empty() {
         bail!("committed bootstrap installer assets must be non-empty");
     }
     let bash_asset = client.publish_asset_owned(
@@ -184,10 +190,17 @@ pub(crate) fn finalize(repo_root: &Path, raw_version: &str, publish: bool) -> Re
         "text/plain; charset=utf-8",
         powershell_installer,
     )?;
+    let cmd_asset = client.publish_asset_owned(
+        verified.release_id,
+        DISTRIBUTION_CMD_INSTALLER_FILENAME,
+        "text/plain; charset=utf-8",
+        cmd_installer,
+    )?;
     for (asset, expected_name) in [
         (aggregate_asset, DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME),
         (bash_asset, DISTRIBUTION_BASH_INSTALLER_FILENAME),
         (powershell_asset, DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME),
+        (cmd_asset, DISTRIBUTION_CMD_INSTALLER_FILENAME),
     ] {
         if asset.name != expected_name {
             bail!(
@@ -299,6 +312,7 @@ fn finalize_with(
             DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME,
             DISTRIBUTION_BASH_INSTALLER_FILENAME,
             DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME,
+            DISTRIBUTION_CMD_INSTALLER_FILENAME,
         ],
     )?;
     let assets = unique_assets(host.list_assets(release.id)?)?;
@@ -534,6 +548,7 @@ fn validate_remote_asset_set(
         DISTRIBUTION_AGGREGATE_MANIFEST_FILENAME.to_string(),
         DISTRIBUTION_BASH_INSTALLER_FILENAME.to_string(),
         DISTRIBUTION_POWERSHELL_INSTALLER_FILENAME.to_string(),
+        DISTRIBUTION_CMD_INSTALLER_FILENAME.to_string(),
     ]);
     let actual = assets.keys().cloned().collect::<BTreeSet<_>>();
     let missing = required.difference(&actual).cloned().collect::<Vec<_>>();
