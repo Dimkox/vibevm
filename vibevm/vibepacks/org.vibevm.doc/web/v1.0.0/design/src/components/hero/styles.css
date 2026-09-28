@@ -269,6 +269,8 @@
   padding: 18px;
   display: grid;
   gap: 14px;
+  min-width: 0;
+  overflow: clip;
   background: var(--bg-raise);
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -407,6 +409,223 @@
   color: var(--text);
 }
 
+/* The choices are part of the card rather than controls floating below
+   it. Negative side and foot margins carry them exactly to the card's
+   edge; the section's clipping preserves its outside radius. */
+.install__drawers {
+  display: grid;
+  min-width: 0;
+  margin: 2px -18px -18px;
+}
+
+.install__drawer {
+  min-width: 0;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--code-bg) 44%, transparent);
+  transition: background-color 0.2s ease;
+}
+
+.install__drawer[open] {
+  background: color-mix(in srgb, var(--code-bg) 72%, transparent);
+}
+
+.install__drawer-summary {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 14px 18px;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  transition:
+    color var(--speed) ease,
+    background-color var(--speed) ease;
+}
+
+.install__drawer-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A short rail makes the open drawer read like a selected tab without
+   spending horizontal room on another label. */
+.install__drawer-summary::before {
+  content: "";
+  position: absolute;
+  inset: 9px auto 9px 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  transform: scaleY(0);
+  transition: transform var(--speed) ease;
+}
+
+.install__drawer-summary:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.install__drawer-summary:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.install__drawer[open] > .install__drawer-summary::before {
+  transform: scaleY(1);
+}
+
+.install__drawer-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.install__drawer-copy strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.install__drawer-copy > span {
+  overflow: hidden;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.install__drawer-mark {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  color: var(--text-2);
+  transition:
+    border-color var(--speed) ease,
+    color var(--speed) ease;
+}
+
+.install__drawer-mark::before,
+.install__drawer-mark::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.install__drawer-mark::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  transition: transform var(--speed) ease;
+}
+
+.install__drawer-summary:hover .install__drawer-mark,
+.install__drawer[open] .install__drawer-mark {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.install__drawer[open] .install__drawer-mark::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.install__drawer-panel {
+  display: grid;
+  gap: 13px;
+  min-width: 0;
+  padding: 3px 18px 18px;
+}
+
+.install__drawer[open] > .install__drawer-panel {
+  animation: install-drawer-reveal 0.24s ease-out;
+}
+
+@keyframes install-drawer-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scaleY(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+.install__links {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.install__link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--bg-raise);
+  color: var(--text);
+  transition:
+    border-color var(--speed) ease,
+    background-color var(--speed) ease,
+    transform var(--speed) ease;
+}
+
+.install__link > span:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.install__link strong {
+  overflow-wrap: anywhere;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.install__link small {
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-3);
+}
+
+.install__link--manual {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-raise));
+}
+
+.install__link:hover,
+.install__link:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.install__link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.install__link-arrow {
+  color: var(--accent);
+  transition: transform var(--speed) ease;
+}
+
+.install__link:hover .install__link-arrow,
+.install__link:focus-visible .install__link-arrow {
+  transform: translate(2px, -2px);
+}
+
 @media (max-width: 860px) {
   .hero {
     grid-template-columns: 1fr;
@@ -430,6 +649,10 @@
   .install__heading p {
     text-align: left;
   }
+
+  .install__drawer-copy > span {
+    white-space: normal;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -441,6 +664,24 @@
      the base stylesheet takes the duration away, which leaves a jump
      rather than nothing, so the movement itself is refused here. */
   .hero__btn:hover .hero__arrow {
+    transform: none;
+  }
+
+  .install__drawer-summary::before,
+  .install__drawer-mark::after,
+  .install__link,
+  .install__link-arrow {
+    transition: none;
+  }
+
+  .install__drawer[open] > .install__drawer-panel {
+    animation: none;
+  }
+
+  .install__link:hover,
+  .install__link:focus-visible,
+  .install__link:hover .install__link-arrow,
+  .install__link:focus-visible .install__link-arrow {
     transform: none;
   }
 }

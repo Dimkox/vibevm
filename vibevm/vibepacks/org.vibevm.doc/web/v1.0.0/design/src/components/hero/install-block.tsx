@@ -17,12 +17,33 @@ export type InstallCommand = {
   readonly command: string;
 };
 
+/** One deliberate way onward from an install drawer. */
+export type InstallLink = {
+  readonly label: string;
+  readonly description: string;
+  readonly href: string;
+  /** The manual is the recommended escape hatch, not another mirror. */
+  readonly emphasis?: "manual";
+};
+
+/** A native disclosure attached to the bottom edge of the install card. */
+export type InstallDrawer = {
+  /** Stable enough for tests and for a summary's accessible identity. */
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly commands?: readonly InstallCommand[];
+  readonly links: readonly InstallLink[];
+};
+
 export type InstallBlockProps = {
   /** The id the block's own heading carries, for `aria-labelledby`. */
   readonly headingId: string;
   readonly title: string;
   readonly lead: string;
-  readonly commands: readonly InstallCommand[];
+  /** The shortest path is the only command visible before a choice. */
+  readonly command: InstallCommand;
+  readonly drawers: readonly InstallDrawer[];
   /** The line under the commands: «then add a spec stack». */
   readonly nextLabel: string;
   /** The command it offers, split so the tool's name can be set apart. */
@@ -38,8 +59,8 @@ export type InstallBlockProps = {
 const COPIED_MS = 1500;
 
 /**
- * The install panel inside the hero: one line per platform, the button
- * that puts a line on the clipboard, and the command that follows.
+ * The install panel inside the hero: the shortest path first, optional
+ * platform drawers, copy controls, and the command that follows.
  *
  * The prompt (`$`, `PS>`) is marked `user-select: none` in the
  * stylesheet rather than dropped, because a reader who selects the line
@@ -91,7 +112,7 @@ export const InstallBlock = component$<InstallBlockProps>((props) => {
         <p>{props.lead}</p>
       </div>
 
-      {props.commands.map((entry) => {
+      {[props.command].map((entry) => {
         const label = entry.label;
         const command = entry.command;
         return (
@@ -160,6 +181,105 @@ export const InstallBlock = component$<InstallBlockProps>((props) => {
           <b class="install__tool">{props.nextCommandHead}</b>
           {props.nextCommandTail}
         </code>
+      </div>
+
+      <div class="install__drawers">
+        {props.drawers.map((drawer) => (
+          <details
+            key={drawer.id}
+            class="install__drawer"
+            data-install-drawer={drawer.id}
+          >
+            <summary class="install__drawer-summary">
+              <span class="install__drawer-copy">
+                <strong>{drawer.title}</strong>
+                <span>{drawer.description}</span>
+              </span>
+              <span class="install__drawer-mark" aria-hidden="true" />
+            </summary>
+            <div class="install__drawer-panel">
+              {drawer.commands?.map((entry) => {
+                const label = entry.label;
+                const command = entry.command;
+                return (
+                  <div key={label} class="install__command">
+                    <div class="install__label">{label}</div>
+                    <div class="install__cmd">
+                      <span class="install__line">
+                        <span class="install__prompt">{entry.prompt}</span>
+                        <code>{command}</code>
+                      </span>
+                      <span class="install__copied" role="status">
+                        {copied.value === label ? props.copiedLabel : ""}
+                      </span>
+                      <button
+                        class="install__copy"
+                        type="button"
+                        hidden={!canCopy.value}
+                        aria-label={props.copyLabel}
+                        onClick$={async () => {
+                          try {
+                            await navigator.clipboard.writeText(command);
+                          } catch {
+                            return;
+                          }
+                          copied.value = label;
+                          setTimeout(() => {
+                            if (copied.value === label) copied.value = "";
+                          }, COPIED_MS);
+                        }}
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <rect
+                            x="4.75"
+                            y="4.75"
+                            width="7.5"
+                            height="7.5"
+                            rx="1.6"
+                            stroke="currentColor"
+                            stroke-width="1.3"
+                          />
+                          <path
+                            d="M9.25 2.75a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5v4.5a1.5 1.5 0 0 0 1.5 1.5"
+                            stroke="currentColor"
+                            stroke-width="1.3"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              <div class="install__links">
+                {drawer.links.map((link) => (
+                  <a
+                    key={link.href}
+                    class={{
+                      install__link: true,
+                      "install__link--manual": link.emphasis === "manual",
+                    }}
+                    href={link.href}
+                  >
+                    <span>
+                      <strong>{link.label}</strong>
+                      <small>{link.description}</small>
+                    </span>
+                    <span class="install__link-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </details>
+        ))}
       </div>
     </section>
   );

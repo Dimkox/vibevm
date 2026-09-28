@@ -24,6 +24,7 @@ import { CREATOR_SITE } from "../src/lib/people.ts";
 
 const CMD_INSTALL =
   'curl.exe -fsSL https://vibevm.org/install.cmd -o "%TEMP%\\vibevm-install.cmd" && call "%TEMP%\\vibevm-install.cmd"';
+const POWERSHELL_INSTALL = "irm https://vibevm.org/install.ps1 | iex";
 
 const PAGES = [
   {
@@ -33,6 +34,7 @@ const PAGES = [
     roadmap: "/roadmap/",
     label: "What is VibeVM?",
     href: "/doc/org.vibevm.core/vibevm-docs/latest/start/what-vibevm-is/",
+    manual: "/doc/org.vibevm.core/vibevm-docs/1.0.0/start/install-vibe/#p09",
   },
   {
     route: "/ru/",
@@ -41,10 +43,37 @@ const PAGES = [
     roadmap: "/ru/roadmap/",
     label: "Что такое VibeVM?",
     href: "/doc/ru/org.vibevm.core/vibevm-docs/latest/start/what-vibevm-is/",
+    manual: "/doc/ru/org.vibevm.core/vibevm-docs/1.0.0/start/install-vibe/#p09",
   },
 ] as const;
 
 for (const one of PAGES) {
+  test(`${one.route} keeps optional install paths collapsed`, async ({
+    page,
+  }) => {
+    await page.goto(one.route);
+
+    const windows = page.locator('[data-install-drawer="windows"]');
+    const releases = page.locator('[data-install-drawer="releases"]');
+    await expect(windows).not.toHaveAttribute("open", "");
+    await expect(releases).not.toHaveAttribute("open", "");
+    await expect(
+      page.getByText(LANDING[one.locale].installBash, { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(POWERSHELL_INSTALL, { exact: true }),
+    ).toBeHidden();
+    await expect(page.getByText(CMD_INSTALL, { exact: true })).toBeHidden();
+    await expect(
+      page.getByRole("link", { name: LANDING[one.locale].installManual }),
+    ).toBeHidden();
+    await expect(
+      page.getByRole("link", {
+        name: LANDING[one.locale].installBinaryReleases,
+      }),
+    ).toBeHidden();
+  });
+
   test(`${one.route} offers the exact cmd.exe installer command`, async ({
     baseURL,
     context,
@@ -57,8 +86,12 @@ for (const one of PAGES) {
     });
     await page.goto(one.route);
 
+    await page.locator('[data-install-drawer="windows"] summary').click();
+    await expect(
+      page.getByText(POWERSHELL_INSTALL, { exact: true }),
+    ).toBeVisible();
     const command = page.getByText(CMD_INSTALL, { exact: true });
-    await expect(command).toHaveCount(1);
+    await expect(command).toBeVisible();
     const line = command.locator(
       "xpath=ancestor::*[contains(@class, 'install__command')][1]",
     );
@@ -73,6 +106,56 @@ for (const one of PAGES) {
     await expect
       .poll(() => page.evaluate(() => navigator.clipboard.readText()))
       .toBe(CMD_INSTALL);
+  });
+
+  test(`${one.route} opens its localized install links`, async ({ page }) => {
+    await page.goto(one.route);
+
+    const windows = page.locator('[data-install-drawer="windows"]');
+    await windows.locator("summary").click();
+    await expect(windows).toHaveAttribute("open", "");
+    await expect(
+      windows.getByRole("link", {
+        name: LANDING[one.locale].installManual,
+      }),
+    ).toHaveAttribute("href", one.manual);
+
+    const releases = page.locator('[data-install-drawer="releases"]');
+    await releases.locator("summary").click();
+    await expect(releases).toHaveAttribute("open", "");
+    await expect(
+      releases.getByRole("link", {
+        name: LANDING[one.locale].installBinaryReleases,
+      }),
+    ).toHaveAttribute("href", "https://github.com/vibevm/vibevm/releases");
+    await expect(
+      releases.getByRole("link", {
+        name: LANDING[one.locale].installSourceGitHub,
+      }),
+    ).toHaveAttribute("href", "https://github.com/vibevm/vibevm");
+    await expect(
+      releases.getByRole("link", {
+        name: LANDING[one.locale].installSourceGitVerse,
+      }),
+    ).toHaveAttribute("href", "https://gitverse.ru/vibevm/vibevm");
+  });
+
+  test(`${one.route} exposes native drawer keyboard focus`, async ({
+    page,
+  }) => {
+    await page.goto(one.route);
+    const drawer = page.locator('[data-install-drawer="windows"]');
+    const summary = drawer.locator("summary");
+
+    await summary.focus();
+    await expect(summary).toBeFocused();
+    expect(
+      await summary.evaluate(
+        (element) => getComputedStyle(element, ":focus-visible").outlineWidth,
+      ),
+    ).not.toBe("0px");
+    await page.keyboard.press("Enter");
+    await expect(drawer).toHaveAttribute("open", "");
   });
 }
 
@@ -246,6 +329,9 @@ for (const one of PAGES) {
   test(`${one.route} wraps the pair on a phone`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(one.route);
+
+    await page.locator('[data-install-drawer="windows"] summary').click();
+    await page.locator('[data-install-drawer="releases"] summary').click();
 
     const under = await page.evaluate(() => {
       const pill = document.querySelector(".hero__release");

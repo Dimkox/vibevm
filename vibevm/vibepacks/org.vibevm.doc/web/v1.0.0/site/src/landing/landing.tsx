@@ -87,6 +87,19 @@ function guideHref(locale: Locale): string {
   });
 }
 
+/** The stable numbered install procedure, at the manual's Windows step. */
+function manualInstallHref(locale: Locale): string {
+  return (
+    docHref({
+      lang: locale === "en" ? null : locale,
+      group: "org.vibevm.core",
+      name: "vibevm-docs",
+      version: "1.0.0",
+      document: "start/install-vibe",
+    }) + "#p09"
+  );
+}
+
 export const Landing = component$<LandingProps>((props) => {
   const t = STRINGS[props.locale];
   return (
@@ -117,21 +130,58 @@ export const Landing = component$<LandingProps>((props) => {
           headingId={INSTALL_HEADING_ID}
           title={t.installTitle}
           lead={t.installLead}
-          commands={[
+          command={{
+            label: t.installBash,
+            prompt: INSTALL.bashPrompt,
+            command: INSTALL.bashCommand,
+          }}
+          drawers={[
             {
-              label: t.installBash,
-              prompt: INSTALL.bashPrompt,
-              command: INSTALL.bashCommand,
+              id: "windows",
+              title: t.installWindows,
+              description: t.installWindowsLead,
+              commands: [
+                {
+                  label: t.installPowerShell,
+                  prompt: INSTALL.powerShellPrompt,
+                  command: INSTALL.powerShellCommand,
+                },
+                {
+                  label: t.installCmd,
+                  prompt: INSTALL.cmdPrompt,
+                  command: INSTALL.cmdCommand,
+                },
+              ],
+              links: [
+                {
+                  label: t.installManual,
+                  description: t.installManualLead,
+                  href: manualInstallHref(props.locale),
+                  emphasis: "manual",
+                },
+              ],
             },
             {
-              label: t.installPowerShell,
-              prompt: INSTALL.powerShellPrompt,
-              command: INSTALL.powerShellCommand,
-            },
-            {
-              label: t.installCmd,
-              prompt: INSTALL.cmdPrompt,
-              command: INSTALL.cmdCommand,
+              id: "releases",
+              title: t.installReleases,
+              description: t.installReleasesLead,
+              links: [
+                {
+                  label: t.installBinaryReleases,
+                  description: t.installBinaryReleasesLead,
+                  href: `${GITHUB_URL}/releases`,
+                },
+                {
+                  label: t.installSourceGitHub,
+                  description: t.installSourceLead,
+                  href: GITHUB_URL,
+                },
+                {
+                  label: t.installSourceGitVerse,
+                  description: t.installSourceLead,
+                  href: GITVERSE_URL,
+                },
+              ],
             },
           ]}
           nextLabel={t.installNext}

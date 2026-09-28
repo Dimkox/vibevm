@@ -171,6 +171,17 @@ export type Strings = {
   readonly installBash: string;
   readonly installPowerShell: string;
   readonly installCmd: string;
+  readonly installWindows: string;
+  readonly installWindowsLead: string;
+  readonly installManual: string;
+  readonly installManualLead: string;
+  readonly installReleases: string;
+  readonly installReleasesLead: string;
+  readonly installBinaryReleases: string;
+  readonly installBinaryReleasesLead: string;
+  readonly installSourceGitHub: string;
+  readonly installSourceGitVerse: string;
+  readonly installSourceLead: string;
   readonly installNext: string;
   /** What the copy button beside an install line IS; it shows no word. */
   readonly copyCommand: string;
@@ -254,6 +265,17 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     installBash: "Linux · macOS · WSL",
     installPowerShell: "Windows PowerShell",
     installCmd: "Windows cmd.exe",
+    installWindows: "Windows",
+    installWindowsLead: "PowerShell, cmd.exe, and a manual path",
+    installManual: "Manual installation",
+    installManualLead: "Follow the complete Windows installation guide",
+    installReleases: "Releases for other platforms",
+    installReleasesLead: "Binaries and source repositories",
+    installBinaryReleases: "Binary releases (full list)",
+    installBinaryReleasesLead: "Browse every published build on GitHub",
+    installSourceGitHub: "Source: GitHub",
+    installSourceGitVerse: "Source: GitVerse",
+    installSourceLead: "Build VibeVM from the source tree",
     installNext: "Then add a spec stack:",
     copyCommand: "Copy",
     copied: "Copied",
@@ -369,6 +391,17 @@ export const STRINGS: Readonly<Record<Locale, Strings>> = {
     installBash: "Linux · macOS · WSL",
     installPowerShell: "Windows PowerShell",
     installCmd: "Windows cmd.exe",
+    installWindows: "Windows",
+    installWindowsLead: "PowerShell, cmd.exe и ручная установка",
+    installManual: "Ручная установка",
+    installManualLead: "Полная инструкция по установке в Windows",
+    installReleases: "Релизы для других платформ",
+    installReleasesLead: "Бинарные сборки и репозитории с исходным кодом",
+    installBinaryReleases: "Бинарные релизы (полный список)",
+    installBinaryReleasesLead: "Все опубликованные сборки на GitHub",
+    installSourceGitHub: "Исходники: GitHub",
+    installSourceGitVerse: "Исходники: GitVerse",
+    installSourceLead: "Соберите VibeVM из дерева исходного кода",
     installNext: "Затем добавьте стек спецификаций:",
     copyCommand: "Скопировать",
     copied: "Скопировано",
