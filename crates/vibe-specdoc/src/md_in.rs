@@ -379,9 +379,14 @@ impl<'a> Adapter<'a> {
     fn item_unit(&self, b: &progress_core::doc::Block, f: &progress_core::doc::Fact) -> Unit {
         let mut unit = self.unit_from_fact(b, f);
         if let Some(line) = self.lines.get(f.line - 1) {
-            let indent = line.len() - line.trim_start().len();
+            // `list_marker_len` already counts the opener's indent (it
+            // returns `indent + marker`), so the item's text starts at
+            // `mlen`, not at `indent + mlen`. The double count sliced a
+            // nested item's line inside a multibyte character (`  * \`Γ…\``,
+            // FPF-Spec Part G) and panicked; on ASCII it only mis-placed the
+            // task-box probe, so nested boxes were silently not restored.
             if let Some(mlen) = list_marker_len(line) {
-                let after = &line[indent + mlen..];
+                let after = &line[mlen..];
                 let blen = task_box_len(after);
                 if blen > 0 && !unit.text.is_empty() {
                     unit.text = format!("{}{}", &after[..blen], unit.text);
