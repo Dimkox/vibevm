@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "scope": "standalone data-only preparation component",
+  "upstream_commit": "30d217bfce47bcaccadabd9468f00e315dbcfead",
+  "specification_commit": "737867129e703fd63c30e567a195f98353fe9c1e",
+  "python": "3.13.5",
+  "os": "Linux",
+  "builder": {
+    "name": "vibevm-factory-context-data-only",
+    "version": "0.1.0",
+    "source_digest": "sha256:4da4867402a6e5cbaaf37e8d2244bf212744d5c5bf0546bba372e2dfe29a256f",
+    "upstream_commit": "30d217bfce47bcaccadabd9468f00e315dbcfead",
+    "parser": "python-tomllib",
+    "runtime": "cpython-3.13",
+    "tree_profile": "posix-normalized",
+    "output_dialect": "markdown"
+  },
+  "tests": {
+    "command": "python -m unittest discover -s integrations/factory_context/tests -v",
+    "passed": 103,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "compileall": {
+    "command": "python -m compileall -q integrations/factory_context",
+    "exit_code": 0
+  },
+  "source_files": {
+    "integrations/__init__.py": {
+      "sha256": "b1b305b00b6b94ca3e6613ceb1bbe4566132674793882661486073ab920f46c6",
+      "git_blob": "2953a77fb9e4eca9fffd1f030c95e6ecb09e13ff"
+    },
+    "integrations/factory_context/__init__.py": {
+      "sha256": "591fbbb78d06cc251cc4627fa550e7fdb5ba9e7ccff298c1a2d175643e0b8279",
+      "git_blob": "d96d9e34e0e5d001117300cd104f8218e8e4ed78"
+    },
+    "integrations/factory_context/__main__.py": {
+      "sha256": "4d2787aef7c2acbf85c81d28677d7dc4643770f764605d3b517f42033e91371a",
+      "git_blob": "dcdd12470ba611d101d714bba430801fc1ddbcc7"
+    },
+    "integrations/factory_context/boot.py": {
+      "sha256": "a263a182dc78ad879ae20606a88407a25139f7f375c13826c06c6626652c740a",
+      "git_blob": "c8189a82187ade57f09629523f76890a751a7e75"
+    },
+    "integrations/factory_context/boundary.py": {
+      "sha256": "fde129de16673b0cff828489ccc2bc509fb6eab44e829b1747eafd6f1595b26f",
+      "git_blob": "c649ff571ae1b01612d900483955eb932a973443"
+    },
+    "integrations/factory_context/context.py": {
+      "sha256": "5e482c65493d9efbd96eaa6b2b66198bc4de79f427106dc3902652bd8851f2b6",
+      "git_blob": "df9cf798be19b3eb975c75554521fc76223bc516"
+    },
+    "integrations/factory_context/store.py": {
+      "sha256": "6040c0d5e20b70bba5069cfae13497b042b5a8ba0a6132b4a681055afda4c4be",
+      "git_blob": "091ea8716f6890d2c9d542eef082bfe0cbbc1dba"
+    },
+    "integrations/factory_context/telemetry.py": {
+      "sha256": "ad4e3fee2e8bd91a4fe4228ab2db0249edb636063d87037abfc51da9694c78d8",
+      "git_blob": "224c47c34ef3082b102156323a5dc6d840631f97"
+    },
+    "integrations/factory_context/tests/test_adapter.py": {
+      "sha256": "11890608b1a4e14fd25bcb89b6ac1de1928172ece4bbfea1002eb6f5c01af89c",
+      "git_blob": "a322f8b60752e46ee673e71454eb442f465b4f09"
+    },
+    "integrations/factory_context/tests/test_regressions.py": {
+      "sha256": "028b0471d3987b8e999386a156a90ae8943f2facad7e7558fda8e7310a6c1a4d",
+      "git_blob": "28e7c6bc5f03def9c6b6f82163f2faf59b6c027d"
+    }
+  },
+  "review": "self-review with executable regressions; independent review not run",
+  "not_run": [
+    "upstream Rust build/tests",
+    "live coding-agent CLI AC94",
+    "existing 12-case F24/F26 comparison",
+    "host cross-tenant sandbox qualification",
+    "factory installer/native wiring",
+    "full candidate Git identity proof",
+    "external Trust CI",
+    "independent review",
+    "Claw deployment"
+  ],
+  "authority_effect": "none",
+  "M8_qualifying_contribution": 0,
+  "production": "not_qualified"
+}
