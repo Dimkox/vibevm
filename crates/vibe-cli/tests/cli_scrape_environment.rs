@@ -140,9 +140,18 @@ fn planning_succeeds_without_journal_environment() {
 fn execute_and_recover_without_home_refuse_bounded() {
     let project = tempfile::tempdir().unwrap();
     fixture(project.path());
+    // `--no-progress`: the generic liveness lines every finite command
+    // prints on a non-terminal stderr are not what this test judges.
     for args in [
-        ["scrape", "--in-place", "--assume-yes", "--path"].as_slice(),
-        ["scrape", "--recover", "--path"].as_slice(),
+        [
+            "--no-progress",
+            "scrape",
+            "--in-place",
+            "--assume-yes",
+            "--path",
+        ]
+        .as_slice(),
+        ["--no-progress", "scrape", "--recover", "--path"].as_slice(),
     ] {
         command()
             .args(args)
