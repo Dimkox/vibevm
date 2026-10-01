@@ -10,6 +10,21 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 _(nothing yet)_
 
+## [1.0.2] — 2026-10-01
+
+MCP packages can declare a remote Streamable HTTP endpoint alongside the
+existing local stdio binary form. `vibe mcp install` accepts a package and
+optional server selector, and `vibe install -g mcp:<group>/<name>` maintains
+an exact-pinned user inventory and registers the endpoint with selected
+agents. Global update and uninstall follow the same inventory. Per-agent
+registration receipts protect operator-owned and hand-edited entries.
+
+Qwen Code joins the agent integration matrix with project and user scopes.
+Codex project MCP configuration follows its current `.codex/config.toml`
+surface. Remote URL projection uses each client's native configuration
+shape; Claude Desktop reports that direct remote configuration is unsupported.
+An endpoint-only package needs no local binary or build.
+
 ## [1.0.1] — 2026-09-30
 
 A patch release with three fixes found while packaging Anatoly Levenchuk's

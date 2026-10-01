@@ -164,14 +164,14 @@ fn resolve_target(requested: Option<&str>) -> Result<String> {
             SUPPORTED_DISTRIBUTION_TARGETS.join(", ")
         );
     }
-    let compatible = match (std::env::consts::OS, std::env::consts::ARCH, selected) {
+    let compatible = matches!(
+        (std::env::consts::OS, std::env::consts::ARCH, selected),
         ("windows", "x86_64", "x86_64-pc-windows-msvc")
-        | ("linux", "x86_64", "x86_64-unknown-linux-musl")
-        | ("linux", "x86_64", "x86_64-unknown-linux-gnu")
-        | ("macos", "x86_64", "x86_64-apple-darwin")
-        | ("macos", "aarch64", "aarch64-apple-darwin") => true,
-        _ => false,
-    };
+            | ("linux", "x86_64", "x86_64-unknown-linux-musl")
+            | ("linux", "x86_64", "x86_64-unknown-linux-gnu")
+            | ("macos", "x86_64", "x86_64-apple-darwin")
+            | ("macos", "aarch64", "aarch64-apple-darwin")
+    );
     if !compatible {
         bail!(
             "distribution target `{selected}` does not match this native host (`{native}`); run \
