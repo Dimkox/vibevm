@@ -7334,6 +7334,15 @@
     },
     {
       "crate_name": "vibe-cli",
+      "file": "crates/vibe-cli/src/commands/install/confirm.rs",
+      "item_kind": "mod",
+      "line": 3,
+      "symbol": "vibe_cli::commands::install::confirm",
+      "end_line": 3,
+      "fingerprint": "tok1:33b6a93f98479747ad3bd4e2975445213ffa9c088dc1db0070ede0a05d161173"
+    },
+    {
+      "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/src/commands/install/direct.rs",
       "item_kind": "mod",
       "line": 32,
@@ -7462,9 +7471,9 @@
       "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/src/commands/lifecycle.rs",
       "item_kind": "fn",
-      "line": 450,
+      "line": 452,
       "symbol": "vibe_cli::commands::lifecycle::classify_outcome",
-      "end_line": 476,
+      "end_line": 478,
       "fingerprint": "tok1:7c20d881f62d5ed35ea08f49c1c195f8b44c6f07f1d4efb1ee672ed8a4e1b5e7"
     },
     {
@@ -7507,10 +7516,10 @@
       "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/src/commands/lifecycle.rs",
       "item_kind": "fn",
-      "line": 165,
+      "line": 166,
       "symbol": "vibe_cli::commands::lifecycle::execute",
-      "end_line": 435,
-      "fingerprint": "tok1:1bebafdfedf5b1638f0bfb695e8855b824215ad85c92048f703637029f51f93e"
+      "end_line": 437,
+      "fingerprint": "tok1:032e6f9764b20641e55fd52b50fc0d244ac1f9c2ce2d15426afde181ea8e7bee"
     },
     {
       "crate_name": "vibe-cli",
@@ -7545,8 +7554,8 @@
       "item_kind": "fn",
       "line": 63,
       "symbol": "vibe_cli::commands::lifecycle::run",
-      "end_line": 162,
-      "fingerprint": "tok1:c2f160a41c573198f7b7d1120b49acdc625e77b511b64f789bc26e2c9f7281b2"
+      "end_line": 163,
+      "fingerprint": "tok1:187fcee2f0bd6f379c3e8a6240eeba15ed575e1784656adec290cc4667dfa9f2"
     },
     {
       "crate_name": "vibe-cli",
@@ -11686,7 +11695,7 @@
       "line": 694,
       "symbol": "vibe_core::manifest::document::tests::mcp_kind_without_a_server_is_refused",
       "end_line": 708,
-      "fingerprint": "tok1:5f16f92d272e3fe319edeb76c560e4f60b8b7edadf33a8816f1299e881768fcc"
+      "fingerprint": "tok1:0533caa937ddd842ca52dd263e7b47cc7a771062a59c78766279ff90bdd4e2f4"
     },
     {
       "crate_name": "vibe-core",
@@ -11722,7 +11731,7 @@
       "line": 670,
       "symbol": "vibe_core::manifest::document::tests::mcp_server_table_is_refused_outside_the_mcp_kind",
       "end_line": 692,
-      "fingerprint": "tok1:f3bcece2e5af7b47311e3efe008ad16e38a24b83aede0751c27decb7363dcf85"
+      "fingerprint": "tok1:87de873a3a59344f2f7cca9d369a0fe0cce21483e26c0eb8bc7450445d6e89c2"
     },
     {
       "crate_name": "vibe-core",
@@ -11740,7 +11749,7 @@
       "line": 166,
       "symbol": "vibe_core::manifest::document::tests::origin_marker_parses",
       "end_line": 191,
-      "fingerprint": "tok1:2538e6c4227acf110cae7e7aa344cdc5165e4c9e5d5b7ee65ba5eae58e52b7c5"
+      "fingerprint": "tok1:1f35ab18ea14d14ae39f8677d1c7d39825fda3c6d310b51edbe28ba35c9795e9"
     },
     {
       "crate_name": "vibe-core",
@@ -11749,7 +11758,7 @@
       "line": 241,
       "symbol": "vibe_core::manifest::document::tests::package_declares_skills_and_roundtrips",
       "end_line": 271,
-      "fingerprint": "tok1:a9dc6c9948723a1fbb9b7604619b84d6b0c50f4552a9d08440f4ec281b6e38ed"
+      "fingerprint": "tok1:255715c62200fe8b8e2db5fe64118039a950ea4ebd5fac9d48287b3caae1d287"
     },
     {
       "crate_name": "vibe-core",
@@ -11767,7 +11776,7 @@
       "line": 223,
       "symbol": "vibe_core::manifest::document::tests::rejects_package_role_section_without_package",
       "end_line": 239,
-      "fingerprint": "tok1:44df3b897caf71e1da4b89c45598a3ba277de2648b43d40949d731471ab6e2ce"
+      "fingerprint": "tok1:0f564627d0d35d1d6e0800d87910392ca2156ec34d748bbc73ad1b5843d26e6c"
     },
     {
       "crate_name": "vibe-core",
@@ -11776,7 +11785,7 @@
       "line": 193,
       "symbol": "vibe_core::manifest::document::tests::rejects_project_and_package_together",
       "end_line": 211,
-      "fingerprint": "tok1:92aeeef78c78e5fa97da96da23c43661e2236c91a276d6647f7bf8c9037b23e8"
+      "fingerprint": "tok1:cbd4f6ce38a4c0ba1ebbaf52c66b69740498275907043e30285c6671d020d1ac"
     },
     {
       "crate_name": "vibe-core",
@@ -11785,7 +11794,7 @@
       "line": 474,
       "symbol": "vibe_core::manifest::document::tests::rejects_skill_section_without_package",
       "end_line": 490,
-      "fingerprint": "tok1:ce97121fc71fe58b6acb67f1338cc9670036e6227b024fc5aaa940a02565a323"
+      "fingerprint": "tok1:0bd98243a85984a11465cfe8ce3e3434e087718e1051ed0ef81dd4f76b7fb229"
     },
     {
       "crate_name": "vibe-core",
@@ -11821,7 +11830,7 @@
       "line": 137,
       "symbol": "vibe_core::manifest::document::tests::root_package_composes_workspace_and_package",
       "end_line": 155,
-      "fingerprint": "tok1:4d86e1e89ccc86be45e7fc9c02749638238d4d7ef3c2968b1c257d95a50835e2"
+      "fingerprint": "tok1:9b53342cd9642516b3617fff3dc2df9c2abbd3d2183098a46520e319512c158d"
     },
     {
       "crate_name": "vibe-core",
@@ -23722,6 +23731,60 @@
       "fingerprint": "tok1:f3378888c5e43bf3027524a5a2cd1df62a9ad5a7c5c8f721ae10f3693aba97c8"
     },
     {
+      "crate_name": "vibe-package-source",
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "item_kind": "mod",
+      "line": 3,
+      "symbol": "vibe_package_source::source_progress_tests",
+      "end_line": 3,
+      "fingerprint": "tok1:c065c21f470c3af1822d94dda796feb4b14d29b66f68029c5716fa0ba370604c"
+    },
+    {
+      "crate_name": "vibe-package-source",
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "item_kind": "fn",
+      "line": 207,
+      "symbol": "vibe_package_source::source_progress_tests::checkout_lookup_uses_checkout_purpose_on_multi_and_declared_embedded",
+      "end_line": 258,
+      "fingerprint": "tok1:d409d71cf9e3d2ef1e39b80b6d4080c5bb6cd3e3bf192753a6afa04f316152a2"
+    },
+    {
+      "crate_name": "vibe-package-source",
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "item_kind": "fn",
+      "line": 116,
+      "symbol": "vibe_package_source::source_progress_tests::download_lookup_follows_fetch_scope_and_preserves_dispatch_io",
+      "end_line": 205,
+      "fingerprint": "tok1:b8a538c8666d5d64671688e65b0131b7e3d2e2e1c6ac664eb94eb04cfa936b9e"
+    },
+    {
+      "crate_name": "vibe-package-source",
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "item_kind": "fn",
+      "line": 347,
+      "symbol": "vibe_package_source::source_progress_tests::embedded_precedence_retains_local_short_circuit_and_provenance",
+      "end_line": 393,
+      "fingerprint": "tok1:0425df4485361b2cc751b3f7c2ac8e22d890f61033fa8d0b02bbf25577dad1e2"
+    },
+    {
+      "crate_name": "vibe-package-source",
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "item_kind": "fn",
+      "line": 312,
+      "symbol": "vibe_package_source::source_progress_tests::explicit_inert_fetch_scope_does_not_leak_to_resolver_observer",
+      "end_line": 345,
+      "fingerprint": "tok1:4b102421d35be5782dbcea1ab5a7eb0c0294e98cbe5238e72ebe86a4352909ee"
+    },
+    {
+      "crate_name": "vibe-package-source",
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "item_kind": "fn",
+      "line": 260,
+      "symbol": "vibe_package_source::source_progress_tests::source_lookup_failure_preserves_error_and_terminalizes_responsible_scope",
+      "end_line": 310,
+      "fingerprint": "tok1:a59cd75593960696f65c7fa5b95d070f7851adfd232d02bbfd4953fae5ed2c16"
+    },
+    {
       "crate_name": "vibe-publish",
       "file": "crates/vibe-publish/src/lib.rs",
       "item_kind": "mod",
@@ -23932,9 +23995,9 @@
       "crate_name": "vibe-registry",
       "file": "crates/vibe-registry/src/lib.rs",
       "item_kind": "fn",
-      "line": 282,
+      "line": 283,
       "symbol": "vibe_registry::CachedPackage::package_meta",
-      "end_line": 302,
+      "end_line": 303,
       "fingerprint": "tok1:1c0512c3543896942ac6f2f6a412095ca508daf24148bd85fa4af1b219bc1642"
     },
     {
@@ -24625,9 +24688,9 @@
       "crate_name": "vibe-registry",
       "file": "crates/vibe-registry/src/multi_registry_resolver/walk.rs",
       "item_kind": "fn",
-      "line": 18,
+      "line": 19,
       "symbol": "vibe_registry::multi_registry_resolver::walk::MultiRegistryResolver::list_versions",
-      "end_line": 39,
+      "end_line": 40,
       "fingerprint": "tok1:675f56333d193ca938c2d863a7730a532e20c2e8850819eb4ef85029ff00a883"
     },
     {
@@ -24647,6 +24710,69 @@
       "symbol": "vibe_registry::multi_registry_resolver::walk::observation",
       "end_line": 3,
       "fingerprint": "tok1:073a54042a714ac0c09a1c976e7043858bc3df89bf453a33c48a6c17fbd2a964"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation.rs",
+      "item_kind": "fn",
+      "line": 96,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation::MultiRegistryResolver::resolve_for",
+      "end_line": 116,
+      "fingerprint": "tok1:6ec1e3200fe9542219cddd65282aedec93970c3731effd6c6307f04d356f89e1"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation.rs",
+      "item_kind": "fn",
+      "line": 118,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation::MultiRegistryResolver::resolve_for_with_progress",
+      "end_line": 145,
+      "fingerprint": "tok1:77e67f2a0a7b29bcb9fb6edd54c9ff1dabf94600953ff8ea5d9fc2b326564def"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "item_kind": "mod",
+      "line": 3,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests",
+      "end_line": 3,
+      "fingerprint": "tok1:c065c21f470c3af1822d94dda796feb4b14d29b66f68029c5716fa0ba370604c"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "item_kind": "fn",
+      "line": 265,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::discovery_fallback_and_metadata_failure_keep_original_error_and_own_rows",
+      "end_line": 308,
+      "fingerprint": "tok1:14ccccf6621f7f905d07b1a5217f8dfffa0a20b5a6eef9e4f59331ff17a9fc24"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "item_kind": "fn",
+      "line": 188,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::metadata_exact_and_pinned_redirect_fallback_have_one_responsible_task",
+      "end_line": 263,
+      "fingerprint": "tok1:46af7ccdae9f3ce3d17de90635f1e70e352b4b3036d03b24d2d59d6162d025aa"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "item_kind": "fn",
+      "line": 146,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::public_resolve_defaults_to_version_selection_and_inert_progress_preserves_work",
+      "end_line": 186,
+      "fingerprint": "tok1:92a08d761239c17b4d4b9342fe2bf2bf7c48c71af45f1dd8f2dce731515e3d77"
+    },
+    {
+      "crate_name": "vibe-registry",
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "item_kind": "fn",
+      "line": 81,
+      "symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::purpose_specific_full_walk_preserves_calls_results_and_freshness",
+      "end_line": 144,
+      "fingerprint": "tok1:b90398a95a7701597855b3d9d19624f05c5476a5aca9926a2e68b2e7baddd86d"
     },
     {
       "crate_name": "vibe-registry",
@@ -35555,6 +35681,14 @@
       "verb": "implements"
     },
     {
+      "file": "crates/vibe-cli/src/commands/install/confirm.rs",
+      "from_symbol": "vibe_cli::commands::install::confirm",
+      "line": 3,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#INSTALL-DESTINATION",
+      "verb": "implements"
+    },
+    {
       "file": "crates/vibe-cli/src/commands/install/direct.rs",
       "from_symbol": "vibe_cli::commands::install::direct",
       "line": 32,
@@ -35670,7 +35804,7 @@
     {
       "file": "crates/vibe-cli/src/commands/lifecycle.rs",
       "from_symbol": "vibe_cli::commands::lifecycle::classify_outcome",
-      "line": 454,
+      "line": 456,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-054#ENGINE-ALGORITHM",
       "verb": "implements"
@@ -35710,7 +35844,7 @@
     {
       "file": "crates/vibe-cli/src/commands/lifecycle.rs",
       "from_symbol": "vibe_cli::commands::lifecycle::execute",
-      "line": 171,
+      "line": 172,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-054#ENGINE-ALGORITHM",
       "verb": "implements"
@@ -50600,6 +50734,54 @@
       "verb": "implements"
     },
     {
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "from_symbol": "vibe_package_source::source_progress_tests",
+      "line": 3,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "from_symbol": "vibe_package_source::source_progress_tests::checkout_lookup_uses_checkout_purpose_on_multi_and_declared_embedded",
+      "line": 208,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "from_symbol": "vibe_package_source::source_progress_tests::download_lookup_follows_fetch_scope_and_preserves_dispatch_io",
+      "line": 117,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "from_symbol": "vibe_package_source::source_progress_tests::embedded_precedence_retains_local_short_circuit_and_provenance",
+      "line": 348,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "from_symbol": "vibe_package_source::source_progress_tests::explicit_inert_fetch_scope_does_not_leak_to_resolver_observer",
+      "line": 313,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-package-source/src/source_progress_tests.rs",
+      "from_symbol": "vibe_package_source::source_progress_tests::source_lookup_failure_preserves_error_and_terminalizes_responsible_scope",
+      "line": 261,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
       "file": "crates/vibe-publish/src/lib.rs",
       "from_symbol": "vibe_publish",
       "line": 28,
@@ -50787,7 +50969,7 @@
     {
       "file": "crates/vibe-registry/src/lib.rs",
       "from_symbol": "vibe_registry::CachedPackage::package_meta",
-      "line": 289,
+      "line": 290,
       "provenance": "authored",
       "uri": "spec://core-ai-native/mechanisms/ENGINE-CONFORM-v0.1#rules",
       "verb": "deviates",
@@ -51418,7 +51600,7 @@
     {
       "file": "crates/vibe-registry/src/multi_registry_resolver/walk.rs",
       "from_symbol": "vibe_registry::multi_registry_resolver::walk::MultiRegistryResolver::list_versions",
-      "line": 28,
+      "line": 29,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-002#solver",
       "verb": "implements"
@@ -51438,6 +51620,62 @@
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-registry/PROP-002#registry-model",
       "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation::MultiRegistryResolver::resolve_for",
+      "line": 107,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation::MultiRegistryResolver::resolve_for_with_progress",
+      "line": 133,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests",
+      "line": 3,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::discovery_fallback_and_metadata_failure_keep_original_error_and_own_rows",
+      "line": 266,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::metadata_exact_and_pinned_redirect_fallback_have_one_responsible_task",
+      "line": 189,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::public_resolve_defaults_to_version_selection_and_inert_progress_preserves_work",
+      "line": 147,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-registry/src/multi_registry_resolver/walk/observation_tests.rs",
+      "from_symbol": "vibe_registry::multi_registry_resolver::walk::observation_tests::purpose_specific_full_walk_preserves_calls_results_and_freshness",
+      "line": 82,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK",
+      "verb": "verifies"
     },
     {
       "file": "crates/vibe-registry/src/multi_registry_resolver/walk/tests.rs",
@@ -83054,7 +83292,7 @@
     },
     {
       "anchor": "root",
-      "content_hash": "sha256:4a81783116b83d16010cbdf678d146b1d76c435a120e26bef027c843d6fa8129",
+      "content_hash": "sha256:17cb8ce998dbd75f07c3fd7f28f29b07435859fd4e3603e573314d2f9f3f6deb",
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "PROP-060 — Observable CLI operations",
@@ -83117,7 +83355,7 @@
     },
     {
       "anchor": "architecture",
-      "content_hash": "sha256:8a85afe9728d4bd464048dfdd818225494d8690d2ae6a2000bccb00e1ae4adfb",
+      "content_hash": "sha256:847bbf54f948edc83f93bed205834f1591024532cec8d944ced93454b20a3a3f",
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Shared observation, separate command policy",
@@ -83143,12 +83381,30 @@
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-STAGES"
     },
     {
+      "anchor": "INSTALL-DESTINATION",
+      "content_hash": "sha256:b4c500bcc7cfebf1abc8990acf8846c932dbc67e25b4727a34dcc26a5c387fd5",
+      "doc_path": "common/PROP-060",
+      "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
+      "heading": "Installation notices and confirmations identify the resolved destination from the already prepared canonical target and active layout. A bare vibedeps/ is insufficient to identify the concrete project being changed. Concrete projects ask confirmation under the existing invocation posture. Internal materialisation/boot terminology does not replace the user's installation action, scope and path. @status:spec/done",
+      "line": 15,
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#INSTALL-DESTINATION"
+    },
+    {
+      "anchor": "PACKAGE-RESOLUTION-WORK",
+      "content_hash": "sha256:0f222002efeadc19e9e5cce4794a84d44bf7d77e6a9f6f9d13c406c1c4b098f2",
+      "doc_path": "common/PROP-060",
+      "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
+      "heading": "Per-package observations distinguish version selection, version enumeration, metadata reads, download-source lookup and in-place checkout-source lookup. Labels include the requested package version or constraint when supplied; one bare “Resolving package” label must not stand for these different operations. Nested source probes and accepted redirect fallbacks belong to the already active version/metadata task rather than producing redundant sibling histories or failed rows for a fallback that succeeds. Fetch preparation follows the caller's supplied progress scope. This observation change must preserve resolver calls, source precedence, backend I/O, cache freshness, returned values and errors; hiding repeated work is not an optimization of that work. @status:spec/done",
+      "line": 16,
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PACKAGE-RESOLUTION-WORK"
+    },
+    {
       "anchor": "SELF-STAGES",
       "content_hash": "sha256:40c2e5c62a523b7e40a1fa09ebdbcc371ca99f63ca9dbf6fefb2fb423a1fbcb7",
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "The self install/update/reinstall paths identify source versus binary acquisition. Source execution observes source discovery/fetch/checkout, prerequisite preparation, each essential binary build, placement and activation. Binary execution observes release metadata, existing-generation verification or reuse, bounded download bytes, extraction/verification and activation. Existing immutable generations, offline admission and injected environment persistence remain unchanged. @status:spec/done",
-      "line": 15,
+      "line": 17,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#SELF-STAGES"
     },
     {
@@ -83157,7 +83413,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "The same renderer covers self gc: start before store inspection, identify the selected action, observe protection checks and candidate preflight, name each version or cache being removed, and report state recording and optional managed-source cleanup. The existing candidate list provides finite instance counts; a guarded tree scan or recursive filesystem deletion remains indeterminate with elapsed time and waiting updates instead of an invented byte/file total or an extra counting pass. Active, rollback and running instances retain the existing protection law. Prompts suspend the display. Cancellation, an empty cache and a nothing-to-prune result are explicit skipped outcomes. Best-effort removal failures remain visible as failed/skipped components without changing exit codes, inventory mutation, or the deletion algorithm. Tests use only temporary stores. @status:spec/done",
-      "line": 16,
+      "line": 18,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#GC-STAGES"
     },
     {
@@ -83166,7 +83422,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Progress must not scan a tree or repeat network work solely to invent a denominator. Known counters come from work already required. High-frequency updates are throttled at the renderer. Network and subprocess waits remain visibly active even before their first byte. Any performance optimization is separately justified by measured or deterministic evidence and preserves freshness semantics. @status:spec/done",
-      "line": 17,
+      "line": 19,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#COST"
     },
     {
@@ -83175,7 +83431,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "CLI-wide coverage, owner extension 2026-09-17",
-      "line": 19,
+      "line": 21,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#coverage"
     },
     {
@@ -83184,7 +83440,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Every finite CLI command that can wait on network, subprocesses, inventory, hashing, compilation or filesystem mutation has an invocation-owned activity before the first blocking stage. A closed command-policy match distinguishes existing operation roots, finite commands, interactive interfaces, stdio protocols and intentionally persistent servers. Adding a command must select its observation policy explicitly. Fast metadata/help/version paths may remain silent. A generic activity is a liveness fallback, not a substitute for named real stages at the blocking seams identified by the command audit. @status:spec/done",
-      "line": 20,
+      "line": 22,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#COMMAND-COVERAGE"
     },
     {
@@ -83193,7 +83449,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Coverage includes all self maintenance verbs; project and global application install/update/reinstall/uninstall; lifecycle/build/package/deploy/clean; registry/cache/workspace operations; package search/outdated; documentation inventory/build/check/shell acquisition; source inspection, analysis, traceability and refactoring. Components report their actual selection, scan, verification, transfer, compile, mutation or output stage. Existing observer ports are bridged where available. No additional full-tree scan exists solely for progress. @status:spec/done",
-      "line": 21,
+      "line": 23,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#COMMAND-STAGES"
     },
     {
@@ -83202,7 +83458,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Progress never enters stdout. Commands that render an interactive interface, serve a stdio protocol, run an intentionally persistent server or transfer terminal ownership to a child do not retain an animated parent display over that interface. Finite commands with raw or independently rendered stdout use plain stderr activity until their output is synchronized with the renderer. Known typed waiting/parked/cancelled outcomes are described honestly; invocation completion does not claim a persistent workflow's goal is complete. No observation may alter authentication, selection, mutation, exit status or command data formats. @status:spec/done",
-      "line": 22,
+      "line": 24,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#STREAM-SAFETY"
     },
     {
@@ -83211,7 +83467,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "The global --no-progress flag or truthy VIBE_NO_PROGRESS disables progress and its verbose detail without suppressing ordinary final command output. Quiet and JSON modes continue to suppress progress independently. The environment is read only at the composition root. Deterministic documentation examples may use this documented opt-out to preserve their ordinary stdout assertions; this needs no regeneration of the documentation corpus or broad user-home/source snapshots. @status:spec/done",
-      "line": 23,
+      "line": 25,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#PROGRESS-OPT-OUT"
     },
     {
@@ -83220,7 +83476,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "The command audit records each command family's policy, actual blocking stages and acceptance evidence. Focused fake network/process or tiny filesystem scenarios verify start-before-wait, named stages, progress suppression and stream preservation across representative families; the closed policy is checked against the CLI command inventory. Existing accepted install/self-update evidence remains valid for unchanged code. Destructive maintenance probes operate only in isolated temporary stores. @status:spec/done",
-      "line": 24,
+      "line": 26,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#COVERAGE-VERIFICATION"
     },
     {
@@ -83229,7 +83485,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Decision record",
-      "line": 26,
+      "line": 28,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#decisions"
     },
     {
@@ -83238,7 +83494,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Decision: share observation in the existing core crate and implement one CLI renderer for the two real consumers. Why: registry resolution runs below the CLI, while self-update has a separate policy; both need identical progress semantics without a dependency on terminal code. Rejected: direct library printing (breaks machine consumers), a process-global reporter (crosses invocation ownership), and fixed percentages for unknown work (misrepresents completion). Revisit if a second surface needs persistent or remotely streamed progress; the current in-process events are not a durable wire protocol. @status:spec/done",
-      "line": 27,
+      "line": 29,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#RENDERER-CHOICE"
     },
     {
@@ -83247,7 +83503,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Acceptance",
-      "line": 29,
+      "line": 31,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#verification"
     },
     {
@@ -83256,7 +83512,7 @@
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Focused deterministic fixtures cover nesting and terminal outcomes, quiet/JSON compatibility, redirected output without ANSI, verbose redaction, progress before a delayed operation completes, finite download/materialization counts and source build output. Registry fixtures verify connection-pool reuse without changing source or freshness selection. Terminal rendering is checked against an in-memory terminal, including a narrow viewport. All probes use isolated project/settings/store roots and injected activation; no test updates the developer's real installation or durable shell environment. @status:impl/done",
-      "line": 30,
+      "line": 32,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#TESTS"
     },
     {
