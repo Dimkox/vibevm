@@ -19,6 +19,9 @@ use super::archive::{ArchiveEntry, read_zip_bounded, write_zip};
 use super::scrub_release_credentials;
 use super::snapshot::{self, GitIdentity, SourceSnapshot};
 
+mod bootstrap;
+use bootstrap::prepare_self_check_dependencies;
+
 mod output;
 use output::{run_visible, write_output};
 
@@ -213,6 +216,7 @@ fn run_cargo_gate(
 }
 
 fn run_self_check(snapshot: &SourceSnapshot, target_dir: &Path) -> Result<()> {
+    prepare_self_check_dependencies(&snapshot.root)?;
     initialise_scratch_git(&snapshot.root)?;
     let mut command = Command::new("bash");
     command

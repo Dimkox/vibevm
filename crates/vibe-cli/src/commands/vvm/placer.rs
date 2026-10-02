@@ -294,7 +294,10 @@ pub(crate) fn place(
             source,
         })?;
     }
-    let staging_parent = staging.parent().expect("version staging has a parent");
+    let staging_parent = staging.parent().ok_or_else(|| PlaceError::Layout {
+        path: staging.clone(),
+        source: io::Error::new(io::ErrorKind::InvalidInput, "version staging has no parent"),
+    })?;
     guard(store, staging_parent)?;
     fs::create_dir_all(staging_parent).map_err(|source| PlaceError::Layout {
         path: staging_parent.to_path_buf(),
@@ -339,9 +342,14 @@ pub(crate) fn place(
                 source,
             })?;
         }
-        let expected = manifest
-            .get(rel)
-            .expect("distribution manifest covers every file");
+        let expected = manifest.get(rel).ok_or_else(|| PlaceError::Copy {
+            from: src.clone(),
+            to: dest.clone(),
+            source: io::Error::new(
+                io::ErrorKind::InvalidData,
+                "distribution manifest does not cover the placed file",
+            ),
+        })?;
         if !actual_matches(expected, &dest) {
             return Err(PlaceError::Copy {
                 from: src.clone(),
@@ -411,6 +419,9 @@ pub(crate) fn publish_staged_instance(
     })?;
     Ok(final_dir)
 }
+
+#[path = "placer_missing_manifest_tests.rs"]
+mod missing_manifest_tests;
 
 #[cfg(test)]
 mod tests {

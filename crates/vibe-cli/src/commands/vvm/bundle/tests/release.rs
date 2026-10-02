@@ -3,11 +3,14 @@
 //! (PROP-019 `##CMD-UPDATE`, `##CMD-REINSTALL`). Every case runs against a
 //! substituted `Downloader`, so the whole lane is exercised without a network.
 
+#![cfg(test)]
+
 use super::super::RemoteContext;
 use super::*;
 use vibe_core::progress::{Progress, ProgressTask};
 
 /// A mocked release server: one aggregate manifest and the bundle it names.
+#[cfg(test)]
 fn release_server(root: &Path, label: &str, fixture: &Fixture) -> ReleaseDownloader {
     let aggregate = root.join(format!("DISTRIBUTIONS-{label}.json"));
     std::fs::write(&aggregate, aggregate_for(fixture).to_json_bytes().unwrap()).unwrap();
@@ -43,6 +46,7 @@ fn drive<T>(
 
 /// A machine already holding `fixture`'s release as its running binary
 /// instance — the state every `update` / `reinstall` case starts from.
+#[cfg(test)]
 fn seed_machine(temp: &Path, fixture: &Fixture) -> (VersionStore, VvmEnv, InstallRecord) {
     let store = VersionStore::new(temp.join("opt"));
     let env = VvmEnv {

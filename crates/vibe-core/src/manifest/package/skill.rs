@@ -95,6 +95,28 @@ pub struct SkillDecl {
 
 /// One selected subtree from an authenticated `[[embedded_source]]` merged
 /// into an adapter-owned skill at projection time.
+///
+/// Declare the source name on the package's `[[embedded_source]]` table;
+/// resource validation then checks the selection and destination before projection.
+///
+/// ```
+/// use vibe_core::manifest::{SkillDecl, SkillResourceDecl};
+///
+/// let resource: SkillResourceDecl = toml::from_str(r#"
+/// embedded_source = "upstream"
+/// path = "docs"
+/// include = ["guide.md", "examples/**/*.md"]
+/// target = "references/upstream"
+/// "#).unwrap();
+/// let mut adapter: SkillDecl = toml::from_str(r#"
+/// name = "review-code"
+/// path = "skills/review-code"
+/// "#).unwrap();
+/// adapter.resources.push(resource);
+/// adapter.validate().unwrap();
+/// adapter.resources[0].target = "SKILL.md".into();
+/// assert!(adapter.validate().unwrap_err().contains("below `references/`"));
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct SkillResourceDecl {

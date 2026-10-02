@@ -226,54 +226,9 @@ pub enum SourceKind {
     Local,
 }
 
-/// One immutable external source authenticated for a locked package. The
-/// record contains portable provenance only: cache paths and credentials are
-/// deliberately absent.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct LockedEmbeddedSource {
-    pub name: String,
-    pub source_url: SourceUrl,
-    /// Optional advertised ref used to obtain the exact commit. It is fetch
-    /// provenance, never the source identity.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub source_ref: Option<String>,
-    /// Exact commit verified at fetch time.
-    pub resolved_commit: String,
-    /// Git tree object owned by `resolved_commit`.
-    pub tree_oid: String,
-    /// Independent SHA-256 identity of the upstream tree.
-    pub content_hash: ContentHash,
-    /// Authors of the referenced upstream bytes. This remains distinct from
-    /// the owning package's `[package].authors`, which records only package
-    /// authorship.
-    pub upstream_authors: Vec<String>,
-    /// SPDX expression for the upstream bytes. This is distinct from the
-    /// adapter package's own `[package].license`.
-    pub upstream_license: String,
-    /// Portable path of the verified licence file inside the source tree.
-    pub license_path: PathBuf,
-    /// Immutable public upstream license URL at the resolved commit.
-    pub license_url: String,
-    /// Hash of the licence file bytes verified inside the authenticated tree.
-    pub license_file_sha256: ContentHash,
-}
-
-impl LockedEmbeddedSource {
-    /// Whether this portable lock row authenticates exactly one authored
-    /// declaration. Cache paths are deliberately absent from both sides.
-    pub fn matches_declaration(&self, declaration: &super::EmbeddedSourceDecl) -> bool {
-        self.name == declaration.name
-            && self.source_url.as_str() == declaration.url
-            && self.source_ref == declaration.ref_hint
-            && self.resolved_commit == declaration.commit
-            && self.content_hash == declaration.content_hash
-            && self.upstream_authors == declaration.upstream_authors
-            && self.upstream_license == declaration.upstream_license
-            && self.license_path == declaration.license_path
-            && self.license_url == declaration.license_url
-    }
-}
+#[path = "lockfile/embedded_source.rs"]
+mod embedded_source;
+pub use embedded_source::LockedEmbeddedSource;
 
 /// One installed package, as it appears in the lockfile.
 ///

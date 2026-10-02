@@ -150,7 +150,8 @@ fn stdin_write_failure_kills_and_reaps_before_returning() {
     let run = allocate_run_id(dir.path()).unwrap();
     let scratch = execution_scratch(dir.path(), &run, "stdin-reap").unwrap();
     let marker = dir.path().join("late-side-effect");
-    let program = "python".into();
+    // Unix distributions expose Python 3 under its versioned executable name.
+    let program = if cfg!(windows) { "python" } else { "python3" }.into();
     let args = vec![
         "-c".into(),
         format!(

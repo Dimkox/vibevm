@@ -382,3 +382,33 @@ fn an_exclusive_lock_admits_one_holder_at_a_time() {
         "and admitted once it drops",
     );
 }
+
+/// A duplicate models the open file description temporarily inherited by a
+/// parallel fork before exec closes it. Its lifetime must not extend the
+/// cooperative transaction's ownership beyond the guard.
+#[cfg(unix)]
+#[test]
+fn dropping_the_lock_guard_unlocks_while_a_duplicate_descriptor_survives() {
+    let (_dir, project) = project();
+    let held = project
+        .try_lock("fork.lock")
+        .unwrap()
+        .expect("first holder");
+    let inherited = held._file.try_clone().unwrap();
+    assert!(project.try_lock("fork.lock").unwrap().is_none());
+
+    drop(held);
+    let next = project
+        .try_lock("fork.lock")
+        .unwrap()
+        .expect("guard drop unlocks even while its duplicate survives");
+    assert!(project.try_lock("fork.lock").unwrap().is_none());
+
+    drop(inherited);
+    assert!(
+        project.try_lock("fork.lock").unwrap().is_none(),
+        "closing the old descriptor does not release the new holder's lock",
+    );
+    drop(next);
+    assert!(project.try_lock("fork.lock").unwrap().is_some());
+}

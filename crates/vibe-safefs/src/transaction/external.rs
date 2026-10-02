@@ -312,7 +312,9 @@ impl ExternalDirectory {
             });
         }
         platform::remove_expected(&self.pinned, name, expected).map_err(|error| match error {
+            #[cfg(windows)]
             platform::NativeRemoveError::Changed(detail) => OwnedTreeCleanupError::Third { detail },
+            #[cfg(windows)]
             platform::NativeRemoveError::Io(error) => {
                 OwnedTreeCleanupError::Io(anyhow::Error::new(error))
             }

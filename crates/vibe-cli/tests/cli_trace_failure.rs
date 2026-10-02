@@ -316,6 +316,12 @@ fn a_failed_quiet_traced_command_is_one_line_with_a_suffix() {
     let user = UserScratch::new();
     let registry = tempfile::tempdir().unwrap();
     failing_package(registry.path(), "pre-install", "SENTINEL-QUIET");
+    // Direct installs inherit child diagnostics even under --quiet. This case
+    // isolates the command's error line and trace suffix with a silent failure;
+    // the other failure fixtures retain their diagnostic/privacy sentinels.
+    let hooks = registry.path().join("org.fail/hooked/v0.1.0/hooks");
+    std::fs::write(hooks.join("fail.sh"), "exit 3\n").unwrap();
+    std::fs::write(hooks.join("fail.ps1"), "exit 3\n").unwrap();
 
     let run = |flags: &[&str]| {
         let project = tempfile::tempdir().unwrap();

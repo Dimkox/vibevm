@@ -49,12 +49,12 @@ binary works on the Windows hosts the projects target. @status:impl/done
 
 ### macOS {#install-macos}
 
-@fact:INSTALL-MACOS Apple Silicon (Intel: swap in
-`x86_64-apple-darwin.tar.gz`): @status:impl/done
+@fact:INSTALL-MACOS Intel macOS uses the published ZIP. Apple Silicon can build the pinned generator natively with `cargo install --git https://github.com/jsontypedef/json-typedef-codegen --tag v0.4.1 --locked --bin jtd-codegen jtd_codegen_cli`; upstream does not publish an ARM64 binary for this version. @status:impl/done
 
 ```sh
-curl -L https://github.com/jsontypedef/json-typedef-codegen/releases/download/v0.4.1/aarch64-apple-darwin.tar.gz \
-  | tar -xz -C tools/jtd-codegen
+curl -LO https://github.com/jsontypedef/json-typedef-codegen/releases/download/v0.4.1/x86_64-apple-darwin.zip
+unzip -d tools/jtd-codegen x86_64-apple-darwin.zip
+chmod +x tools/jtd-codegen/jtd-codegen
 ```
 
 ### Linux {#install-linux}
@@ -62,8 +62,9 @@ curl -L https://github.com/jsontypedef/json-typedef-codegen/releases/download/v0
 @fact:INSTALL-LINUX One command: @status:impl/done
 
 ```sh
-curl -L https://github.com/jsontypedef/json-typedef-codegen/releases/download/v0.4.1/x86_64-unknown-linux-gnu.tar.gz \
-  | tar -xz -C tools/jtd-codegen
+curl -LO https://github.com/jsontypedef/json-typedef-codegen/releases/download/v0.4.1/x86_64-unknown-linux-gnu.zip
+unzip -d tools/jtd-codegen x86_64-unknown-linux-gnu.zip
+chmod +x tools/jtd-codegen/jtd-codegen
 ```
 
 ### Verify {#verify}

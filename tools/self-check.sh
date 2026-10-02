@@ -71,8 +71,12 @@ run_step() {
 
 run_step "cargo fmt --all --check" \
   cargo fmt --all --check || OVERALL=$?
+TEST_OPTIONS=(test --workspace --quiet)
+if [ "$KEEP_GOING" -eq 1 ]; then
+  TEST_OPTIONS+=(--no-fail-fast)
+fi
 run_step "cargo test --workspace" \
-  cargo test --workspace --quiet || OVERALL=$?
+  cargo "${TEST_OPTIONS[@]}" || OVERALL=$?
 run_step "cargo clippy --workspace --all-targets -- -D warnings" \
   cargo clippy --workspace --all-targets --quiet -- -D warnings || OVERALL=$?
 run_step "vibe check --path . --quiet" \

@@ -20,7 +20,7 @@ fn post_fail_reply_keeps_bounded_script_streams_in_generated_outcome() {
     .unwrap();
     fs::write(
         package.join("hooks/post.sh"),
-        "printf FAIL-REPLY-OUT\npython -c \"import sys; sys.stderr.write('FAIL-REPLY-ERR' + 'x' * 1048600)\"\nprintf '%s' '{\"artifacts\":[],\"envelope\":1,\"message\":\"semantic\",\"status\":\"fail\",\"tasks\":[]}' > \"$VIBE_REPLY\"\n",
+        "printf FAIL-REPLY-OUT\nawk 'BEGIN { printf \"FAIL-REPLY-ERR\"; for (i = 0; i < 1048600; i++) printf \"x\" }' >&2\nprintf '%s' '{\"artifacts\":[],\"envelope\":1,\"message\":\"semantic\",\"status\":\"fail\",\"tasks\":[]}' > \"$VIBE_REPLY\"\n",
     )
     .unwrap();
     fs::write(

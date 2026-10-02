@@ -263,12 +263,19 @@ mod tests {
         let path = slot.path().join("payload.txt");
         fs::write(&path, "first").unwrap();
         let identity = open_recorded_file(&path).unwrap().identity;
-        fs::remove_file(&path).unwrap();
+        // Keep the inspected inode allocated so the replacement must be a
+        // different object even on Unix filesystems that reuse freed inodes.
+        fs::rename(&path, slot.path().join("inspected-payload.txt")).unwrap();
         fs::write(&path, "replacement").unwrap();
 
         let error =
             recheck_path_identity(slot.path(), Path::new("payload.txt"), identity).unwrap_err();
         assert!(error.to_string().contains("changed identity"), "{error}");
+        assert_eq!(fs::read_to_string(&path).unwrap(), "replacement");
+        assert_eq!(
+            fs::read_to_string(slot.path().join("inspected-payload.txt")).unwrap(),
+            "first",
+        );
     }
 
     #[test]

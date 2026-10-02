@@ -259,7 +259,9 @@ fn an_injected_post_reads_identity_swap_refuses() {
     let file = dir.path().join("a.txt");
     inject::arm_after_reads(Some(Box::new(move |relative| {
         assert_eq!(relative, "a.txt");
-        fs::remove_file(&file).unwrap();
+        // Keep the inspected object alive: unlink-and-create can immediately
+        // reuse its inode on Unix, which would not inject an identity change.
+        fs::rename(&file, file.with_extension("previous")).unwrap();
         fs::write(&file, "TWO").unwrap();
     })));
 

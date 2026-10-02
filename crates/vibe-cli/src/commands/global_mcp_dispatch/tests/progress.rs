@@ -1,5 +1,3 @@
-#![cfg(test)]
-
 //! Typed global-install progress regression coverage.
 
 use super::*;

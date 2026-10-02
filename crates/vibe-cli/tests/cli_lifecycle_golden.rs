@@ -365,7 +365,7 @@ config = { message = "GOLDEN-GENERATE" }
     fs::create_dir_all(&scripts).unwrap();
     fs::write(
         scripts.join("fail.sh"),
-        "printf PHASE-OUT\nprintf PHASE-ERR >&2\nexit 29\n",
+        "printf 'PHASE-OUT\\n'\nprintf PHASE-ERR >&2\nexit 29\n",
     )
     .unwrap();
     fs::write(
@@ -457,9 +457,9 @@ fn install_barrier_document_stream_is_pinned_in_full() {
         "[package]\ngroup='org.goldenpkg'\nname='hooked'\nkind='tool'\nversion='0.1.0'\n\n[hooks]\npre-install='hooks/pre'\npost-install='hooks/post'\n",
     )
     .unwrap();
-    fs::write(package.join("hooks/pre.sh"), "printf PRE-RAN\n").unwrap();
+    fs::write(package.join("hooks/pre.sh"), "printf 'PRE-RAN\\n'\n").unwrap();
     fs::write(package.join("hooks/pre.ps1"), "Write-Output PRE-RAN\n").unwrap();
-    fs::write(package.join("hooks/post.sh"), "printf POST-RAN\n").unwrap();
+    fs::write(package.join("hooks/post.sh"), "printf 'POST-RAN\\n'\n").unwrap();
     fs::write(package.join("hooks/post.ps1"), "Write-Output POST-RAN\n").unwrap();
 
     let user = UserScratch::new();

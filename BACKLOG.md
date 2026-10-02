@@ -2370,5 +2370,5 @@ structure, and it goes when the file does.
 | @fact:B215-WHAT **what** | The existing global MCP test modules repeat cfg(test) at both the module declaration and file level. Strict all-target CLI clippy rejects duplicated_attributes although ordinary compilation and tests accept them. |
 | @fact:B215-EVIDENCE **evidence** | 2026-10-02: cargo clippy -p vibe-cli --all-targets -- -D warnings reports duplicate attributes in global_mcp_dispatch/tests.rs:1 and tests/progress.rs:1; these files are unchanged by the init role feature. |
 | @fact:B215-SEVERITY **severity** | P3 — inherited test-only lint debt. |
-| @fact:B215-DISPOSITION **disposition** | `open` — remove the redundant file attributes while retaining cfg on module declarations, then run strict all-target CLI clippy. Keep this cleanup separate from root init semantics. |
+| @fact:B215-DISPOSITION **disposition** | `closed` — redundant file attributes removed; parent test-only boundaries retained. Full Linux workspace all-target Clippy and full seven-step gate passed during 1.0.3 distribution validation (2026-10-02). |
 | @fact:B215-FILED **filed by** | Init root declaration/group verification, 2026-10-02. |

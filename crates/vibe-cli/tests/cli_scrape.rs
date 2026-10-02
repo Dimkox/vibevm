@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
+#[cfg(windows)]
 use std::process::Command as ProcessCommand;
 
 use assert_cmd::Command;
@@ -499,11 +500,24 @@ fn execution_modes_enter_real_planning_and_recovery_paths() {
         .failure()
         .stderr(predicate::str::contains("requires an explicit `--path"));
 
+    let project = tempfile::tempdir().unwrap();
+    fs::write(project.path().join("untouched.txt"), b"preserve").unwrap();
+    let project_before = exact_project_snapshot(project.path());
+    let settings_before = exact_project_snapshot(settings.path());
     vibe(&settings)
-        .args(["scrape", "--recover", "--path", "."])
+        .args(["scrape", "--recover", "--path"])
+        .arg(project.path())
         .assert()
         .failure()
-        .stderr(predicate::str::contains("no pending scrape transaction"));
+        .stderr(predicate::str::contains(if cfg!(windows) {
+            "no pending scrape transaction"
+        } else {
+            "scrape-platform-unsupported"
+        }));
+    assert_eq!(exact_project_snapshot(project.path()), project_before);
+    if !cfg!(windows) {
+        assert_eq!(exact_project_snapshot(settings.path()), settings_before);
+    }
 }
 
 #[test]

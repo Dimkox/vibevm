@@ -314,9 +314,86 @@ fn local_context(phase: &tempfile::TempDir, protected: &tempfile::TempDir) -> Lo
 fn opaque_identity(path: &std::path::Path) -> vibe_safefs::FileIdentity {
     let anchor = tempfile::tempdir().unwrap();
     let project = Project::open(anchor.path()).unwrap();
+    // The fixture is this test executable, whose debug information can exceed
+    // 64 MiB on Linux; seal its exact observed size without changing product caps.
+    let size = usize::try_from(std::fs::metadata(path).unwrap().len()).unwrap();
     Project::pin_absolute_file(path)
         .unwrap()
-        .read_snapshot_bounded(&project, 64 * 1024 * 1024)
+        .read_snapshot_bounded(&project, size)
         .unwrap()
         .identity
+}
+
+/// Keep each native-process scenario active on unsupported hosts: the exact
+/// requested plan must refuse before execution or any filesystem effects.
+fn assert_native_unix_refusal(plan: &PreparedHealth, context: &PhaseContext) -> bool {
+    if cfg!(windows) {
+        return false;
+    }
+    struct ObservedBackend {
+        native: LocalProcessBackend,
+        executions: usize,
+        reproofs: usize,
+    }
+    impl super::backend::sealed::Sealed for ObservedBackend {}
+    impl HealthBackend for ObservedBackend {
+        fn capabilities(&self) -> BackendCapabilities {
+            self.native.capabilities()
+        }
+        fn execute(
+            &mut self,
+            request: BackendCommandRequest<'_>,
+        ) -> Result<CommandExecution, HealthError> {
+            self.executions += 1;
+            self.native.execute(request)
+        }
+        fn reprove_tree(&mut self, context: &PhaseContext) -> Result<tree::TreeSeal, HealthError> {
+            self.reproofs += 1;
+            self.native.reprove_tree(context)
+        }
+    }
+    fn seal(root: &str) -> tree::TreeSeal {
+        let project = Project::open(std::path::Path::new(root)).unwrap();
+        tree::TreeSeal::from_inventory(&crate::inventory::collect(&project).unwrap())
+    }
+    let mut backend = ObservedBackend {
+        native: LocalProcessBackend::new(),
+        executions: 0,
+        reproofs: 0,
+    };
+    let capabilities = backend.capabilities();
+    assert!(!capabilities.exact_executable_identity);
+    assert!(!capabilities.process_tree_containment);
+    assert!(!capabilities.forced_tree_termination);
+    let blockers = capability_blockers(plan, capabilities, context.same_display_path_required);
+    for check in &plan.checks {
+        assert!(check.sandbox.exact_executable_identity);
+        assert!(check.sandbox.process_tree_containment);
+        for code in [
+            "health-exact-exec-unavailable",
+            "health-process-tree-unavailable",
+        ] {
+            assert!(blockers.iter().any(|blocker| blocker.code == code
+                && blocker.check_id.as_deref() == Some(check.id.as_str())));
+        }
+    }
+    let phase_before = seal(&context.root);
+    let protected_before = seal(&context.protected_root);
+    assert!(!std::path::Path::new(&context.scratch).exists());
+    assert!(!std::path::Path::new(&context.result).exists());
+    let error = run_phase(&mut backend, plan, context).unwrap_err();
+    let HealthError::Unsupported(detail) = error else {
+        panic!("expected native capability refusal, got {error}")
+    };
+    assert!(detail.contains(&format!("healthcheck `{}` requirements", plan.checks[0].id)));
+    assert_eq!(
+        backend.executions, 0,
+        "unsupported plans must never reach process creation"
+    );
+    assert_eq!(backend.reproofs, 0);
+    assert_eq!(seal(&context.root), phase_before);
+    assert_eq!(seal(&context.protected_root), protected_before);
+    assert!(!std::path::Path::new(&context.scratch).exists());
+    assert!(!std::path::Path::new(&context.result).exists());
+    true
 }

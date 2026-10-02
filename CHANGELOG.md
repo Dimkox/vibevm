@@ -45,6 +45,11 @@ instead of repeating an indistinguishable "Resolving" label.
 - **Prompt coexistence:** progress stays paused for the entire field-entry
   dialog, however long a person leaves it unanswered, and resumes afterward.
   Native client-directory injection isolates global MCP fixtures on Windows.
+- **Release validation:** the full workspace gate now provisions its pinned
+  generator and clean-snapshot dependency slot. Unix lock guards explicitly
+  release inherited file-description locks; placement rejects incomplete
+  manifests through typed errors. Portable fixtures retain identity, rollback,
+  capability-refusal and stream assertions across operating systems.
 
 ## [1.0.2] — 2026-10-01
 

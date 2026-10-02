@@ -342,12 +342,15 @@ impl Project {
             if !held {
                 return Ok(None);
             }
-            if still_named(&vibe, name, &file, &display)? {
-                return Ok(Some(LockGuard { _file: file }));
+            // Every successfully locked handle has the same release law,
+            // including a rejected identity check or its I/O failure.
+            let guard = LockGuard { _file: file };
+            if still_named(&vibe, name, &guard._file, &display)? {
+                return Ok(Some(guard));
             }
-            // Dropping releases the lock on the object the name no longer
-            // means, so the next attempt can contend for the current one.
-            drop(file);
+            // Release explicitly before closing the stale handle: a concurrent
+            // Unix fork can temporarily retain its open file description.
+            drop(guard);
         }
         bail!(
             "`{}` was replaced under every one of {LOCK_ATTEMPTS} lock attempts; refusing to \
@@ -386,8 +389,18 @@ fn still_named(vibe: &Pinned, name: &str, locked: &std::fs::File, display: &Path
 #[derive(Debug)]
 #[spec(documents = "spec://org.vibevm.core/vibevm/common/PROP-054#REPLY-SHAPE")]
 pub struct LockGuard {
-    /// Intentionally live: dropping it releases the OS lock.
+    /// Held until the guard explicitly unlocks it, then closes the handle.
     _file: std::fs::File,
+}
+
+impl Drop for LockGuard {
+    fn drop(&mut self) {
+        // Unix flock belongs to the open file description. A descriptor
+        // inherited by another thread's fork keeps it alive until exec, even
+        // after our close. Unlock now so the guard's lifetime remains the
+        // authority; close still runs as the fallback if unlocking fails.
+        let _ = self._file.unlock();
+    }
 }
 
 include!("project/pinned.rs");

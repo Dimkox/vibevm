@@ -372,14 +372,11 @@ network = "deny"
         .read_file_snapshot_bounded("notes.txt", before.len())
         .unwrap()
         .unwrap();
-    let inventory = vec![InventoryEntry {
-        path: "notes.txt".to_owned(),
-        kind: EntryKind::File,
-        sha256: Some(digest(before)),
-        bytes: Some(before.len() as u64),
-        unix_mode: None,
-        identity: Some(snapshot.identity),
-    }];
+    // Observe the actual platform mode alongside identity, digest and size;
+    // fabricating mode=None would describe a different preimage on Unix.
+    let inventory = crate::inventory::collect(&project).unwrap().entries;
+    assert_eq!(inventory.len(), 1);
+    assert_eq!(inventory[0].identity, Some(snapshot.identity));
     let prepared = prepare_rewrites(&project, &contract, inventory.as_slice()).unwrap();
     assert!(prepared.blockers.is_empty());
     assert_eq!(prepared.rewrites.len(), 1);

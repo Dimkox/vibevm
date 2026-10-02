@@ -1,5 +1,3 @@
-#![cfg(test)]
-
 //! In-process global MCP command integration with explicit isolated agent dirs.
 
 use super::*;

@@ -1,13 +1,14 @@
 use std::fs;
 use std::path::Path;
 
+#[cfg(windows)]
 use crate::{
-    CleanupPreparation, DirectoryDurability, ExternalStore, OwnedTreeCleanupError,
-    OwnedTreeCleanupProgress, OwnedTreeObservation, Project, RenameError,
+    CleanupPreparation, OwnedTreeCleanupError, OwnedTreeCleanupProgress, OwnedTreeObservation,
     arm_after_owned_tree_publish_move, arm_after_rename_source_check, arm_before_owned_tree_check,
     arm_before_owned_tree_publish, arm_before_rename_noreplace, arm_between_manifest_passes,
-    arm_during_manifest_lease, arm_during_native_mutation, arm_same_filesystem_check,
+    arm_during_manifest_lease, arm_during_native_mutation,
 };
+use crate::{DirectoryDurability, ExternalStore, Project, RenameError, arm_same_filesystem_check};
 
 fn project() -> (tempfile::TempDir, Project) {
     let root = tempfile::tempdir().unwrap();
