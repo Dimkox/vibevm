@@ -2342,3 +2342,13 @@ structure, and it goes when the file does.
 | @fact:B212-SEVERITY **severity** | P3 — a normative text that trails the product. |
 | @fact:B212-DISPOSITION **disposition** | `open` — reconcile PROP-035 with PROP-045 by the owner's hand, and add the agreement check. |
 | @fact:B212-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-213 — audit native client configuration isolation in remaining Windows tests {#b-213}
+
+| field | value |
+|---|---|
+| @fact:B213-WHAT **what** | `UserScratch` relocates Vibe settings/cache, but Windows `dirs` resolves client home/config through KnownFolders rather than HOME/USERPROFILE overrides. A user-scope MCP subprocess fixture is therefore not isolated by those environment variables. The global MCP fixtures found during agent-selection work were replaced with in-process dispatch over injected temporary client directories; remaining client-config test surfaces need an explicit audit. |
+| @fact:B213-EVIDENCE **evidence** | 2026-10-02: `dirs-5.0.1/src/win.rs`, `vibe-test-support/src/isolate.rs`, and the retired global cases in `crates/vibe-cli/tests/cli_application.rs`. The replacement `global_mcp_dispatch/tests.rs` proves all destination paths are inside its temporary root and verifies retention, rollback and drift there. No assumption about restoring unknown prior real client state is safe. |
+| @fact:B213-SEVERITY **severity** | P1 — an unisolated test can read or modify the developer's client configuration. |
+| @fact:B213-DISPOSITION **disposition** | `open` — inventory the remaining tests that reach native user-scope client paths; inject directory authority or otherwise prove isolation before executing them. Extend the user-home tripwire beyond Vibe settings to cover client configs without printing their contents. The current global MCP fixtures are already migrated. |
+| @fact:B213-FILED **filed by** | Global MCP agent/server selection review, 2026-10-02. |

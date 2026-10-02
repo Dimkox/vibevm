@@ -321,3 +321,70 @@ fn selector_kind_and_exact_version_are_honored() {
     assert!(ensure_requested_version("mcp:ai.lev/fpf-mcp@=9.9.9", "1.0.0").is_err());
     assert!(ensure_requested_version("mcp:ai.lev/fpf-mcp@^1.0", "1.0.0").is_err());
 }
+
+#[test]
+fn explicit_server_subset_trims_deduplicates_and_validates_every_name() {
+    assert!(server_filter(None).unwrap().is_none());
+    let names = server_filter(Some(" fpf,second,fpf ")).unwrap().unwrap();
+    assert_eq!(names, ["fpf", "second"]);
+    validate_server_names(&names, &["fpf", "second", "unselected"]).unwrap();
+    assert!(validate_server_names(&names, &["fpf"]).is_err());
+    for filter in ["", " ", "fpf,", ",fpf", "fpf,,second"] {
+        assert!(server_filter(Some(filter)).is_err(), "{filter}");
+    }
+}
+
+#[test]
+fn selected_uninstall_validates_all_requested_names_before_any_write() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("config.toml");
+    let server = remote();
+    let payload = server_payload(Agent::Codex, dir.path(), &server, false).unwrap();
+    register_one(Agent::Codex, Scope::User, &path, &server, &payload, false).unwrap();
+    let config_before = fs::read(&path).unwrap();
+    let receipt_before = fs::read(receipt_path(&path).unwrap()).unwrap();
+    let destinations = [(Agent::Codex, Scope::User, path.clone())];
+    assert!(
+        remove_from_configs(&destinations, &server.package, Some("fpf,unknown"), false).is_err()
+    );
+    assert_eq!(fs::read(&path).unwrap(), config_before);
+    assert_eq!(
+        fs::read(receipt_path(&path).unwrap()).unwrap(),
+        receipt_before
+    );
+    assert_eq!(
+        remove_from_configs(&destinations, &server.package, Some(" fpf,fpf "), false)
+            .unwrap()
+            .len(),
+        1
+    );
+}
+
+#[test]
+fn exact_server_selector_preserves_literal_comma_names_through_removal() {
+    let names = vec!["a,b".to_owned(), " padded ".to_owned()];
+    let selector = exact_server_filter(&names).unwrap();
+    assert_eq!(server_filter(Some(&selector)).unwrap().unwrap(), names);
+    assert!(server_filter(Some("[]")).is_err());
+    assert!(server_filter(Some("[\"\"]")).is_err());
+    assert!(server_filter(Some("[1]")).is_err());
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("config.toml");
+    let mut server = remote();
+    server.decl.name = "a,b".into();
+    let payload = server_payload(Agent::Codex, dir.path(), &server, false).unwrap();
+    register_one(Agent::Codex, Scope::User, &path, &server, &payload, false).unwrap();
+    assert_eq!(
+        remove_all_managed(Agent::Codex, Scope::User, &path, None, false)
+            .unwrap()
+            .len(),
+        1
+    );
+    assert!(
+        read_toml(&path).unwrap()["mcp_servers"]
+            .get("a,b")
+            .is_none()
+    );
+}
+
+mod discovery_tests;
