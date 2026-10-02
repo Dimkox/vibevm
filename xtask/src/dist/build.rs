@@ -221,6 +221,7 @@ fn run_self_check(snapshot: &SourceSnapshot, target_dir: &Path) -> Result<()> {
     let mut command = Command::new("bash");
     command
         .arg("tools/self-check.sh")
+        .arg("--keep-going")
         .current_dir(&snapshot.root)
         .env("CARGO_TARGET_DIR", target_dir)
         .env("SOURCE_DATE_EPOCH", &snapshot.identity.source_date_epoch);
@@ -254,6 +255,7 @@ fn initialise_scratch_git(root: &Path) -> Result<()> {
     for args in [
         vec!["init", "--quiet", "--initial-branch=main"],
         vec!["config", "core.autocrlf", "false"],
+        vec!["config", "core.longpaths", "true"],
         vec!["config", "user.name", "vibevm distribution check"],
         vec!["config", "user.email", "distribution@vibevm.invalid"],
         vec!["add", "-A"],

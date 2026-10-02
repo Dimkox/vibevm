@@ -398,7 +398,33 @@ fn plan_and_contract_check_project_the_generated_plan_in_all_modes() {
     let project = tempfile::tempdir().unwrap();
     init_contract(&settings, &project);
 
-    vibe(&settings)
+    // Health preparation seals the executable without following links. Rustup's
+    // PATH shim may be a symlink, so use the selected toolchain's real binaries
+    // in these child processes rather than changing the production link policy.
+    let selected = std::process::Command::new("rustup")
+        .args(["which", "cargo"])
+        .output()
+        .unwrap();
+    assert!(
+        selected.status.success(),
+        "rustup must resolve the fixture's toolchain: {}",
+        String::from_utf8_lossy(&selected.stderr),
+    );
+    let cargo = fs::canonicalize(String::from_utf8(selected.stdout).unwrap().trim()).unwrap();
+    assert!(fs::symlink_metadata(&cargo).unwrap().is_file());
+    let toolchain_bin = cargo.parent().unwrap();
+    let inherited_path = std::env::var_os("PATH").unwrap();
+    let health_path = std::env::join_paths(
+        std::iter::once(toolchain_bin.to_path_buf()).chain(std::env::split_paths(&inherited_path)),
+    )
+    .unwrap();
+    let plan_vibe = || {
+        let mut command = vibe(&settings);
+        command.env("PATH", &health_path);
+        command
+    };
+
+    plan_vibe()
         .args(["scrape", "--plan", "--path"])
         .arg(project.path())
         .assert()
@@ -410,7 +436,7 @@ fn plan_and_contract_check_project_the_generated_plan_in_all_modes() {
         .stdout(predicate::str::contains("modified-policy-refusal"))
         .stdout(predicate::str::contains("health-preparation-required").not());
 
-    let quiet = vibe(&settings)
+    let quiet = plan_vibe()
         .args(["--quiet", "scrape", "contract", "check", "--path"])
         .arg(project.path())
         .output()
@@ -420,7 +446,7 @@ fn plan_and_contract_check_project_the_generated_plan_in_all_modes() {
     assert_eq!(stdout.lines().count(), 1, "quiet is exactly one line");
     assert!(stdout.starts_with("scrape plan sha256:"));
 
-    let json = vibe(&settings)
+    let json = plan_vibe()
         .args(["--json", "scrape", "--plan", "--in-place", "--path"])
         .arg(project.path())
         .output()
@@ -437,7 +463,7 @@ fn plan_and_contract_check_project_the_generated_plan_in_all_modes() {
     assert!(!document.to_string().contains("health-preparation-required"));
     assert!(document.get("tree_digest").is_none(), "no shadow core DTO");
 
-    let export = vibe(&settings)
+    let export = plan_vibe()
         .args(["--json", "scrape", "--plan", "--output"])
         .arg(settings.path().join("scraped-output"))
         .arg("--path")

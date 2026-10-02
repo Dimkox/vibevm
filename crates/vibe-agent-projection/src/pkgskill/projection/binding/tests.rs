@@ -173,16 +173,38 @@ fn nfc_and_nfd_source_spellings_refuse_before_stage_or_intent() {
     let receipt_path = project.path().join(".vibe/package-skills.toml");
     let committed = fs::read(&receipt_path).unwrap();
 
-    // Composed `é` (U+00E9) and decomposed `e` + U+0301: two files here,
-    // one file on macOS.
-    fs::write(body.join("caf\u{e9}.md"), "composed").unwrap();
-    fs::write(body.join("cafe\u{301}.md"), "decomposed").unwrap();
-    let error = lower_project_skill_bindings(
-        project.path(),
-        vec![provider(package.path(), "one", "demo", "skills/demo")],
-    )
-    .unwrap_err();
-    let error = format!("{error:#}");
+    // APFS cannot represent both canonical spellings in one directory.
+    // Other hosts exercise the filesystem planner; on a collapsing host,
+    // submit the same explicit selected path set to its production judgment.
+    let composed = "caf\u{e9}.md";
+    let decomposed = "cafe\u{301}.md";
+    fs::write(body.join(composed), "composed").unwrap();
+    let distinct = !body.join(decomposed).exists();
+    fs::write(body.join(decomposed), "decomposed").unwrap();
+    let error = if distinct {
+        format!(
+            "{:#}",
+            lower_project_skill_bindings(
+                project.path(),
+                vec![provider(package.path(), "one", "demo", "skills/demo")],
+            )
+            .unwrap_err(),
+        )
+    } else {
+        assert_eq!(
+            fs::read(body.join(composed)).unwrap(),
+            fs::read(body.join(decomposed)).unwrap(),
+            "the host maps both spellings to the same source object",
+        );
+        let desired = std::collections::BTreeMap::from([
+            (composed.to_owned(), b"composed".to_vec()),
+            (decomposed.to_owned(), b"decomposed".to_vec()),
+        ]);
+        format!(
+            "{:#}",
+            receipt::judge_selection(desired.keys().map(String::as_str)).unwrap_err(),
+        )
+    };
     assert!(
         error.contains("one file on a case-insensitive host"),
         "{error}"

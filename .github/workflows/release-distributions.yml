@@ -144,6 +144,21 @@ jobs:
           fi
           echo "$tool" >> "$GITHUB_PATH"
 
+      - name: Prepare a native case-sensitive macOS scratch volume
+        if: ${{ runner.os == 'macOS' && inputs.self_check }}
+        shell: bash
+        run: |
+          set -eu
+          image="$RUNNER_TEMP/vibevm-gate.sparseimage"
+          mount="$RUNNER_TEMP/vibevm-gate"
+          hdiutil create -size 16g -type SPARSE -fs APFSX -volname vibevm-gate "$image"
+          mkdir -p "$mount"
+          hdiutil attach -nobrowse -mountpoint "$mount" "$image"
+          mkdir -p "$mount/tmp"
+          # /var is a system symlink on macOS. The no-follow fixtures need the
+          # physical spelling, and case-alias controls need distinct files.
+          python3 -c 'import os, sys; print("TMPDIR=" + os.path.realpath(sys.argv[1]))' "$mount/tmp" >> "$GITHUB_ENV"
+
       - name: Build the Windows bundle
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
@@ -195,6 +210,13 @@ jobs:
             dist/vibevm-*
             dist/vibe-bootstrap-*
           if-no-files-found: error
+
+      - name: Detach the owned macOS scratch volume
+        if: ${{ always() && runner.os == 'macOS' && inputs.self_check }}
+        shell: bash
+        run: |
+          mount="$RUNNER_TEMP/vibevm-gate"
+          if mount | grep -F " on $mount ("; then hdiutil detach "$mount"; fi
 
   upload:
     name: Upload ${{ matrix.target }} from retained build output

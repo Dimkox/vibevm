@@ -50,6 +50,9 @@ instead of repeating an indistinguishable "Resolving" label.
   release inherited file-description locks; placement rejects incomplete
   manifests through typed errors. Portable fixtures retain identity, rollback,
   capability-refusal and stream assertions across operating systems.
+  Windows scratch Git enables long paths. Native macOS gates use an owned
+  case-sensitive temporary volume and physical paths; Unicode fixtures
+  exercise the same refusal rules when APFS cannot represent distinct names.
 
 ## [1.0.2] — 2026-10-01
 
