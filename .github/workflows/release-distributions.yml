@@ -151,7 +151,7 @@ jobs:
           set -eu
           image="$RUNNER_TEMP/vibevm-gate.sparseimage"
           mount="$RUNNER_TEMP/vibevm-gate"
-          hdiutil create -size 16g -type SPARSE -fs APFSX -volname vibevm-gate "$image"
+          hdiutil create -size 16g -type SPARSE -fs 'Case-sensitive APFS' -volname vibevm-gate "$image"
           mkdir -p "$mount"
           hdiutil attach -nobrowse -mountpoint "$mount" "$image"
           mkdir -p "$mount/tmp"
