@@ -83530,7 +83530,7 @@
     },
     {
       "anchor": "root",
-      "content_hash": "sha256:63f8ea989207af493a46c48f7a452d28a9dedac12f4d5d7a7a8c1e831048c13c",
+      "content_hash": "sha256:dbdf4129b3466f9423a810deb4324cbedea3d1c891f58a010c689b86fcd52c5a",
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "PROP-060 — Observable CLI operations",
@@ -83548,7 +83548,7 @@
     },
     {
       "anchor": "surface",
-      "content_hash": "sha256:3470d5970cbc9599014c1abef96155bc923b2aacffb54805deb925f74af666f1",
+      "content_hash": "sha256:765953889791f79ba5ca4ab861914c3d85e68c56d0a7370210fcb7123d086a21",
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
       "heading": "Human output and compatibility",
@@ -83584,10 +83584,10 @@
     },
     {
       "anchor": "OUTCOMES",
-      "content_hash": "sha256:049f15753b83fe72715d2bcf7a34fed8ff3d4499c98b4f6ddb30dda680f1cb0d",
+      "content_hash": "sha256:5a67d2e55682496fb134d495e00311652cecc4fd9b1da449a87f14d27bdc944e",
       "doc_path": "common/PROP-060",
       "file": "vibevm/vibespecs/common/PROP-060-command-progress.xml",
-      "heading": "Completion is explicit and occurs only after successful work. A dropped unfinished component is stopped, never successful; failures retain the responsible component and elapsed time. Rendering failure cannot change installation effects or mask the original operation error. Prompts and ordinary command output coexist with active bars without corrupting the display. @status:spec/done",
+      "heading": "Completion is explicit and occurs only after successful work. A dropped unfinished component is stopped, never successful; failures retain the responsible component and elapsed time. Rendering failure cannot change installation effects or mask the original operation error. Prompts and ordinary command output coexist with active bars without corrupting the display. Field-entry dialogs suspend both animated progress and plain waiting records for their entire lifetime, however long the user pauses; progress resumes when the dialog returns, including cancellation or error. @status:spec/done",
       "line": 10,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-060#OUTCOMES"
     },
