@@ -10,6 +10,42 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 _(nothing yet)_
 
+## [1.0.3] — 2026-10-02
+
+Global MCP installation now keeps preparation, dependency installation and
+agent registration visibly active. Resolution messages distinguish version
+selection, metadata reads, download-source lookup and in-place checkout
+instead of repeating an indistinguishable "Resolving" label.
+
+- **Agent and server selection:** interactive checkbox menus use Space to
+  toggle and Enter to confirm. Install starts with only All checked; All and
+  individual subsets are exclusive. Checked rows use `[+]`. Multi-server
+  packages offer the same selection, with explicit `--agent`/`--server`
+  filters for scripts and JSON string arrays for exact server names.
+- **Selective global uninstall:** inspect native client configurations and
+  initially check only agents with an exact owned installed registration.
+  Show missing, changed and pending states. Remove only selected owned
+  entries; retain the package while another agent still owns registrations.
+  Refresh preserves each agent's chosen server subset. Drift protection and
+  rollback preserve foreign entries and later edits; JSON reports whether
+  the package was removed.
+- **Installation scope:** the known global MCP service user-project is
+  materialized automatically with a human notice naming its full destination.
+  A concrete project keeps its existing confirmation policy and names the
+  full target path. Automatic service installation does not bypass unrelated
+  binary consent or agent/server choices.
+- **Initialization:** `vibe init` can choose a root `[project]` or `[package]`
+  declaration in the same scaffold. `--type project|package`, `--group` and
+  `--name` provide explicit script inputs. Interactive init explains the
+  group/name coordinate before asking group, name, type and remaining fields.
+  Metadata flags and the chosen package kind reach the manifest; reinit
+  preserves authored files and refuses silent role conversion. Interior
+  hyphens such as `package-name` are supported. Legacy nested package/group
+  forms remain available.
+- **Prompt coexistence:** progress stays paused for the entire field-entry
+  dialog, however long a person leaves it unanswered, and resumes afterward.
+  Native client-directory injection isolates global MCP fixtures on Windows.
+
 ## [1.0.2] — 2026-10-01
 
 MCP packages can declare a remote Streamable HTTP endpoint alongside the
