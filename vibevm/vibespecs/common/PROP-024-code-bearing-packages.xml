@@ -367,4 +367,7 @@ L4 (implemented checkers) ships in the package whose language they check.</PLACE
   engine-extraction deferred (§2.6).</HIST-DRAFT-1>
     </facts>
   </history>
+  <initialization title="Root declaration selection">
+    <p><INIT-ROOT-ROLE fact="true" status="impl/done">Owner request, 2026-10-02: ordinary interactive vibe init offers project or package as mutually exclusive root declarations in the same project-shaped target. Package initialization collects a reverse-DNS group and a package name; project initialization may declare an optional group. The explicit --type project|package and --group flags provide the same role and namespace choice without a terminal. No explicit role in noninteractive mode preserves the project default. Existing init package and init group forms retain their nested-package/group behavior. All field dialogs suspend progress indefinitely. The selected package kind and supplied metadata must reach the created manifest. Invalid identities and conflicting role requests are rejected before scaffold or user-settings writes; reinitialization preserves existing authored files and does not silently convert roles.</INIT-ROOT-ROLE></p>
+  </initialization>
 </spec>

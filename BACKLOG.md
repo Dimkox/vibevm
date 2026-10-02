@@ -2327,10 +2327,10 @@ structure, and it goes when the file does.
 
 | field | value |
 |---|---|
-| @fact:B211-WHAT **what** | `vibe init package … --link static` writes `link = "dynamic"`, and without `--format` the scaffold writes `format = "normal"` although `--help` says the default is `simple`. |
+| @fact:B211-WHAT **what** | `vibe init package … --link static` still writes `link = "dynamic"`. The format-help mismatch recorded here was corrected during root declaration selection on 2026-10-02: help now reports the existing `normal` default. |
 | @fact:B211-EVIDENCE **evidence** | 2026-09-27, the sandbox walks of `DOCS-MD-XML-TUTORIAL` (`f-cat-link-static`, `f-cat-defaults`) and `DOCS-OBSIDIAN-TUTORIAL`. |
 | @fact:B211-SEVERITY **severity** | P3 — two flags that do not do what their help says. |
-| @fact:B211-DISPOSITION **disposition** | `open` — honour `--link`, and make the default and the help agree (see also `B-201`). The tutorials set the link in the manifest. |
+| @fact:B211-DISPOSITION **disposition** | `open` — honour `--link` (see also `B-201`). Format help is aligned with the existing default; the tutorials still set the link in the manifest. |
 | @fact:B211-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
 
 ## B-212 — PROP-035 lags the compiler it describes {#b-212}
@@ -2352,3 +2352,23 @@ structure, and it goes when the file does.
 | @fact:B213-SEVERITY **severity** | P1 — an unisolated test can read or modify the developer's client configuration. |
 | @fact:B213-DISPOSITION **disposition** | `open` — inventory the remaining tests that reach native user-scope client paths; inject directory authority or otherwise prove isolation before executing them. Extend the user-home tripwire beyond Vibe settings to cover client configs without printing their contents. The current global MCP fixtures are already migrated. |
 | @fact:B213-FILED **filed by** | Global MCP agent/server selection review, 2026-10-02. |
+
+## B-214 — legacy nested init interpolates metadata into TOML {#b-214}
+
+| field | value |
+|---|---|
+| @fact:B214-WHAT **what** | Legacy `vibe init package` scaffolding inserts authors, license and description directly into quoted TOML templates. Valid prose containing quotes, backslashes or newlines can produce an invalid manifest. New root project/package declarations serialize typed manifests safely, but the legacy nested generic/doc template writers still require migration. |
+| @fact:B214-EVIDENCE **evidence** | 2026-10-02 source review: `commands/init/package.rs::create_package_dirs_from_fields` manually quotes authors and prose; `commands/init/doc.rs::manifest_text` formats metadata similarly. Root-role integration tests prove quoted authors/license/description safely roundtrip through the new typed root writer. |
+| @fact:B214-SEVERITY **severity** | P2 — otherwise valid metadata can leave a broken nested scaffold. |
+| @fact:B214-DISPOSITION **disposition** | `open` — replace legacy nested template metadata with typed serialization and validate the complete candidate before config/scaffold writes; add isolated quoted-metadata regressions for generic and doc packages. This is separate from the accepted root declaration/group choice. |
+| @fact:B214-FILED **filed by** | Init root declaration/group review, 2026-10-02. |
+
+## B-215 — duplicate test cfg attributes block all-target CLI clippy {#b-215}
+
+| field | value |
+|---|---|
+| @fact:B215-WHAT **what** | The existing global MCP test modules repeat cfg(test) at both the module declaration and file level. Strict all-target CLI clippy rejects duplicated_attributes although ordinary compilation and tests accept them. |
+| @fact:B215-EVIDENCE **evidence** | 2026-10-02: cargo clippy -p vibe-cli --all-targets -- -D warnings reports duplicate attributes in global_mcp_dispatch/tests.rs:1 and tests/progress.rs:1; these files are unchanged by the init role feature. |
+| @fact:B215-SEVERITY **severity** | P3 — inherited test-only lint debt. |
+| @fact:B215-DISPOSITION **disposition** | `open` — remove the redundant file attributes while retaining cfg on module declarations, then run strict all-target CLI clippy. Keep this cleanup separate from root init semantics. |
+| @fact:B215-FILED **filed by** | Init root declaration/group verification, 2026-10-02. |
