@@ -177,7 +177,7 @@ fn compute(
 
         // Sort edges deterministically so the fingerprint is stable.
         let mut edges = unit.edges.clone();
-        edges.sort_by(|a, b| pkgref(&a.target).cmp(&pkgref(&b.target)));
+        edges.sort_by_key(|edge| pkgref(&edge.target));
         for edge in &edges {
             hasher.update(b"\nedge:");
             hasher.update(link_wire(edge.link).as_bytes());

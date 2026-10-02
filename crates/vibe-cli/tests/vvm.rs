@@ -6,9 +6,22 @@
 
 use std::path::Path;
 use std::process::Command as Sys;
+use std::sync::{Mutex, MutexGuard};
 
 use assert_cmd::Command;
 use tempfile::TempDir;
+
+static FIXTURE_PROCESS_LOCK: Mutex<()> = Mutex::new(());
+
+// Serialize every fixture's copies AND process launches. A concurrent fork
+// can inherit a write descriptor during fs::copy and retain it until exec,
+// causing ETXTBSY even after the copying thread closed its descriptor:
+// https://github.com/rust-lang/rust/issues/114554
+fn fixture_process_guard() -> MutexGuard<'static, ()> {
+    FIXTURE_PROCESS_LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
 
 /// A `vibe` invocation with the install root pinned to `base` and no
 /// ambient `VIBEVM_HOME` leaking in.
@@ -49,6 +62,7 @@ fn index_bin_name() -> &'static str {
 
 #[test]
 fn ls_on_a_fresh_root_still_identifies_the_direct_source_execution() {
+    let _fixture_guard = fixture_process_guard();
     let base = TempDir::new().unwrap();
     let src = TempDir::new().unwrap();
     write_tiny_source(src.path());
@@ -62,6 +76,7 @@ fn ls_on_a_fresh_root_still_identifies_the_direct_source_execution() {
 
 #[test]
 fn which_reports_the_direct_source_executable_without_an_active_version() {
+    let _fixture_guard = fixture_process_guard();
     let base = TempDir::new().unwrap();
     let src = TempDir::new().unwrap();
     write_tiny_source(src.path());
@@ -74,6 +89,7 @@ fn which_reports_the_direct_source_executable_without_an_active_version() {
 
 #[test]
 fn remove_selector_conflicts_with_all() {
+    let _fixture_guard = fixture_process_guard();
     let base = TempDir::new().unwrap();
     vibe(base.path())
         .args(["self", "remove", "tag:1.0.0", "--all"])
@@ -89,6 +105,7 @@ fn remove_selector_conflicts_with_all() {
 
 #[test]
 fn doctor_exits_nonzero_when_reported_problems_remain() {
+    let _fixture_guard = fixture_process_guard();
     let base = TempDir::new().unwrap();
     vibe(base.path())
         .args(["--json", "self", "doctor"])
@@ -101,6 +118,7 @@ fn doctor_exits_nonzero_when_reported_problems_remain() {
 #[test]
 #[cfg(not(windows))]
 fn install_builds_publishes_and_records_under_the_temp_root() {
+    let _fixture_guard = fixture_process_guard();
     let base = TempDir::new().unwrap();
     let src = TempDir::new().unwrap();
     write_tiny_source(src.path());
@@ -143,6 +161,7 @@ fn install_builds_publishes_and_records_under_the_temp_root() {
 #[test]
 #[cfg(not(windows))]
 fn update_builds_and_activates_latest_like_install() {
+    let _fixture_guard = fixture_process_guard();
     // A source execution updates `latest`: it builds both essential binaries,
     // publishes, and flips `current` to the new immutable instance.
     let base = TempDir::new().unwrap();

@@ -231,7 +231,7 @@ fn one_unavailable_and_one_active_trace_round_trip_through_all_four_roots() {
             }
             other => panic!(
                 "the authored fixture is unavailable or running, not {other:?}",
-                other = &other
+                other = other
             ),
         }
     }

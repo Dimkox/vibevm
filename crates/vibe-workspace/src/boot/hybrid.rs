@@ -233,7 +233,7 @@ pub fn resolve_zone(root: &UnitId, units: &HashMap<UnitId, UnitInput>) -> ZoneMe
     // Deterministic INDEX order — sort the surfaced dynamic edges by pkgref.
     membership
         .dynamic_edges
-        .sort_by(|(a, _), (b, _)| pkgref(a).cmp(&pkgref(b)));
+        .sort_by_key(|(target, _)| pkgref(target));
     membership.static_members = static_visited;
     membership
 }
@@ -258,7 +258,7 @@ fn descend(
     // Deterministic descent — sort edges by pkgref so the walk (and thus the
     // dedup outcome for diamonds) is stable across runs.
     let mut edges = unit.edges.clone();
-    edges.sort_by(|a, b| pkgref(&a.target).cmp(&pkgref(&b.target)));
+    edges.sort_by_key(|edge| pkgref(&edge.target));
     for edge in &edges {
         // Link controls graph membership. Read-time conditions live on each
         // contribution and are projected later; they do not hide unrelated

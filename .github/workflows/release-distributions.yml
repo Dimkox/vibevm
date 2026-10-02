@@ -159,6 +159,48 @@ jobs:
           # physical spelling, and case-alias controls need distinct files.
           python3 -c 'import os, sys; print("TMPDIR=" + os.path.realpath(sys.argv[1]))' "$mount/tmp" >> "$GITHUB_ENV"
 
+      - name: Prepare physical Windows scratch and native MSVC tools
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scratch = Join-Path $env:RUNNER_TEMP 'vvm'
+          New-Item -ItemType Directory -Path $scratch -Force | Out-Null
+          $scratch = & python -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' $scratch
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve the physical Windows scratch directory.' }
+          "TEMP=$scratch" >> $env:GITHUB_ENV
+          "TMP=$scratch" >> $env:GITHUB_ENV
+
+          $cargoTool = & rustup which cargo
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot locate the selected native Cargo toolchain.' }
+          $env:PATH = (Split-Path -Parent $cargoTool) + ';' + $env:PATH
+
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or -not $installation) { throw 'The native MSVC x64 build tools are unavailable.' }
+          $developerCommand = Join-Path $installation 'Common7\Tools\VsDevCmd.bat'
+          $developerEnvironment = & $env:ComSpec /d /c "call `"$developerCommand`" -no_logo -arch=x64 -host_arch=x64 >nul && set"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot initialize the native MSVC environment.' }
+          # Import only compiler/search-path variables; never print the full environment.
+          foreach ($entry in $developerEnvironment) {
+            $pair = $entry -split '=', 2
+            if ($pair.Count -eq 2 -and $pair[0] -in @('PATH', 'INCLUDE', 'LIB', 'LIBPATH', 'VCToolsInstallDir')) {
+              Set-Item -LiteralPath "Env:$($pair[0])" -Value $pair[1]
+              "$($pair[0])=$($pair[1])" >> $env:GITHUB_ENV
+            }
+          }
+          $msvcBin = Join-Path $env:VCToolsInstallDir 'bin\Hostx64\x64'
+          $linker = Join-Path $msvcBin 'link.exe'
+          if (-not (Test-Path -LiteralPath $linker -PathType Leaf)) { throw 'The native MSVC x64 linker is unavailable.' }
+          "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER=$linker" >> $env:GITHUB_ENV
+          # Git Bash otherwise places GNU link.exe ahead of MSVC. Preserve the
+          # native linker on PATH even in callback environments that filter Cargo variables.
+          $bashEnvironment = Join-Path $env:RUNNER_TEMP 'vvm-msvc.bash'
+          $bashBin = $msvcBin.Replace("'", "'\''")
+          $bashSetup = 'export PATH="$(cygpath -u ''' + $bashBin + '''):$PATH"' + "`n"
+          [IO.File]::WriteAllText($bashEnvironment, $bashSetup, [Text.UTF8Encoding]::new($false))
+          "BASH_ENV=$($bashEnvironment.Replace('\', '/'))" >> $env:GITHUB_ENV
+
       - name: Build the Windows bundle
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh

@@ -39,6 +39,21 @@ fn is_shippable(entry: &walkdir::DirEntry, excludes: &[&str]) -> bool {
         .unwrap_or(true)
 }
 
+fn admit_relative_path(recipe: RecipeId, rel: &Path, path: &Path) -> Result<String> {
+    match recipe {
+        RecipeId::Legacy0 => Ok(rel.to_string_lossy().into_owned()),
+        RecipeId::Tree1 => rel
+            .to_str()
+            .ok_or_else(|| Error::Io {
+                path: path.to_path_buf(),
+                message: "relative path is not valid UTF-8; recipe 1 (sha256-tree/1) requires \
+                     UTF-8 paths so two distinct non-UTF-8 names cannot collide to one hash"
+                    .to_string(),
+            })
+            .map(str::to_owned),
+    }
+}
+
 /// Compute the content hash of `pkg_dir`'s shippable tree under `recipe`.
 ///
 /// `compute_content_hash` (recipe 1, this crate's default) delegates here.
@@ -67,18 +82,7 @@ pub fn compute_content_hash_with(recipe: RecipeId, pkg_dir: &Path) -> Result<Str
     {
         let path = entry.path().to_path_buf();
         let rel = path.strip_prefix(pkg_dir).unwrap_or(&path);
-        let raw = match recipe {
-            RecipeId::Legacy0 => rel.to_string_lossy().into_owned(),
-            RecipeId::Tree1 => rel
-                .to_str()
-                .ok_or_else(|| Error::Io {
-                    path: path.clone(),
-                    message: "relative path is not valid UTF-8; recipe 1 (sha256-tree/1) requires \
-                     UTF-8 paths so two distinct non-UTF-8 names cannot collide to one hash"
-                        .to_string(),
-                })?
-                .to_owned(),
-        };
+        let raw = admit_relative_path(recipe, rel, &path)?;
         entries.push((raw, path));
     }
 
@@ -118,6 +122,34 @@ mod tests {
     use super::*;
     use std::fs;
     use tempfile::tempdir;
+
+    #[cfg(unix)]
+    #[test]
+    fn raw_non_utf8_path_admission_keeps_the_two_recipes_distinct() {
+        use std::os::unix::ffi::OsStringExt;
+
+        let rel = PathBuf::from(std::ffi::OsString::from_vec(vec![0xFF]));
+        let path = Path::new("package").join(&rel);
+        assert_eq!(
+            admit_relative_path(RecipeId::Legacy0, &rel, &path).unwrap(),
+            "\u{FFFD}"
+        );
+        match admit_relative_path(RecipeId::Tree1, &rel, &path) {
+            Err(Error::Io {
+                path: observed,
+                message,
+            }) => {
+                assert_eq!(observed, path);
+                assert_eq!(
+                    message,
+                    "relative path is not valid UTF-8; recipe 1 (sha256-tree/1) requires UTF-8 paths so two distinct non-UTF-8 names cannot collide to one hash"
+                );
+            }
+            other => {
+                panic!("recipe 1 must refuse the raw path with its exact I/O error: {other:?}")
+            }
+        }
+    }
 
     #[test]
     fn empty_directory_hashes_to_known_value() {

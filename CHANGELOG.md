@@ -54,6 +54,9 @@ instead of repeating an indistinguishable "Resolving" label.
   Bash explicitly. Native macOS gates use an owned
   case-sensitive temporary volume and physical paths; Unicode fixtures
   exercise the same refusal rules when APFS cannot represent distinct names.
+  Health preparation fixtures seal their own regular tool assets. The
+  workspace also passes current Rust 1.98 Clippy without lint suppressions;
+  hash recipes, wire formats and their golden data stay unchanged.
 
 ## [1.0.2] — 2026-10-01
 

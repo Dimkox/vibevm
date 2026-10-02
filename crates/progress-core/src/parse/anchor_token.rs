@@ -152,10 +152,9 @@ pub(super) fn parse_anchor_token(t: &str) -> Option<AnchorToken<'_>> {
         )
     } else if let Some(after) = t.strip_prefix("@fact:") {
         (AnchorForm::Qualified, None, after, "@fact:".len())
-    } else if let Some(after) = t.strip_prefix("##") {
-        (AnchorForm::Legacy, None, after, 2)
     } else {
-        return None;
+        let after = t.strip_prefix("##")?;
+        (AnchorForm::Legacy, None, after, 2)
     };
 
     let id_len = rest

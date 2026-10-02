@@ -10093,7 +10093,7 @@
       "line": 65,
       "symbol": "vibe_cli::commands::vvm::relocate::tests::plan_partitions_old_matching_records",
       "end_line": 129,
-      "fingerprint": "tok1:f652c53fb99ab8676eb2f458f214ede72bc4454d5824af7e150b6191beb775a1"
+      "fingerprint": "tok1:e634f1530ce495bb12ee260b04e2c3057c364201abab08d0d0db2fcd2c75a753"
     },
     {
       "crate_name": "vibe-cli",
