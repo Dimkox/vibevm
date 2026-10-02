@@ -59,7 +59,10 @@ pub(super) fn prepare_package(
     interactive: bool,
 ) -> Result<PreparedPackage> {
     let (fields, kind) = if interactive {
-        ctx.suspend_progress(|| prompts::prompt_package_fields(args, group, name, user_config))?
+        ctx.suspend_progress(|| {
+            prompts::identity_introduction(ctx);
+            prompts::prompt_package_fields(args, group, name, user_config)
+        })?
     } else {
         (
             prompts::package_fields_from_args(args, group, name, user_config),

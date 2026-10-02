@@ -41,47 +41,33 @@ pub(super) fn plan(
     if manifest_path.exists() {
         return existing(args, Manifest::read(&manifest_path)?);
     }
-    let role = match args.init_type {
-        Some(role) => role,
-        None if interactive => ctx.suspend_progress(|| {
-            let selected = Select::new()
-                .with_prompt("Root declaration")
-                .items(["project", "package"])
-                .default(0)
-                .interact()?;
-            Ok::<_, anyhow::Error>(if selected == 0 {
-                InitType::Project
-            } else {
-                InitType::Package
-            })
-        })?,
-        None => InitType::Project,
-    };
     let default_name = super::helpers::resolve_name(args, root)?;
-    let mut fields = prompts::project_fields_from_args(args, &default_name, user_config);
-    if role == InitType::Package && args.version.is_none() {
-        fields.version = "0.1.0".to_string();
-    }
-    let (fields, group, kind) = if interactive {
+    let fields = prompts::project_fields_from_args(args, &default_name, user_config);
+    let (role, fields, group, kind) = if interactive {
         ctx.suspend_progress(|| {
-            let fields = prompts::prompt_fields(args, fields, role == InitType::Package)?;
-            let group = match &args.group {
-                Some(group) => Some(group.clone()),
-                None => {
-                    let group =
-                        prompts::text("Group (reverse-DNS)", "", role == InitType::Project)?;
-                    (!group.trim().is_empty()).then(|| group.trim().to_string())
-                }
+            let mut dialogue = TerminalIdentity { ctx };
+            let (role, fields, group) = collect_identity(args, fields, &mut dialogue)?;
+            let fixed_identity = InitArgs {
+                name: Some(fields.name.clone()),
+                ..args.clone()
             };
+            let fields =
+                prompts::prompt_fields(&fixed_identity, fields, role == InitType::Package)?;
             let kind = if role == InitType::Package {
                 prompts::prompt_kind(args)?
             } else {
                 super::package::requested_kind(args)?
             };
-            Ok::<_, anyhow::Error>((fields, group, kind))
+            Ok::<_, anyhow::Error>((role, fields, Some(group), kind))
         })?
     } else {
+        let role = args.init_type.unwrap_or(InitType::Project);
+        let mut fields = fields;
+        if role == InitType::Package && args.version.is_none() {
+            fields.version = "0.1.0".to_string();
+        }
         (
+            role,
             fields,
             args.group.clone(),
             super::package::requested_kind(args)?,
@@ -97,6 +83,75 @@ pub(super) fn plan(
         fields,
         manifest,
     })
+}
+
+/// The identity dialogue finishes before metadata and before any writes.
+trait IdentityDialogue {
+    fn introduction(&mut self);
+    fn group(&mut self) -> Result<String>;
+    fn name(&mut self, default: &str) -> Result<String>;
+    fn role(&mut self) -> Result<InitType>;
+}
+
+struct TerminalIdentity<'a> {
+    ctx: &'a output::Context,
+}
+
+impl IdentityDialogue for TerminalIdentity<'_> {
+    fn introduction(&mut self) {
+        prompts::identity_introduction(self.ctx);
+    }
+
+    fn group(&mut self) -> Result<String> {
+        prompts::text("Group (reverse-DNS)", "", false)
+    }
+
+    fn name(&mut self, default: &str) -> Result<String> {
+        prompts::text("Name within the group", default, false)
+    }
+
+    fn role(&mut self) -> Result<InitType> {
+        let selected = Select::new()
+            .with_prompt("Root declaration")
+            .items(["project", "package"])
+            .default(0)
+            .interact()?;
+        Ok(if selected == 0 {
+            InitType::Project
+        } else {
+            InitType::Package
+        })
+    }
+}
+
+fn collect_identity(
+    args: &InitArgs,
+    mut fields: ProjectFields,
+    dialogue: &mut impl IdentityDialogue,
+) -> Result<(InitType, ProjectFields, String)> {
+    dialogue.introduction();
+    let group = match &args.group {
+        Some(group) => group.clone(),
+        None => dialogue.group()?.trim().to_string(),
+    };
+    validate_group(&group)?;
+    if args.name.is_none() {
+        fields.name = dialogue.name(&fields.name)?;
+    }
+    if fields.name.trim().is_empty() {
+        bail!("initialization name must not be empty");
+    }
+    let role = match args.init_type {
+        Some(role) => role,
+        None => dialogue.role()?,
+    };
+    if role == InitType::Package {
+        vibe_core::PackageName::parse(&fields.name).context("invalid initialization name")?;
+        if args.version.is_none() {
+            fields.version = "0.1.0".to_string();
+        }
+    }
+    Ok((role, fields, group))
 }
 
 pub(super) fn validate_fields(fields: &ProjectFields, package: bool) -> Result<()> {
@@ -279,6 +334,113 @@ mod tests {
             license: "Proprietary".into(),
             description: "Text with \"quotes\"\nand a newline".into(),
             format: "normal".into(),
+        }
+    }
+
+    struct FakeIdentity {
+        events: Vec<&'static str>,
+        group: &'static str,
+        name: &'static str,
+        role: InitType,
+        cancel_at: Option<&'static str>,
+    }
+
+    impl FakeIdentity {
+        fn visit(&mut self, event: &'static str) -> Result<()> {
+            self.events.push(event);
+            if self.cancel_at == Some(event) {
+                bail!("cancelled {event}");
+            }
+            Ok(())
+        }
+    }
+
+    impl IdentityDialogue for FakeIdentity {
+        fn introduction(&mut self) {
+            self.events.push("introduction");
+        }
+        fn group(&mut self) -> Result<String> {
+            self.visit("group")?;
+            Ok(self.group.into())
+        }
+        fn name(&mut self, _default: &str) -> Result<String> {
+            self.visit("name")?;
+            Ok(self.name.into())
+        }
+        fn role(&mut self) -> Result<InitType> {
+            self.visit("role")?;
+            Ok(self.role)
+        }
+    }
+
+    fn dialogue() -> FakeIdentity {
+        FakeIdentity {
+            events: vec![],
+            group: "org.example",
+            name: "package-name",
+            role: InitType::Package,
+            cancel_at: None,
+        }
+    }
+
+    #[test]
+    fn identity_introduction_and_namespace_precede_role_and_metadata() {
+        let mut dialogue = dialogue();
+        let (role, selected, group) = collect_identity(&args(), fields(), &mut dialogue).unwrap();
+        assert_eq!(dialogue.events, ["introduction", "group", "name", "role"]);
+        assert_eq!(role, InitType::Package);
+        assert_eq!(group, "org.example");
+        assert_eq!(selected.name, "package-name");
+        assert_eq!(selected.version, "0.1.0");
+        let manifest =
+            new_manifest(&args(), role, Some(&group), PackageKind::Tool, &selected).unwrap();
+        assert_eq!(manifest.require_package().unwrap().name, "package-name");
+    }
+
+    #[test]
+    fn supplied_identity_skips_questions_and_preserves_values() {
+        let mut args = args();
+        args.group = Some("org.supplied".into());
+        args.name = Some("supplied-name".into());
+        args.init_type = Some(InitType::Package);
+        args.version = Some("2.3.4".into());
+        let fields = prompts::project_fields_from_args(&args, "directory", &UserConfig::default());
+        let mut dialogue = dialogue();
+        let (_, selected, group) = collect_identity(&args, fields, &mut dialogue).unwrap();
+        assert_eq!(dialogue.events, ["introduction"]);
+        assert_eq!(group, "org.supplied");
+        assert_eq!(selected.name, "supplied-name");
+        assert_eq!(selected.version, "2.3.4");
+    }
+
+    #[test]
+    fn invalid_group_and_cancel_stop_later_identity_questions() {
+        let mut invalid = dialogue();
+        invalid.group = "invalid";
+        assert!(collect_identity(&args(), fields(), &mut invalid).is_err());
+        assert_eq!(invalid.events, ["introduction", "group"]);
+        for (cancel, expected) in [
+            ("group", vec!["introduction", "group"]),
+            ("name", vec!["introduction", "group", "name"]),
+            ("role", vec!["introduction", "group", "name", "role"]),
+        ] {
+            let mut cancelled = dialogue();
+            cancelled.cancel_at = Some(cancel);
+            assert!(collect_identity(&args(), fields(), &mut cancelled).is_err());
+            assert_eq!(cancelled.events, expected);
+        }
+    }
+
+    #[test]
+    fn selected_role_keeps_human_project_names_and_enforces_package_grammar() {
+        let mut project = dialogue();
+        project.role = InitType::Project;
+        project.name = "My project";
+        assert!(collect_identity(&args(), fields(), &mut project).is_ok());
+        for name in ["My project", "-package", "package-", "package--name"] {
+            let mut package = dialogue();
+            package.name = name;
+            assert!(collect_identity(&args(), fields(), &mut package).is_err());
         }
     }
 

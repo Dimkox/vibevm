@@ -338,3 +338,40 @@ fn legacy_package_and_group_initializers_remain_nested() {
     let nested = dir.path().join(common::pack_rel("org.example/demo/v0.1.0"));
     assert_eq!(manifest(&nested).require_package().unwrap().name, "demo");
 }
+
+#[test]
+#[specmark::verifies("spec://org.vibevm.core/vibevm/common/PROP-024#INIT-ROOT-ROLE")]
+fn hyphenated_names_roundtrip_in_root_and_nested_packages() {
+    for nested in [false, true] {
+        let user = UserScratch::new();
+        let dir = tempfile::tempdir().unwrap();
+        let mut command = user.vibe();
+        command.arg("init");
+        if nested {
+            command.args(["package", "org.example/package-name"]);
+        } else {
+            command.args([
+                "--type",
+                "package",
+                "--group",
+                "org.example",
+                "--name",
+                "package-name",
+            ]);
+        }
+        command
+            .args(["--no-registry", "--path"])
+            .arg(dir.path())
+            .assert()
+            .success();
+        let package_root = if nested {
+            dir.path()
+                .join(common::pack_rel("org.example/package-name/v0.1.0"))
+        } else {
+            dir.path().to_path_buf()
+        };
+        let parsed = manifest(&package_root);
+        parsed.validate().unwrap();
+        assert_eq!(parsed.require_package().unwrap().name, "package-name");
+    }
+}

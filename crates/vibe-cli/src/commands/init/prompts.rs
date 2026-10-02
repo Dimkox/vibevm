@@ -5,6 +5,10 @@ use anyhow::Result;
 use dialoguer::{Input, Select};
 use vibe_core::{PackageKind, user_config::UserConfig};
 
+pub(super) fn identity_introduction(ctx: &crate::output::Context) {
+    ctx.summary("Ваш проект или пакет будет называться org.acme/package-name. «org.acme» называется «группой», «package-name» — это имя внутри группы.");
+}
+
 pub(super) struct ProjectFields {
     pub name: String,
     pub version: String,

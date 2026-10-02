@@ -10522,6 +10522,15 @@
       "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/tests/cli_init/init_root_roles.rs",
       "item_kind": "fn",
+      "line": 342,
+      "symbol": "vibe_cli::tests::cli_init::init_root_roles::hyphenated_names_roundtrip_in_root_and_nested_packages",
+      "end_line": 377,
+      "fingerprint": "tok1:c1622517d2e6a25ef9fe950aa1c9a6be969b7ced119dd5d72c2f170085429f5c"
+    },
+    {
+      "crate_name": "vibe-cli",
+      "file": "crates/vibe-cli/tests/cli_init/init_root_roles.rs",
+      "item_kind": "fn",
       "line": 178,
       "symbol": "vibe_cli::tests::cli_init::init_root_roles::invalid_root_identity_fails_before_scaffold_and_settings_writes",
       "end_line": 260,
@@ -38769,6 +38778,14 @@
       "file": "crates/vibe-cli/tests/cli_init/init_root_roles.rs",
       "from_symbol": "vibe_cli::tests::cli_init::init_root_roles::explicit_root_role_cannot_convert_existing_manifest",
       "line": 263,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-024#INIT-ROOT-ROLE",
+      "verb": "verifies"
+    },
+    {
+      "file": "crates/vibe-cli/tests/cli_init/init_root_roles.rs",
+      "from_symbol": "vibe_cli::tests::cli_init::init_root_roles::hyphenated_names_roundtrip_in_root_and_nested_packages",
+      "line": 343,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-024#INIT-ROOT-ROLE",
       "verb": "verifies"
@@ -67810,7 +67827,7 @@
     },
     {
       "anchor": "root",
-      "content_hash": "sha256:9f31dc275794249dcf06718ed0994e370e964c19a184c0914162f9c752c57259",
+      "content_hash": "sha256:262632157b6efbc790646db3623c732927f52cd7f060a03c9643af7b0296ab9d",
       "doc_path": "common/PROP-024",
       "file": "vibevm/vibespecs/common/PROP-024-code-bearing-packages.xml",
       "heading": "PROP-024 — Code-bearing packages (a package is a project)",
@@ -68776,7 +68793,7 @@
     },
     {
       "anchor": "initialization",
-      "content_hash": "sha256:ab6acdc88abac9c8835c62893e01b447f33b25f107cc644b046a32546209fb89",
+      "content_hash": "sha256:7d734753ae60873a80d0dc689359078adde4020469f56b0200d080c57ddce760",
       "doc_path": "common/PROP-024",
       "file": "vibevm/vibespecs/common/PROP-024-code-bearing-packages.xml",
       "heading": "Root declaration selection",
@@ -68785,10 +68802,10 @@
     },
     {
       "anchor": "INIT-ROOT-ROLE",
-      "content_hash": "sha256:b51b6f2876ce19de22dc43cc1985478f6981fa13c153d7fa0cdcd45c0df9c417",
+      "content_hash": "sha256:5f17311eeeb44ca7a23b271e375465faf81dd4af27d27361d9fbcdebd084d27e",
       "doc_path": "common/PROP-024",
       "file": "vibevm/vibespecs/common/PROP-024-code-bearing-packages.xml",
-      "heading": "Owner request, 2026-10-02: ordinary interactive vibe init offers project or package as mutually exclusive root declarations in the same project-shaped target. Package initialization collects a reverse-DNS group and a package name; project initialization may declare an optional group. The explicit --type project|package and --group flags provide the same role and namespace choice without a terminal. No explicit role in noninteractive mode preserves the project default. Existing init package and init group forms retain their nested-package/group behavior. All field dialogs suspend progress indefinitely. The selected package kind and supplied metadata must reach the created manifest. Invalid identities and conflicting role requests are rejected before scaffold or user-settings writes; reinitialization preserves existing authored files and does not silently convert roles. @status:impl/done",
+      "heading": "Owner request, 2026-10-02: ordinary interactive vibe init offers project or package as mutually exclusive root declarations in the same project-shaped target. Before any interactive field entry, init explains the coordinate org.acme/package-name and the meaning of group and name. New interactive roots collect a valid reverse-DNS group first, the name second, and only then select project/package and gather remaining metadata. Supplied flags skip their matching questions without changing this order. Noninteractive project initialization may omit its group; package initialization requires one. Internal single hyphens are valid in package names (for example package-name); core package-name edge/double-hyphen restrictions remain unchanged. The explicit --type project|package and --group flags provide the same role and namespace choice without a terminal. No explicit role in noninteractive mode preserves the project default. Existing init package and init group forms retain their nested-package/group behavior. All field dialogs suspend progress indefinitely. The selected package kind and supplied metadata must reach the created manifest. Invalid identities and conflicting role requests are rejected before scaffold or user-settings writes; reinitialization preserves existing authored files and does not silently convert roles. @status:impl/done",
       "line": 371,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-024#INIT-ROOT-ROLE"
     },

@@ -168,6 +168,13 @@ fn ensure_project_exists(
     if !path.join(Manifest::FILENAME).exists() {
         let mut container_args = InitArgs {
             init_type: Some(crate::cli::InitType::Project),
+            group: if interactive {
+                args.positional
+                    .get(1)
+                    .map(|identity| identity.split('/').next().unwrap_or(identity).to_string())
+            } else {
+                None
+            },
             ..args.clone()
         };
         container_args.name = None;
