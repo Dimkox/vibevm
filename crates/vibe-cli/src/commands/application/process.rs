@@ -17,6 +17,7 @@ use vibe_wire::generated::application::e1::reply as reply_wire;
 
 use crate::output::sanitize_progress_text;
 
+use super::model::launcher_belongs_to_command;
 use super::model::{
     ApplicationContext, ApplicationOperation, ApplicationReply, ApplicationStatus, ManagementEntry,
     RESULT_PROTOCOL,
@@ -321,15 +322,6 @@ fn validate_launchers(context: &ApplicationContext, reply: &ApplicationReply) ->
         }
     }
     Ok(())
-}
-
-fn launcher_belongs_to_command(name: &str, commands: &[String]) -> bool {
-    commands.iter().any(|command| {
-        name == command
-            || [".cmd", ".ps1", ".sh"]
-                .iter()
-                .any(|suffix| name == format!("{command}{suffix}"))
-    })
 }
 
 fn hash_file(path: &Path) -> Result<String> {

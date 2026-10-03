@@ -285,13 +285,22 @@ pub fn publish(
     let management_dir = host_root.join("management");
     fs::create_dir_all(&management_dir)?;
     let bundle_entry = generation.join(&verified.manifest.management.entry);
-    let stable_launcher = management_dir.join(stable_launcher_name_for(&bundle_entry));
+    let stable_launcher = management_dir.join(stable_launcher_name_for(
+        &bundle_entry,
+        &verified.manifest.os,
+    ));
     let management_path = management_dir.join("binary.json");
     let launcher_count = verified.manifest.launchers.len();
     let stage_dir = host_root.join(format!(".management-pending-{}", std::process::id()));
     fs::create_dir(&stage_dir)?;
-    let staged_launcher = stage_dir.join(stable_launcher_name_for(&bundle_entry));
-    fs::write(&staged_launcher, stable_launcher_body(&bundle_entry))?;
+    let staged_launcher = stage_dir.join(stable_launcher_name_for(
+        &bundle_entry,
+        &verified.manifest.os,
+    ));
+    fs::write(
+        &staged_launcher,
+        stable_launcher_body(&bundle_entry, &verified.manifest.os),
+    )?;
     let staged_management = stage_dir.join("binary.json");
     write_json(
         &staged_management,
@@ -329,26 +338,34 @@ pub fn publish(
     })
 }
 
-fn stable_launcher_name_for(bundle_entry: &Path) -> &'static str {
-    if bundle_entry
+fn stable_launcher_name_for(bundle_entry: &Path, os: &str) -> &'static str {
+    let extension = bundle_entry
         .extension()
-        .is_some_and(|extension| extension == "cmd")
-    {
-        "launch.cmd"
+        .and_then(|value| value.to_str())
+        .map(str::to_ascii_lowercase);
+    if os == "windows" {
+        match extension.as_deref() {
+            Some("ps1") => "launch.ps1",
+            None | Some("cmd" | "bat" | "exe") => "launch.cmd",
+            _ => "launch.sh",
+        }
     } else {
         "launch.sh"
     }
 }
 
-fn stable_launcher_body(bundle_entry: &Path) -> Vec<u8> {
-    if stable_launcher_name_for(bundle_entry) == "launch.cmd" {
-        return format!(
-            "@echo off\r\ncall \"{}\" %*\r\n",
-            bundle_entry.display().to_string().replace('%', "%%")
-        )
-        .into_bytes();
+fn stable_launcher_body(bundle_entry: &Path, os: &str) -> Vec<u8> {
+    match stable_launcher_name_for(bundle_entry, os) {
+        "launch.cmd" => format!(
+            "@echo off\r\nsetlocal DisableDelayedExpansion\r\n\"{}\" %*\r\n",
+            bundle_entry.display().to_string().replace('%', "%%"),
+        ).into_bytes(),
+        "launch.ps1" => format!(
+            "$ErrorActionPreference = 'Stop'\r\n$global:LASTEXITCODE = 0\r\n& '{}' @args\r\nexit $LASTEXITCODE\r\n",
+            bundle_entry.to_string_lossy().replace('\'', "''"),
+        ).into_bytes(),
+        _ => format!("#!/bin/sh\nexec {} \"$@\"\n", sh_quote(bundle_entry)).into_bytes(),
     }
-    format!("#!/bin/sh\nexec {} \"$@\"\n", sh_quote(bundle_entry)).into_bytes()
 }
 
 fn sh_quote(path: &Path) -> String {

@@ -10,6 +10,20 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 _(nothing yet)_
 
+## [1.0.4] — 2026-10-03
+
+Global application installation accepts platform-specific launcher variants.
+Each command needs a native launcher, and a package may publish several
+variants without requiring a Windows `.cmd`/`.ps1` pair on Linux or macOS.
+The shared ownership checks also recognize `.exe` and `.bat`; update,
+rollback and uninstall retain exact file/hash protection. Windows management
+entries select the correct batch/native or PowerShell wrapper; POSIX entries
+keep shell argument forwarding.
+
+Zap's tracked source installer was corrected alongside this release to report
+its deployed native launchers instead of demanding Windows files everywhere.
+Published binary witnesses and application protocol versions are unchanged.
+
 ## [1.0.3] — 2026-10-02
 
 Global MCP installation now keeps preparation, dependency installation and

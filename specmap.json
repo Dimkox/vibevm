@@ -6749,6 +6749,15 @@
     },
     {
       "crate_name": "vibe-cli",
+      "file": "crates/vibe-cli/src/commands/application/launcher.rs",
+      "item_kind": "mod",
+      "line": 3,
+      "symbol": "vibe_cli::commands::application::launcher",
+      "end_line": 3,
+      "fingerprint": "tok1:d6194e98dda09b37523fe920cc5a2a54dd2c500df29f102a9caf92c0fbf7f4c9"
+    },
+    {
+      "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/src/commands/application/local_source.rs",
       "item_kind": "mod",
       "line": 3,
@@ -6805,9 +6814,9 @@
       "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/src/commands/application/process.rs",
       "item_kind": "fn",
-      "line": 110,
+      "line": 111,
       "symbol": "vibe_cli::commands::application::process::resolve_node",
-      "end_line": 132,
+      "end_line": 133,
       "fingerprint": "tok1:4cc036098aedcce41a64104561fc626cbd3b7710fb9f90c4fff5635d0b027374"
     },
     {
@@ -35475,6 +35484,14 @@
       "verb": "implements"
     },
     {
+      "file": "crates/vibe-cli/src/commands/application/launcher.rs",
+      "from_symbol": "vibe_cli::commands::application::launcher",
+      "line": 3,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/common/PROP-059#binary-ownership",
+      "verb": "implements"
+    },
+    {
       "file": "crates/vibe-cli/src/commands/application/local_source.rs",
       "from_symbol": "vibe_cli::commands::application::local_source",
       "line": 3,
@@ -35525,7 +35542,7 @@
     {
       "file": "crates/vibe-cli/src/commands/application/process.rs",
       "from_symbol": "vibe_cli::commands::application::process::resolve_node",
-      "line": 110,
+      "line": 111,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-059#context",
       "verb": "deviates",
@@ -83780,7 +83797,7 @@
     },
     {
       "anchor": "root",
-      "content_hash": "sha256:7c6f26ead41ec4421a126c2983e5a87b70a71bb860235708b271bb0c0447b945",
+      "content_hash": "sha256:b56ddfb875f6eab52d9ea732d08468b988934031e8641e0c6186dd2d7735725d",
       "doc_path": "common/PROP-059",
       "file": "vibevm/vibespecs/common/PROP-059-user-applications.xml",
       "heading": "PROP-059 — User-local source applications",
@@ -83816,10 +83833,10 @@
     },
     {
       "anchor": "distribution",
-      "content_hash": "sha256:721ce5e86a2930a44adf8a14de6d87583f1a8865b02f593e1e474ddd50549662",
+      "content_hash": "sha256:93b77afa04c5fccca7e08f958e659e156182c8d199a0bf72d9f1010cc79a8f78",
       "doc_path": "common/PROP-059",
       "file": "vibevm/vibespecs/common/PROP-059-user-applications.xml",
-      "heading": "A real [application] may name one stable release-index locator: repository, release_tag and index_asset. Artifact URLs, byte lengths, SHA-256 digests and source commit/tree identities live only in the release-owned DISTRIBUTIONS.json, outside source Git, so publishing a binary cannot make its own source commit stale. The index binds the complete selected application identity and every target row; Linux rows additionally carry the explicit `gnu` or `musl` libc ABI selected from Vibe's own compile-time target environment. The selected ZIP descriptor must match that C1 identity exactly. Its files list exhaustively covers every archive entry except the descriptor, and its launchers cover every advertised command. Vibe verifies outer and per-file size/digest, portable depth/path/component laws, duplicate/case collision, links/special entries and exact platform before any extracted byte can execute. @status:impl/done",
+      "heading": "A real [application] may name one stable release-index locator: repository, release_tag and index_asset. Artifact URLs, byte lengths, SHA-256 digests and source commit/tree identities live only in the release-owned DISTRIBUTIONS.json, outside source Git, so publishing a binary cannot make its own source commit stale. The index binds the complete selected application identity and every target row; Linux rows additionally carry the explicit `gnu` or `musl` libc ABI selected from Vibe's own compile-time target environment. The selected ZIP descriptor must match that C1 identity exactly. Its files list exhaustively covers every archive entry except the descriptor, and its launchers cover every advertised command with at least one native platform variant; additional explicitly named variants are retained, never an obligatory cross-platform pair. Vibe verifies outer and per-file size/digest, portable depth/path/component laws, duplicate/case collision, links/special entries and exact platform before any extracted byte can execute. @status:impl/done",
       "line": 8,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-059#distribution"
     },
@@ -83861,10 +83878,10 @@
     },
     {
       "anchor": "binary-ownership",
-      "content_hash": "sha256:0de7afe7fd0a02db78b4bb954169101a3dc0e3d01c21d2d0702da80d7ade1afd",
+      "content_hash": "sha256:35cd29ab28ca865e8f439d49f02e4633b279b479fcbf46e258dcbb78d5c1ad36",
       "doc_path": "common/PROP-059",
       "file": "vibevm/vibespecs/common/PROP-059-user-applications.xml",
-      "heading": "Binary payloads publish as immutable application-host generations. Core-owned management binds the selected generation and delegates stable public launchers to its verified bundled management entry; bundled runtime and engine bytes mean binary launch needs no host Node or Rust. Windows bundles use `.cmd` management/public launchers; POSIX bundles use archive-mode-preserved executable launchers and a stable `launch.sh`. Extraction restores regular-file permission bits, publication reasserts executable launcher mode, and suspension derives the stable launcher genre from the verified bundle entry rather than assuming Windows. Source ready replies report exact receipt-owned launcher destinations and hashes. Vibe validates and persists that ownership so source-to-binary replacement and binary-to-source suspension are transactional: failure before the application index commits restores prior launcher and management bytes, while uninstall removes only exact recorded regular files and refuses drift or receipt paths outside settings/opt/bin and the owned host. @status:impl/done",
+      "heading": "Binary payloads publish as immutable application-host generations. Core-owned management binds the selected generation and delegates stable public launchers to its verified bundled management entry; bundled runtime and engine bytes mean binary launch needs no host Node or Rust. Public command destinations admit the exact command name or `.cmd`, `.bat`, `.ps1`, `.exe` and `.sh` variants. Windows command coverage admits bare/native executable, batch or PowerShell entry points; Linux/macOS coverage admits executable bare/shell entry points. Several variants may cover one command without making all suffixes mandatory. Windows management selects a native/batch `launch.cmd` or explicit PowerShell `launch.ps1`; POSIX management retains archive-mode-preserved executable launchers and a stable `launch.sh`. Extraction restores regular-file permission bits, publication reasserts executable launcher mode, and suspension derives the stable launcher genre from the verified bundle entry rather than assuming Windows. Source ready replies report exact receipt-owned launcher destinations and hashes. Vibe validates and persists that ownership so source-to-binary replacement and binary-to-source suspension are transactional: failure before the application index commits restores prior launcher and management bytes, while uninstall removes only exact recorded regular files and refuses drift or receipt paths outside settings/opt/bin and the owned host. @status:impl/done",
       "line": 13,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-059#binary-ownership"
     },

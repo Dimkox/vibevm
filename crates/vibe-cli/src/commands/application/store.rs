@@ -10,6 +10,7 @@ use anyhow::{Context, Result, bail};
 use vibe_core::manifest::is_portable_token;
 use vibe_safefs::{Pinned, Project, ensure_no_follow_walk};
 
+use super::model::launcher_belongs_to_command;
 use super::model::{ApplicationIndex, INDEX_PROTOCOL};
 
 pub struct ApplicationStore {
@@ -194,15 +195,6 @@ fn validate_index(index: &ApplicationIndex, settings_root: &Path) -> Result<()> 
         }
     }
     Ok(())
-}
-
-fn launcher_belongs_to_command(name: &str, commands: &[String]) -> bool {
-    commands.iter().any(|command| {
-        name == command
-            || [".cmd", ".ps1", ".sh"]
-                .iter()
-                .any(|suffix| name == format!("{command}{suffix}"))
-    })
 }
 
 fn remove_file_if_present(path: &Path) -> Result<()> {
