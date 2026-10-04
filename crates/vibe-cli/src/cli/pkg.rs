@@ -495,7 +495,8 @@ pub struct ReinstallArgs {
 
 #[derive(Debug, clap::Args)]
 pub struct UninstallArgs {
-    /// Package reference `<kind>:<name>` (version is ignored on uninstall).
+    /// Direct package reference; removes dependencies no longer needed by the workspace.
+    /// The version selector is ignored on uninstall.
     pub package: String,
 
     /// Uninstall one user application without mutating a project.

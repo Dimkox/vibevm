@@ -4988,7 +4988,7 @@
       "item_kind": "schema",
       "line": 1,
       "symbol": "uninstall_report",
-      "end_line": 43
+      "end_line": 94
     },
     {
       "crate_name": "<schema>",
@@ -9496,10 +9496,37 @@
       "crate_name": "vibe-cli",
       "file": "crates/vibe-cli/src/commands/uninstall.rs",
       "item_kind": "mod",
-      "line": 10,
+      "line": 9,
       "symbol": "vibe_cli::commands::uninstall",
-      "end_line": 10,
+      "end_line": 9,
       "fingerprint": "tok1:a8e48b73f01b9a810d8ea1405031076906e5684cf132420c9894b573034757ab"
+    },
+    {
+      "crate_name": "vibe-cli",
+      "file": "crates/vibe-cli/src/commands/uninstall/plan.rs",
+      "item_kind": "mod",
+      "line": 2,
+      "symbol": "vibe_cli::commands::uninstall::plan",
+      "end_line": 2,
+      "fingerprint": "tok1:5bb2d51346cc03e1fe03c70eded0a5bbea66b99b38d0c3cba75a100ebe19e6b9"
+    },
+    {
+      "crate_name": "vibe-cli",
+      "file": "crates/vibe-cli/src/commands/uninstall/report.rs",
+      "item_kind": "mod",
+      "line": 2,
+      "symbol": "vibe_cli::commands::uninstall::report",
+      "end_line": 2,
+      "fingerprint": "tok1:5bb2d51346cc03e1fe03c70eded0a5bbea66b99b38d0c3cba75a100ebe19e6b9"
+    },
+    {
+      "crate_name": "vibe-cli",
+      "file": "crates/vibe-cli/src/commands/uninstall/transaction.rs",
+      "item_kind": "mod",
+      "line": 2,
+      "symbol": "vibe_cli::commands::uninstall::transaction",
+      "end_line": 4,
+      "fingerprint": "tok1:54d3dbe266f591cc6f9ae20c62e807e30102a67aae9593b82b5c48e307621368"
     },
     {
       "crate_name": "vibe-cli",
@@ -37929,9 +37956,33 @@
     {
       "file": "crates/vibe-cli/src/commands/uninstall.rs",
       "from_symbol": "vibe_cli::commands::uninstall",
-      "line": 10,
+      "line": 9,
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/VIBEVM-SPEC#command-summary",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-cli/src/commands/uninstall/plan.rs",
+      "from_symbol": "vibe_cli::commands::uninstall::plan",
+      "line": 2,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#UNINSTALL-CLOSURE",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-cli/src/commands/uninstall/report.rs",
+      "from_symbol": "vibe_cli::commands::uninstall::report",
+      "line": 2,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#UNINSTALL-CLOSURE",
+      "verb": "implements"
+    },
+    {
+      "file": "crates/vibe-cli/src/commands/uninstall/transaction.rs",
+      "from_symbol": "vibe_cli::commands::uninstall::transaction",
+      "line": 2,
+      "provenance": "authored",
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#UNINSTALL-PREFLIGHT",
       "verb": "implements"
     },
     {
@@ -125282,7 +125333,7 @@
     },
     {
       "anchor": "root",
-      "content_hash": "sha256:05ac7adf3eea1a598d6f725ec1cfaf39c754310ad75c94c1d7267c4b44b577f4",
+      "content_hash": "sha256:d72ba98fefa1e40dfd453c7840d8f7457ee0a7edf230c3b1e1a3535bb424163c",
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "PROP-009: Loading model — computed boot composition and the effective spec",
@@ -126388,12 +126439,48 @@
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#PHASE-8-EFFECTIVE-SPEC"
     },
     {
+      "anchor": "uninstall",
+      "content_hash": "sha256:48cef7a915abbd1f32a9945c7f0d8f6cd081866890a4064871e9ed2b4c422c24",
+      "doc_path": "modules/vibe-workspace/PROP-009",
+      "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
+      "heading": "Package removal and newly orphaned dependencies",
+      "line": 205,
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#uninstall"
+    },
+    {
+      "anchor": "UNINSTALL-CLOSURE",
+      "content_hash": "sha256:84bcc10784d6922b381ed88a877cb934ab60c5b8270cf0a7139c5db4541972ab",
+      "doc_path": "modules/vibe-workspace/PROP-009",
+      "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
+      "heading": "**Offline removal plan.** Removing a direct dependency drops its declaration from the selected node and removes the selected package's locked dependency closure only where no surviving workspace declaration reaches it. The lockfile's resolved dependency edges are authority; removal performs no registry resolution, fetch or reinstall. Shared dependencies, separately declared descendants and packages required by another workspace node remain installed. A pure transitive cannot be uninstalled directly: remove its declaring root instead. Removing a declaration still required elsewhere retains the package and reports that fact. @status:spec/done",
+      "line": 207,
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#UNINSTALL-CLOSURE"
+    },
+    {
+      "anchor": "UNINSTALL-BOUNDED",
+      "content_hash": "sha256:28ba62c3c34bce79de29d90273095a400bc0f8a46a0df66c3f4860f2c7e97e47",
+      "doc_path": "modules/vibe-workspace/PROP-009",
+      "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
+      "heading": "**Bounded ownership.** Only rows in the selected package's closure are candidates. Unrelated pre-existing orphan rows and untracked slots are not swept; surviving locked rows also protect their descendants from dangling edges. Registry, git, path and workspace-version declarations are considered across all nodes. Authored path-source directories, global caches, authored boot snippets and transitive adoption facts are never deleted by this closure cleanup. Missing or inconsistent graph evidence is a refusal before mutation, not permission to guess which files are unnecessary. @status:spec/done",
+      "line": 208,
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#UNINSTALL-BOUNDED"
+    },
+    {
+      "anchor": "UNINSTALL-PREFLIGHT",
+      "content_hash": "sha256:4e6b3c0b9d9ed88f01659c0d897f67841167da6e45e923bf32f2988aac4390b4",
+      "doc_path": "modules/vibe-workspace/PROP-009",
+      "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
+      "heading": "**Whole-plan preflight and durable boundary.** Show the planned package set before confirmation and apply PROP-022's destructive guard to every removed in-place slot. Validate paths before staging any slot. Stage slot directories on the same filesystem; a staging or durable-recording failure restores staged slots and prior durable metadata. If restoration fails, retain the staged payload and name its recovery location. Record the pruned lock and selected manifest before regenerating every node's boot; boot failure may leave reparable generated output but must not resurrect rows for removed slots. @status:spec/done",
+      "line": 209,
+      "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#UNINSTALL-PREFLIGHT"
+    },
+    {
       "anchor": "history",
       "content_hash": "sha256:4d4c32aaa7d60e85592dd80d166b64df76eb1f3872f914fd23cce8467351ce6c",
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "8. Version history",
-      "line": 205,
+      "line": 212,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#history"
     },
     {
@@ -126402,7 +126489,7 @@
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "**2026-05-21 — draft 1.** Requirements captured in an owner design session: the loading-model redesign answering PROP-007 §6 question 3, the static/dynamic-linking spine, the four-fork resolution. Rationale recorded in [`vibevm/vibespecs/design/loading-and-boot-model.xml`](../../design/loading-and-boot-model.xml). @status:spec/done",
-      "line": 207,
+      "line": 214,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#HISTORY-DRAFT-1"
     },
     {
@@ -126411,7 +126498,7 @@
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "**2026-05-21 — draft 2.** The eight §5 open questions resolved in a follow-up owner session: `vibedeps/`, `vibe reinstall`, the TOML `INDEX.md`, `[writes]` retired, dynamic conditions reusing the subskill `[activation]` vocabulary, a minimal `[boot]` table, the effective-spec view kept v1.5-scoped. The `VIBEVM-SPEC.md` sanction (§5 item 8) is the one item carried to Phase 7. Ready for M1.18 implementation. @status:spec/done",
-      "line": 208,
+      "line": 215,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#HISTORY-DRAFT-2"
     },
     {
@@ -126420,7 +126507,7 @@
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "**2026-05-22 — Phase 7 shipped.** The migration-and-docs phase landed in M1.18: the vibevm self-migration, the `VIBEVM-SPEC.md` consistency pass (owner sanction granted — §5 item 8), and [PROP-012](PROP-012-managed-redirect-block.xml), which refines §2.3's redirect into a managed `<vibevm>` block. Phases 1–7 are shipped; phase 8 (the effective-spec view) remains v1.5 scope. @status:spec/done",
-      "line": 209,
+      "line": 216,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#HISTORY-PHASE-7"
     },
     {
@@ -126429,7 +126516,7 @@
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "**2026-05-22 — the `when` declaration site.** §2.3's dynamic-entry `when` is pinned to `[boot_snippet].when` (§2.6), closing the contract gap Phase 4 flagged — §2.3 showed `when` but no field declared it. v1 scope is deliberately small: the only condition is an operating-system match (`when = \"os:<name>\"`), shipped end-to-end through the `vibe-core` schema, the computed-view engine, and the `INDEX.md` renderer. A `[boot_snippet]` carrying a `when` is `dynamic` irrespective of `link` (§2.4). The OS probe is also reserved as `if_os` in the subskill `[activation]` vocabulary (PROP-003 §2.5.2), so the two mechanisms share one grammar. The wider probe set follows when PROP-003's activation engine is built. @status:spec/done",
-      "line": 210,
+      "line": 217,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#HISTORY-WHEN-SITE"
     },
     {
@@ -126438,7 +126525,7 @@
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "**2026-08-04 — the static lane becomes anchor-qualified (B-011, owner-approved).** §2.3's `##ARTIFACT-STATIC-MD` changes from «verbatim concatenation» to «anchor-qualified concatenation» (labels rewritten under the contribution's origin slug — PROP-035 §8's new qualify phase), the lane opens with the resolution preamble + tombstone table, and a generated lane stops being a legal citation target. Motivation: 59 `duplicate-anchor` warnings over the compiled lane (`{#root}` ×26) and the strip-safety design; the full rationale and fork record: [`vibevm/vibespecs/design/deterministic-loading-aliasing.xml`](../../design/deterministic-loading-aliasing.xml). Landed the same day (five worker slices; the host lane regenerated 59 → 0), retiring the §2.3 annotated interim. @status:spec/work",
-      "line": 211,
+      "line": 218,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#HISTORY-B011-QUALIFIED"
     },
     {
@@ -126447,7 +126534,7 @@
       "doc_path": "modules/vibe-workspace/PROP-009",
       "file": "vibevm/vibespecs/modules/vibe-workspace/PROP-009-loading-model.xml",
       "heading": "**2026-08-04 — the lane emits once each (B-006, owner-approved: A1·B1·C1).** §2.3 gains `##STATIC-EMITS-ONCE-EACH`: a static entry embedding a compiled unit artifact is elided to a provenance stub when its whole static zone is already present member-by-member — the compose-time dedup that removes the aggregator double-emission (the git-practices family carried twice, 323 nested lines, 164 double-qualified labels) without touching the unit artifacts, hoisting, or coverage in a dynamic-member topology. Rationale, forks and the measured traps of the alternatives: [`vibevm/vibespecs/design/lane-composition-dedup.xml`](../../design/lane-composition-dedup.xml); the linker-side twin sentence: PROP-038 §2.1; the per-node-qualify rider: PROP-035 §8. @status:spec/work",
-      "line": 212,
+      "line": 219,
       "uri": "spec://org.vibevm.core/vibevm/modules/vibe-workspace/PROP-009#HISTORY-B006-ONCE-EACH"
     },
     {

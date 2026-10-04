@@ -1568,7 +1568,7 @@ structure, and it goes when the file does.
 | @fact:B135-WHAT **what** | `vibe uninstall org.vibevm.world/wal --path hello-vibe --assume-yes` печатает «removed its vibedeps/ slot», но `vibevm/vibedeps/org.vibevm.world.wal/` остаётся пустым каталогом; `test ! -e vibevm/vibedeps/org.vibevm.world.wal` красный |
 | @fact:B135-EFFECT **effect** | «нет и следа» после удаления не выполняется буквально; скрипты и ассерты документации, проверяющие отсутствие каталога, ложно красные |
 | @fact:B135-SEVERITY **severity** | P3 — пустой каталог безвреден, но противоречит отчёту команды |
-| @fact:B135-DISPOSITION **disposition** | `open` — удалять пустой родительский каталог слота вместе со слотом |
+| @fact:B135-DISPOSITION **disposition** | `closed` — 2026-10-04: удаление транзитивного замыкания убирает пустые контейнеры пакетов через нерекурсивный `remove_dir`, сохраняя другие версии и неучтённые файлы. Проверено тестом `empty_containers_removed_but_untracked_sibling_preserved` на Windows и Linux и свежими копиями FPF GOLDEN: остатки пакетов/контейнеров 0/0, 1/1 и 28/28. |
 | @fact:B135-FILED **filed by** | кампания документации, прогон промптов PP-O1 (`remove-a-package`) и проба центральной сессии, 2026-09-12 |
 
 ## B-136 — `vibe outdated` требует `[[registry]]` в манифесте, которого `vibe init` не пишет

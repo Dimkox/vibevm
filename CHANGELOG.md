@@ -8,7 +8,14 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
-_(nothing yet)_
+- Package uninstall removes newly orphaned transitive dependencies using the
+  installed lock graph, without downloading or reinstalling packages. Shared
+  dependencies and declarations in other workspace nodes remain installed;
+  pure-transitive removal is refused. Confirmation and in-place protection
+  cover the complete removal set, and boot is regenerated from the pruned world.
+  Empty package containers are removed while other versions and untracked
+  siblings remain untouched. JSON reports the removal count, complete slot
+  paths and whether the selected package was retained by another declaration.
 
 ## [1.0.4] — 2026-10-03
 
