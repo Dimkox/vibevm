@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=vibevm/vibevm:1.0.4
+ARG BASE_IMAGE=vibevm/vibevm:1.0.5
 FROM ${BASE_IMAGE}
 
 ARG NPM_CONFIG_REGISTRY=https://registry.npmjs.org

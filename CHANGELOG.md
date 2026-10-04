@@ -8,6 +8,10 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
+_(nothing yet)_
+
+## [1.0.5] — 2026-10-04
+
 - Package uninstall removes newly orphaned transitive dependencies using the
   installed lock graph, without downloading or reinstalling packages. Shared
   dependencies and declarations in other workspace nodes remain installed;
