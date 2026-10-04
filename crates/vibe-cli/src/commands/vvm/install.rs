@@ -110,6 +110,17 @@ pub(crate) fn perform_install(
     let before = SourceSnapshot::capture(source_root, &req.resolved.commit, req.build_environment);
     let toolchain = builder.probe_toolchain(source_root);
     let prev = latest_instance(store, id)?;
+    if before.is_none() {
+        freshness.detail("source input snapshot unavailable; freshness cannot be proven");
+    } else if prev
+        .as_ref()
+        .is_some_and(|(_, manifest, _)| manifest.source_inputs_sha256.is_none())
+    {
+        freshness.detail("previous instance has no source fingerprint; establishing a baseline");
+    } else {
+        freshness
+            .detail("comparing source fingerprint, provenance, toolchain and installed payload");
+    }
     if !req.force
         && let (Some(snapshot), Some(toolchain), Some((home, manifest, record))) =
             (&before, &toolchain, &prev)
@@ -154,6 +165,9 @@ pub(crate) fn perform_install(
         && toolchain.as_ref() == Some(&out.toolchain)
     {
         manifest.source_inputs_sha256 = Some(before.0);
+    }
+    if manifest.source_inputs_sha256.is_none() {
+        placement.detail("source fingerprint was not sealed: inputs changed or were unprovable");
     }
     if let Some((prev_dir, prev_man, prev_rec)) = &prev
         && !req.force

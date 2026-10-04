@@ -8,7 +8,12 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
-_(nothing yet)_
+- Source self-update freshness handles opaque untracked nested Git worktrees
+  instead of rejecting them as non-file inputs. Local verification caches are
+  ignored as machine outputs. Regression coverage includes the actual host
+  checkout with an isolated temporary store; repeated calls reuse the sealed
+  instance without rebuilding. Verbose progress distinguishes unavailable
+  snapshots from missing legacy evidence.
 
 ## [1.0.6] — 2026-10-04
 

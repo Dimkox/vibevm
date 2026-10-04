@@ -530,7 +530,7 @@ origin = "binary"
     }
 
     #[test]
-    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 3)]
+    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 4)]
     fn profile_parses_and_defaults_to_debug() {
         assert_eq!(Profile::parse("release").unwrap(), Profile::Release);
         assert!(Profile::parse("fast").is_err());

@@ -1,6 +1,7 @@
 //! Conservative source-build reuse evidence, private to the install pipeline.
 //! Ignored materialized dependencies and configuration outside the Git root
-//! are not covered: callers use `--force` when those inputs change.
+//! or in separate nested Git worktrees are not covered: callers use `--force`
+//! when those inputs change.
 specmark::scope!("spec://org.vibevm.core/vibevm/common/PROP-019#SOURCE-FRESHNESS");
 
 use std::collections::BTreeSet;
@@ -37,6 +38,7 @@ impl SourceSnapshot {
         let tracked = git(&root, &["ls-files", "--stage", "-z"])?;
         let untracked = git(&root, &["ls-files", "--others", "--exclude-standard", "-z"])?;
         let mut paths = BTreeSet::new();
+        let mut external_worktrees = Vec::new();
         for entry in tracked
             .split(|byte| *byte == 0)
             .filter(|entry| !entry.is_empty())
@@ -56,7 +58,14 @@ impl SourceSnapshot {
             .split(|byte| *byte == 0)
             .filter(|path| !path.is_empty())
         {
-            paths.insert(path.to_vec());
+            let relative = path_from_bytes(path)?;
+            if external_worktree(&root, &relative)? {
+                // Git emits a nested repository as one opaque directory,
+                // outside this worktree's regular-file namespace.
+                external_worktrees.push(relative);
+            } else {
+                paths.insert(path.to_vec());
+            }
         }
         let mut hash = Sha256::new();
         field(&mut hash, b"vvm-source-inputs-v1");
@@ -144,8 +153,63 @@ impl SourceSnapshot {
         {
             return None;
         }
+        for relative in external_worktrees {
+            if !external_worktree(&root, &relative)? {
+                return None;
+            }
+        }
         Some(Self(format!("{:x}", hash.finalize())))
     }
+}
+
+/// Only an ordinary directory with its own verified Git worktree boundary
+/// may be omitted. Unknown directories and redirects stay unprovable.
+fn external_worktree(root: &Path, relative: &Path) -> Option<bool> {
+    if relative.as_os_str().is_empty()
+        || relative
+            .components()
+            .any(|component| !matches!(component, Component::Normal(_)))
+    {
+        return None;
+    }
+    let mut path = root.to_path_buf();
+    for component in relative.components() {
+        path.push(component.as_os_str());
+        match fs::symlink_metadata(&path) {
+            Ok(metadata) if redirected(&metadata) => return None,
+            Ok(_) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Some(false),
+            Err(_) => return None,
+        }
+    }
+    if !fs::symlink_metadata(&path).ok()?.is_dir() {
+        return Some(false);
+    }
+    let marker = fs::symlink_metadata(path.join(".git")).ok()?;
+    if redirected(&marker) {
+        return None;
+    }
+    // A regular gitfile supports linked worktrees; Git itself resolves it.
+    // Merely finding a .git marker would also accept malformed repositories
+    // or a command that discovered the parent repository instead.
+    let top = git(&path, &["rev-parse", "--show-toplevel"])?;
+    let top = path_from_bytes(trim_line(&top))?.canonicalize().ok()?;
+    if top != path.canonicalize().ok()? {
+        return None;
+    }
+    // Recheck the pathname after Git's inspection before excluding it.
+    let mut cursor = root.to_path_buf();
+    for component in relative.components() {
+        cursor.push(component.as_os_str());
+        let metadata = fs::symlink_metadata(&cursor).ok()?;
+        if redirected(&metadata) || !metadata.is_dir() {
+            return None;
+        }
+    }
+    if redirected(&fs::symlink_metadata(path.join(".git")).ok()?) {
+        return None;
+    }
+    Some(true)
 }
 
 fn same_file_metadata(before: &fs::Metadata, after: &fs::Metadata) -> Option<bool> {
