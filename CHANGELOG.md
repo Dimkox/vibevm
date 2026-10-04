@@ -8,7 +8,11 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
-_(nothing yet)_
+- `vibe self update` checks source freshness before Cargo and reuses unchanged
+  source builds without copying a new instance. An already-active verified
+  binary release skips redundant activation and installation messages; JSON
+  no-op output no longer requests a `vibe-index` restart. `--force` and
+  `self reinstall` retain deliberate refresh behavior.
 
 ## [1.0.5] — 2026-10-04
 

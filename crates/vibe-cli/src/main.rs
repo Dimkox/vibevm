@@ -289,6 +289,10 @@ fn main() -> ExitCode {
                 shell: read_env_opt("SHELL"),
                 path_var: read_env_opt("PATH"),
                 offline: vvm_offline(cli.offline),
+                source_build_environment: commands::vvm::SOURCE_BUILD_ENVIRONMENT
+                    .into_iter()
+                    .map(|name| (name.to_owned(), std::env::var_os(name)))
+                    .collect(),
             };
             commands::vvm::run(&ctx, args, vvm_env)
         }

@@ -411,7 +411,7 @@ mod tests {
     }
 
     #[test]
-    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 2)]
+    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 3)]
     fn find_source_root_walks_up_to_the_workspace() {
         let tmp = tempfile::tempdir().unwrap();
         let root = tmp.path();
@@ -459,7 +459,7 @@ mod tests {
     }
 
     #[test]
-    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 2)]
+    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 3)]
     fn mirror_parses_names_and_maps_urls() {
         assert_eq!(Mirror::parse("gitverse").unwrap(), Mirror::GitVerse);
         assert_eq!(Mirror::parse("github").unwrap(), Mirror::Github);

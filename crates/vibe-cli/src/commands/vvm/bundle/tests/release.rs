@@ -30,18 +30,162 @@ fn drive<T>(
     command: &str,
     call: impl FnOnce(&RemoteContext<'_>) -> anyhow::Result<T>,
 ) -> anyhow::Result<T> {
-    let ctx = quiet();
     let persister = FakePersister::new(false);
+    drive_with_persister(store, env, downloader, command, &persister, call)
+}
+
+fn drive_with_persister<T>(
+    store: &VersionStore,
+    env: &VvmEnv,
+    downloader: &dyn Downloader,
+    command: &str,
+    persister: &dyn EnvPersister,
+    call: impl FnOnce(&RemoteContext<'_>) -> anyhow::Result<T>,
+) -> anyhow::Result<T> {
+    let ctx = quiet();
     let progress = Progress::default();
     call(&RemoteContext {
         ctx: &ctx,
         env,
         store,
         downloader,
-        persister: &persister,
+        persister,
         command,
         progress: &progress,
     })
+}
+
+struct NoActivation;
+
+impl EnvPersister for NoActivation {
+    fn set_vibevm_home(&self, _home: &Path) -> anyhow::Result<Persisted> {
+        panic!("an already current update must not persist advisory HOME")
+    }
+
+    fn ensure_on_path(&self, _path: &Path) -> anyhow::Result<Persisted> {
+        panic!("an already current update must not persist PATH")
+    }
+
+    fn activation_hint(&self) -> String {
+        panic!("an already current update must not request activation hints")
+    }
+}
+
+/// Include file contents and timestamps: activation rewrites stable shims and
+/// current even when their bytes happen to remain identical.
+#[cfg(test)]
+fn file_snapshot(root: &Path) -> Vec<(PathBuf, Vec<u8>, std::time::SystemTime)> {
+    #[cfg(test)]
+    fn collect(root: &Path, files: &mut Vec<(PathBuf, Vec<u8>, std::time::SystemTime)>) {
+        for entry in std::fs::read_dir(root).unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+            if entry.file_type().unwrap().is_dir() {
+                collect(&path, files);
+            } else {
+                files.push((
+                    path.clone(),
+                    std::fs::read(path).unwrap(),
+                    entry.metadata().unwrap().modified().unwrap(),
+                ));
+            }
+        }
+    }
+    let mut files = Vec::new();
+    collect(root, &mut files);
+    files.sort_by(|left, right| left.0.cmp(&right.0));
+    files
+}
+
+#[test]
+fn repeated_current_binary_updates_preserve_all_files_and_skip_environment_persistence() {
+    let temp = tempfile::tempdir().unwrap();
+    let one = bundle_for(temp.path(), semver::Version::new(1, 0, 0), b"vibe-1.0.0");
+    let (store, env, installed) = seed_machine(temp.path(), &one);
+    let before = file_snapshot(&temp.path().join("opt"));
+    for iteration in 0..2 {
+        let server = release_server(temp.path(), &format!("noop-{iteration}"), &one);
+        drive_with_persister(
+            &store,
+            &env,
+            &server,
+            "self:update",
+            &NoActivation,
+            |remote| move_to_newest_release(remote, &installed, false),
+        )
+        .unwrap();
+        assert_eq!(server.urls.borrow().len(), 1, "metadata only");
+        assert!(asks_what_is_newest(&server.urls.borrow()[0]));
+        assert_eq!(file_snapshot(&temp.path().join("opt")), before);
+    }
+}
+
+#[test]
+fn a_cached_binary_target_that_is_not_active_still_activates() {
+    let temp = tempfile::tempdir().unwrap();
+    let one = bundle_for(temp.path(), semver::Version::new(1, 0, 0), b"vibe-1.0.0");
+    let (store, env, installed) = seed_machine(temp.path(), &one);
+    let two = bundle_for(temp.path(), semver::Version::new(1, 1, 0), b"vibe-1.1.0");
+    let newer = release_server(temp.path(), "activate-newer", &two);
+    drive(&store, &env, &newer, "self:install", |remote| {
+        install_release_version(remote, "1.1.0", false)
+    })
+    .unwrap();
+    let server = release_server(temp.path(), "cached-older", &one);
+    let persister = FakePersister::new(false);
+    drive_with_persister(&store, &env, &server, "self:update", &persister, |remote| {
+        move_to_newest_release(remote, &installed, false)
+    })
+    .unwrap();
+    assert_eq!(active_selector(&store), "tag:1.0.0#1");
+    assert_eq!(server.urls.borrow().len(), 1, "cached bundle is reused");
+    assert_eq!(persister.paths.borrow().len(), 1);
+    assert_eq!(persister.homes.borrow().len(), 1);
+}
+
+#[test]
+fn an_already_current_json_outcome_requires_no_restart_or_durable_path_change() {
+    use super::super::report::{ActivationReport, outcome_json};
+    let temp = tempfile::tempdir().unwrap();
+    let one = bundle_for(temp.path(), semver::Version::new(1, 0, 0), b"vibe-1.0.0");
+    let (store, _env, installed) = seed_machine(temp.path(), &one);
+    let outcome = super::super::archive::InstallOutcome {
+        home: store.instance_dir(&installed.version_id(), installed.instance),
+        record: installed,
+        reused: true,
+    };
+    let json = outcome_json(
+        "self:update",
+        &outcome,
+        &ActivationReport {
+            path_on_current_process: true,
+            durable_path_changed: false,
+            advisory_home_warning: None,
+        },
+        false,
+    );
+    assert_eq!(json["selector"], "tag:1.0.0#1");
+    assert_eq!(json["reused"], true);
+    assert_eq!(json["vibe_index_restart_required"], false);
+    assert_eq!(json["durable_path_changed"], false);
+}
+
+#[test]
+fn already_current_requires_the_full_active_version_and_instance_identity() {
+    use super::super::report_if_current;
+    let temp = tempfile::tempdir().unwrap();
+    let one = bundle_for(temp.path(), semver::Version::new(1, 0, 0), b"vibe-1.0.0");
+    let (store, env, installed) = seed_machine(temp.path(), &one);
+    assert!(report_if_current(&quiet(), &env, &store, &installed, "self:update").unwrap());
+    let mut other = installed.clone();
+    other.instance += 1;
+    assert!(!report_if_current(&quiet(), &env, &store, &other, "self:update").unwrap());
+    other = installed.clone();
+    other.id = "1.1.0".into();
+    assert!(!report_if_current(&quiet(), &env, &store, &other, "self:update").unwrap());
+    other = installed;
+    other.kind = Kind::Branch;
+    assert!(!report_if_current(&quiet(), &env, &store, &other, "self:update").unwrap());
 }
 
 /// A machine already holding `fixture`'s release as its running binary

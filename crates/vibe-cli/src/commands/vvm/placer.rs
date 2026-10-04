@@ -97,6 +97,8 @@ pub(crate) struct FileEntry {
 /// The per-instance file manifest (`.vvm-manifest.toml`).
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Manifest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_inputs_sha256: Option<String>,
     #[serde(default, rename = "file")]
     pub files: Vec<FileEntry>,
 }
@@ -174,7 +176,10 @@ pub(crate) fn manifest_for(dist: &[(PathBuf, String)]) -> Result<Manifest, Place
     for (src, rel) in dist {
         files.push(entry_for(src, rel)?);
     }
-    Ok(Manifest { files })
+    Ok(Manifest {
+        files,
+        ..Manifest::default()
+    })
 }
 
 /// Whether two entries are the same file: by content hash for small files,
@@ -556,6 +561,7 @@ mod tests {
         };
         let valid = Manifest {
             files: vec![entry(BINARY_NAME)],
+            ..Manifest::default()
         };
         assert!(manifest_shape_valid(
             super::super::model::Origin::Binary,
@@ -568,11 +574,13 @@ mod tests {
         ] {
             assert!(!manifest_shape_valid(
                 super::super::model::Origin::Binary,
-                &Manifest { files }
+                &Manifest {
+                    files,
+                    ..Manifest::default()
+                }
             ));
         }
     }
-
     #[test]
     fn source_change_between_manifest_and_copy_is_rejected() {
         let temp = tempfile::tempdir().unwrap();
