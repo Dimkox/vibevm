@@ -102,7 +102,7 @@ pub(in crate::commands::vvm) fn report_source_if_current(
     }
     if !ctx.is_json() {
         ctx.summary(&format!(
-            "Нечего обновлять, потому что вы собираете из исходников, и исходники не изменились.\nДиректория, где я брал исходники, вот такая:\n{}",
+            "Nothing to update: you are building from source, and the source files have not changed.\nSource directory:\n{}",
             super::super::source::external_path(source_root),
         ));
     }
