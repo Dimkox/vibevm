@@ -8,6 +8,8 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
+## [1.0.7] — 2026-10-04
+
 - Source self-update freshness handles opaque untracked nested Git worktrees
   instead of rejecting them as non-file inputs. Local verification caches are
   ignored as machine outputs. Regression coverage includes the actual host
