@@ -8,6 +8,10 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
+_(nothing yet)_
+
+## [1.0.6] — 2026-10-04
+
 - `vibe self update` checks source freshness before Cargo and reuses unchanged
   source builds without copying a new instance. An already-active verified
   binary release skips redundant activation and installation messages; JSON
