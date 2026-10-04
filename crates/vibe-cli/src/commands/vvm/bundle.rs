@@ -31,8 +31,8 @@ use download::{CONNECT_TIMEOUT, TOTAL_TIMEOUT, copy_download, write_download};
 use download::{
     DownloadCleanup, Downloader, HttpDownloader, cache_busted, download_path, safe_url,
 };
-pub(super) use report::report_if_current;
 use report::{ActivationReport, emit_outcome};
+pub(super) use report::{report_if_current, report_source_if_current};
 use selection::{current_target, read_aggregate, select_platform, validated_release_base};
 
 pub(super) fn installed_bundle_intact(store: &VersionStore, record: &InstallRecord) -> bool {

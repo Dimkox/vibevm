@@ -13,7 +13,8 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
   ignored as machine outputs. Regression coverage includes the actual host
   checkout with an isolated temporary store; repeated calls reuse the sealed
   instance without rebuilding. Verbose progress distinguishes unavailable
-  snapshots from missing legacy evidence.
+  snapshots from missing legacy evidence. An unchanged source update explains
+  why nothing needs updating and names the selected source checkout.
 
 ## [1.0.6] — 2026-10-04
 

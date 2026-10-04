@@ -10336,7 +10336,7 @@
       "line": 80,
       "symbol": "vibe_cli::commands::vvm::tests::a_binary_execution_routes_stable_to_the_newest_release_and_latest_nowhere",
       "end_line": 103,
-      "fingerprint": "tok1:ca82fdda3b6434d6452c5eeaf02bc2ee1cf6b93a1a348c189845e6f2b4aa43d4"
+      "fingerprint": "tok1:b0af1f474529c4873facc07feaef943027523ca5e40baeff436832b90e337547"
     },
     {
       "crate_name": "vibe-cli",
@@ -38749,7 +38749,7 @@
       "provenance": "authored",
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-019#surface",
       "verb": "verifies",
-      "pinned_r": 6
+      "pinned_r": 7
     },
     {
       "file": "crates/vibe-cli/src/commands/vvm/tests.rs",
@@ -65627,7 +65627,7 @@
     },
     {
       "anchor": "root",
-      "content_hash": "sha256:e53ccda8dd987eb30354ca29de2dbb17c17d4bef6950d67fb2d54cdd938db160",
+      "content_hash": "sha256:e107d90ed50ab918c4a8c61fd0ee62d5565b00e154d0c163cb9eeaafce4945ff",
       "doc_path": "common/PROP-019",
       "file": "vibevm/vibespecs/common/PROP-019-version-manager.xml",
       "heading": "PROP-019 — VibeVM Version Manager (VVM)",
@@ -65809,7 +65809,7 @@
     },
     {
       "anchor": "decisions",
-      "content_hash": "sha256:ea5ea5447054419d99fd5e29af1347bc673066ca5ac867ee9b90ec5729a2ff71",
+      "content_hash": "sha256:f9a3e9b86d8206539ade7d45670638decd1591f90e32d9a0e5401558a655b20d",
       "doc_path": "common/PROP-019",
       "file": "vibevm/vibespecs/common/PROP-019-version-manager.xml",
       "heading": "2. Decisions",
@@ -65865,21 +65865,21 @@
     },
     {
       "anchor": "surface",
-      "content_hash": "sha256:45c3b0c43a9405c22a430b44c46800106a7c297774335df44d0612278d436d26",
+      "content_hash": "sha256:4d7e928a35f0c6657c41e1d4015197f0c0e2003e7552fc20d091220b364c997f",
       "doc_path": "common/PROP-019",
       "file": "vibevm/vibespecs/common/PROP-019-version-manager.xml",
       "heading": "2.2 Command surface — `vibe self` (+ `vibe vars`)",
       "line": 83,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-019#surface",
       "kind": "req",
-      "revision": 6
+      "revision": 7
     },
     {
       "anchor": "req-surface",
-      "content_hash": "sha256:b230a2a2a561c3bd921eda1b263ad741f40d3670caab0a3a66241e00c19c7f78",
+      "content_hash": "sha256:23b6707d99eaa2b57ebe411098e03aa3efaee76e00deb0f15aad77e8301fd73f",
       "doc_path": "common/PROP-019",
       "file": "vibevm/vibespecs/common/PROP-019-version-manager.xml",
-      "heading": "`req r6` @status:spec/done",
+      "heading": "`req r7` @status:spec/done",
       "line": 84,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-019#req-surface"
     },
@@ -65903,10 +65903,10 @@
     },
     {
       "anchor": "CMD-UPDATE",
-      "content_hash": "sha256:4521bf9185aa1ab438a2a8f055d3970821cd7b5dd7ffa898e860615da78ad98e",
+      "content_hash": "sha256:78332cf185df3c494b4770d7a6f1a92fcd4628e851b91cc2b16a62daaced1c4b",
       "doc_path": "common/PROP-019",
       "file": "vibevm/vibespecs/common/PROP-019-version-manager.xml",
-      "heading": "`self update` follows the running origin, and moves versions FORWARD (owner\r\n  ruling 2026-09-14, replacing the v1 rule that a binary execution refreshes its\r\n  own number and never jumps). A source/worktree execution checks its exact\r\n  source root at `latest` before Cargo and rebuilds only when the source inputs,\r\n  provenance, profile, toolchain or installed payload changed, or `--force` was\r\n  requested. An unchanged already-active instance is a no-op: no build,\r\n  placement, activation, environment rewrite or installation output. A binary execution reads the release channel's\r\n  newest-release aggregate manifest and goes to the **newest published\r\n  release**: newer than the running version installs and activates it by the\r\n  same verified path an explicit `X.Y.Z` takes. The SAME version is not a no-op\r\n  — a release may be rebuilt under its own number, so the manifest's bundle\r\n  digest decides: changed bytes install a fresh immutable `#N`, unchanged bytes\r\n  reuse the instance already held and cost no bundle download at all. If that\r\n  verified instance is already active, update does not reactivate it or emit\r\n  installation messages; JSON reports reuse without requiring an index restart.\r\n  A newest\r\n  release OLDER than the running one (withdrawn on the far side) never walks the\r\n  machine backwards. `--force` installs a fresh `#N` whatever the digest says.\r\n  `self install stable` enters this same path, since `stable` IS the newest\r\n  release (§2.3). <status stage=\"impl\" state=\"done\" action=\"continue\" actionstage=\"doc\" audience=\"user\"/>",
+      "heading": "`self update` follows the running origin, and moves versions FORWARD (owner\r\n  ruling 2026-09-14, replacing the v1 rule that a binary execution refreshes its\r\n  own number and never jumps). A source/worktree execution checks its exact\r\n  source root at `latest` before Cargo and rebuilds only when the source inputs,\r\n  provenance, profile, toolchain or installed payload changed, or `--force` was\r\n  requested. An unchanged already-active instance is a no-op: no build,\r\n  placement, activation, environment rewrite or installation output. Its human result explains that the selected source checkout is unchanged and names that checkout’s full path; JSON retains the machine envelope. A binary execution reads the release channel's\r\n  newest-release aggregate manifest and goes to the **newest published\r\n  release**: newer than the running version installs and activates it by the\r\n  same verified path an explicit `X.Y.Z` takes. The SAME version is not a no-op\r\n  — a release may be rebuilt under its own number, so the manifest's bundle\r\n  digest decides: changed bytes install a fresh immutable `#N`, unchanged bytes\r\n  reuse the instance already held and cost no bundle download at all. If that\r\n  verified instance is already active, update does not reactivate it or emit\r\n  installation messages; JSON reports reuse without requiring an index restart.\r\n  A newest\r\n  release OLDER than the running one (withdrawn on the far side) never walks the\r\n  machine backwards. `--force` installs a fresh `#N` whatever the digest says.\r\n  `self install stable` enters this same path, since `stable` IS the newest\r\n  release (§2.3). <status stage=\"impl\" state=\"done\" action=\"continue\" actionstage=\"doc\" audience=\"user\"/>",
       "line": 93,
       "uri": "spec://org.vibevm.core/vibevm/common/PROP-019#CMD-UPDATE"
     },

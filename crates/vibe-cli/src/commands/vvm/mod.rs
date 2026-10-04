@@ -389,7 +389,7 @@ fn run_install_cmd(
     );
     if outcome.reused
         && command == "self:update"
-        && bundle::report_if_current(ctx, env, &store, &outcome.record, command)?
+        && bundle::report_source_if_current(ctx, env, &store, &outcome.record, &source_dir)?
     {
         return Ok(());
     }

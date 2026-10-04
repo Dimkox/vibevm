@@ -89,6 +89,26 @@ pub(in crate::commands::vvm) fn report_if_current(
     Ok(true)
 }
 
+/// Explain a source update no-op using the checkout actually selected by the caller.
+pub(in crate::commands::vvm) fn report_source_if_current(
+    ctx: &output::Context,
+    env: &VvmEnv,
+    store: &VersionStore,
+    record: &InstallRecord,
+    source_root: &std::path::Path,
+) -> Result<bool> {
+    if !report_if_current(ctx, env, store, record, "self:update")? {
+        return Ok(false);
+    }
+    if !ctx.is_json() {
+        ctx.summary(&format!(
+            "Нечего обновлять, потому что вы собираете из исходников, и исходники не изменились.\nДиректория, где я брал исходники, вот такая:\n{}",
+            super::super::source::external_path(source_root),
+        ));
+    }
+    Ok(true)
+}
+
 pub(super) fn outcome_json(
     command: &str,
     outcome: &archive::InstallOutcome,
