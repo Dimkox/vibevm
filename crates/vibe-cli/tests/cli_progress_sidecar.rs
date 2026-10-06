@@ -85,9 +85,12 @@ fn sidecar_absent_runs_cold() {
     fixture(root);
 
     let scan = || {
+        // `--no-progress`: the generic liveness lines every finite command
+        // prints on a non-terminal stderr are not what this test judges —
+        // what it judges is that the STORE is not mentioned.
         scratch
             .vibe()
-            .args(["progress", "scan", "--path"])
+            .args(["--no-progress", "progress", "scan", "--path"])
             .arg(root)
             .output()
             .expect("run vibe progress scan")

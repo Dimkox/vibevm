@@ -1,7 +1,9 @@
 //! Generated-wire conversion, archive parsing, and semantic validation helpers.
 
+specmark::scope!("spec://org.vibevm.core/vibevm/common/PROP-059#distribution");
+
 use super::*;
-use crate::commands::application::model::PackageIdentity;
+use crate::commands::application::model::{PackageIdentity, launcher_kind};
 
 pub(super) fn validate_index(
     locator: &ApplicationDistributionDecl,
@@ -92,25 +94,24 @@ pub(super) fn validate_bundle(
         portable_path(&launcher.destination)?;
         if launcher.destination.contains('/')
             || !commands.contains(launcher.command.as_str())
-            || !launcher_destination_matches(&launcher.destination, &launcher.command)
+            || launcher_kind(&launcher.destination, &launcher.command).is_none()
             || !manifest.files.iter().any(|f| f.path == launcher.path)
             || !destinations.insert(launcher.destination.to_ascii_lowercase())
         {
             bail!("application distribution launcher is invalid or ambiguous");
         }
-        covered_commands.insert(launcher.command.as_str());
+        if launcher_kind(&launcher.destination, &launcher.command)
+            .is_some_and(|kind| kind.covers_command_on(&manifest.os))
+        {
+            covered_commands.insert(launcher.command.as_str());
+        }
     }
     if covered_commands != commands {
-        bail!("application distribution does not cover every declared command");
+        bail!(
+            "application distribution has no platform-runnable launcher for every declared command"
+        );
     }
     Ok(())
-}
-
-fn launcher_destination_matches(destination: &str, command: &str) -> bool {
-    destination == command
-        || [".cmd", ".ps1", ".sh"]
-            .iter()
-            .any(|suffix| destination == format!("{command}{suffix}"))
 }
 
 fn validate_application_identity(value: &ApplicationIdentity) -> Result<()> {

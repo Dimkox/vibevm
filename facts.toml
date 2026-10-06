@@ -291,4 +291,7 @@ exempt = [
     # campaigns/docs-2026-09. Version-agnostic so the next slot inherits the
     # exemption rather than silently entering the debt on the day it opens.
     "vibevm/vibepacks/org.vibevm.core/vibevm-docs/**",
+    # Its Russian adaptation — `kind = "doc"` as well, the same pages in
+    # another language. Documentation is observed, only never judged.
+    "vibevm/vibepacks/org.vibevm.core/vibevm-docs-ru/**",
 ]

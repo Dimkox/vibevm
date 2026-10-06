@@ -2,6 +2,31 @@
 
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum UninstallReportAdoptionFactsStatus {
+    #[serde(rename = "absent")]
+    Absent,
+
+    #[serde(rename = "kept")]
+    Kept,
+
+    #[serde(rename = "removed")]
+    Removed,
+}
+
+/// Disposition of the selected dependency declaration’s adoption overlay.
+/// Transitive overlays remain user-owned.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct UninstallReportAdoptionFacts {
+    pub status: UninstallReportAdoptionFactsStatus,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hint: Option<String>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+}
+
 /// Wire format for `vibe uninstall --json`. Source of truth for `crates/vibe-
 /// wire/src/generated/uninstall_report.rs`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -11,18 +36,35 @@ pub struct UninstallReport {
 
     pub ok: bool,
 
-    /// `<kind>:<name>` of the package that was removed.
+    /// Qualified group/name coordinate of the direct dependency declaration
+    /// removed from the selected node.
     pub package: String,
 
-    /// Forward-slash-normalised paths of every file removed. User-owned paths
-    /// (e.g. `spec/boot/00-core.md`, `spec/boot/90-user.md`, `spec/WAL.md`)
-    /// are filtered out at plan-time and never appear here. Required member:
-    /// a removal that took nothing still writes `paths` as `[]` — omitting a
-    /// required collection would produce a document invalid by this same schema
-    /// (rule R21).
+    /// Forward-slash workspace-relative dependency slot paths in the
+    /// removal plan. Paths outside materialized slots, global caches and
+    /// authored source directories never appear here. Required collection: a
+    /// declaration-only removal emits [].
     pub paths: Vec<String>,
 
+    /// Number of locked packages removed by this operation, including newly
+    /// orphaned transitives. Zero when other workspace requirements retain
+    /// the package.
     pub removed_count: u32,
 
     pub version: String,
+
+    /// Disposition of the selected dependency declaration’s adoption overlay.
+    /// Transitive overlays remain user-owned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub adoption_facts: Option<UninstallReportAdoptionFacts>,
+
+    /// Whether the selected package was removed from the locked world, as
+    /// opposed to removing only its declaration.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub package_removed: Option<bool>,
+
+    /// Compatibility field for the selected package slot; empty when the
+    /// selected package remains required elsewhere.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub removed_slot: Option<String>,
 }

@@ -411,7 +411,7 @@ mod tests {
     }
 
     #[test]
-    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 2)]
+    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 4)]
     fn find_source_root_walks_up_to_the_workspace() {
         let tmp = tempfile::tempdir().unwrap();
         let root = tmp.path();
@@ -459,7 +459,7 @@ mod tests {
     }
 
     #[test]
-    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 2)]
+    #[verifies("spec://org.vibevm.core/vibevm/common/PROP-019#build", r = 4)]
     fn mirror_parses_names_and_maps_urls() {
         assert_eq!(Mirror::parse("gitverse").unwrap(), Mirror::GitVerse);
         assert_eq!(Mirror::parse("github").unwrap(), Mirror::Github);
@@ -501,14 +501,15 @@ mod tests {
         let outside = temp.path().join("outside");
         fs::create_dir_all(&outside).unwrap();
         symlink(&outside, store.mirror_dir()).unwrap();
-        let error = prepare_from_mirror(
+        let error = match prepare_from_mirror(
             &store,
             "https://invalid.example/repo",
             &model::Selector::Latest,
             &Progress::default(),
-        )
-        .unwrap_err()
-        .to_string();
+        ) {
+            Err(error) => error.to_string(),
+            Ok(_) => panic!("linked managed mirror must be rejected before Git mutation"),
+        };
         assert!(error.contains("symlink or reparse point"), "{error}");
         assert!(fs::read_dir(outside).unwrap().next().is_none());
     }

@@ -125,10 +125,17 @@ fn recovery_rebind_is_explicitly_unsupported_off_windows() {
     let (_root, project) = project();
     let identity =
         crate::OwnedDirectoryIdentity::from_token(&format!("sha256:{}", "0".repeat(64))).unwrap();
-    let manifest = crate::TreeManifest {
-        digest: format!("sha256:{}", "0".repeat(64)),
-        entries: Vec::new(),
-    };
+    // A malformed digest is refused before the platform boundary. Supply
+    // authenticated empty-tree evidence so this tests Unsupported itself.
+    use sha2::Digest as _;
+    let manifest = crate::TreeManifest::from_persisted(
+        format!(
+            "sha256:{:x}",
+            sha2::Sha256::digest(b"vibe-safefs-tree-manifest-e1\0"),
+        ),
+        Vec::new(),
+    )
+    .unwrap();
     assert!(matches!(
         project
             .root_dir()

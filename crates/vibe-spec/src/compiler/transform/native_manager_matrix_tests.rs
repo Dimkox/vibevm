@@ -106,7 +106,7 @@ fn execution_config_fuses_two_absences_but_preserves_every_nested_value() {
     compile_artifact_native(plan, &world.source, &invoker).unwrap();
     let records = invoker.records();
     assert_eq!(records.len(), 15);
-    for document in records.chunks_exact(3) {
+    for document in records.as_chunks::<3>().0 {
         assert_eq!(document[0].config, BTreeMap::new());
         assert_eq!(document[1].config, BTreeMap::new());
         assert_eq!(

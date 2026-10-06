@@ -54,7 +54,7 @@ pub(super) fn parse_digest(field: &'static str, value: &str) -> Result<[u8; 32],
         ));
     }
     let mut digest = [0u8; 32];
-    for (slot, pair) in digest.iter_mut().zip(bytes.chunks_exact(2)) {
+    for (slot, pair) in digest.iter_mut().zip(bytes.as_chunks::<2>().0) {
         *slot = pair
             .iter()
             .fold(0u8, |acc, byte| (acc << 4) | hex_nibble(*byte));

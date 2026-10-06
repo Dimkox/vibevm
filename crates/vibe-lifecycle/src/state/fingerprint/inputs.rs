@@ -408,10 +408,9 @@ fn prepare_declared_inputs(
         // Authored patterns are UTF-8. A non-UTF-8 filesystem name is
         // outside that namespace and cannot be selected; skipping it
         // avoids both false failures and lossy alias/order collisions.
-        let Some(relative) = relative.to_str() else {
+        let Some(relative) = input_glob_path(relative) else {
             continue;
         };
-        let relative = relative.replace('\\', "/");
         let ordinals: Vec<usize> = compiled
             .iter()
             .enumerate()
@@ -495,6 +494,14 @@ fn prepare_declared_inputs(
         per_pattern,
         refusal,
     }))
+}
+
+/// Admit exactly the UTF-8 namespace authored input globs can name. Keep
+/// raw OS names outside it rather than introducing lossy aliases.
+pub(crate) fn input_glob_path(relative: &Path) -> Option<String> {
+    relative
+        .to_str()
+        .map(|relative| relative.replace('\\', "/"))
 }
 
 struct Hit {

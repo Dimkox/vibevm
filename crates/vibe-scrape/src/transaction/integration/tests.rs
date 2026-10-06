@@ -26,16 +26,26 @@ fn prepared_export_converts_without_a_second_plan_or_inventory() {
         },
     })
     .unwrap();
-    assert!(
-        prepared.plan.blockers.is_empty(),
-        "{:?}",
-        prepared.plan.blockers
-    );
-    assert!(
-        prepared.health.blockers.is_empty(),
-        "{:?}",
-        prepared.health.blockers
-    );
+    if cfg!(windows) {
+        assert!(
+            prepared.plan.blockers.is_empty(),
+            "{:?}",
+            prepared.plan.blockers
+        );
+        assert!(
+            prepared.health.blockers.is_empty(),
+            "{:?}",
+            prepared.health.blockers
+        );
+    } else {
+        assert!(
+            prepared
+                .plan
+                .blockers
+                .iter()
+                .any(|blocker| blocker.code == "scrape-platform-unsupported")
+        );
+    }
     let wire_plan = prepared.plan.to_wire().unwrap();
     let refused_report = tx::TransactionReport {
         project_key: tx::ProjectKey(format!("sha256:{}", "1".repeat(64))),
@@ -59,6 +69,30 @@ fn prepared_export_converts_without_a_second_plan_or_inventory() {
     assert!(refused_wire.rewrites.is_empty());
     assert!(refused_wire.relocations.is_empty());
     assert!(refused_wire.residuals.is_empty());
+    if !cfg!(windows) {
+        // Planning and refusal reports remain portable, while the native
+        // mutation backend refuses before touching source or output trees.
+        let observed =
+            crate::inventory::collect(&vibe_safefs::Project::open(source.path()).unwrap()).unwrap();
+        assert_eq!(observed.tree_digest, prepared.inventory.tree_digest);
+        assert_eq!(std::fs::read_dir(output_parent.path()).unwrap().count(), 0);
+        let in_place = crate::prepare(crate::model::ScrapeRequest {
+            root: source.path().to_path_buf(),
+            contract: None,
+            mode: ScrapeMode::InPlace,
+        })
+        .unwrap();
+        assert!(
+            in_place
+                .plan
+                .blockers
+                .iter()
+                .any(|blocker| blocker.code == "scrape-platform-unsupported")
+        );
+        assert_eq!(in_place.inventory.tree_digest, observed.tree_digest);
+        in_place.plan.to_wire().unwrap();
+        return;
+    }
     let transaction = prepared_transaction(prepared).unwrap();
     super::super::validate::prepared(&transaction).unwrap();
     let tx::PreparedMode::Export(plan) = transaction.mode else {

@@ -372,6 +372,8 @@ fn stub_install_args(path: PathBuf) -> InstallArgs {
     InstallArgs {
         packages: Vec::new(),
         global: false,
+        agent: None,
+        server: None,
         from_source: false,
         local_source: false,
         path,

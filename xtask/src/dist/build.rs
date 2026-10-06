@@ -19,6 +19,11 @@ use super::archive::{ArchiveEntry, read_zip_bounded, write_zip};
 use super::scrub_release_credentials;
 use super::snapshot::{self, GitIdentity, SourceSnapshot};
 
+mod bootstrap;
+use bootstrap::prepare_self_check_dependencies;
+
+mod bash;
+
 mod output;
 use output::{run_visible, write_output};
 
@@ -164,14 +169,14 @@ fn resolve_target(requested: Option<&str>) -> Result<String> {
             SUPPORTED_DISTRIBUTION_TARGETS.join(", ")
         );
     }
-    let compatible = match (std::env::consts::OS, std::env::consts::ARCH, selected) {
+    let compatible = matches!(
+        (std::env::consts::OS, std::env::consts::ARCH, selected),
         ("windows", "x86_64", "x86_64-pc-windows-msvc")
-        | ("linux", "x86_64", "x86_64-unknown-linux-musl")
-        | ("linux", "x86_64", "x86_64-unknown-linux-gnu")
-        | ("macos", "x86_64", "x86_64-apple-darwin")
-        | ("macos", "aarch64", "aarch64-apple-darwin") => true,
-        _ => false,
-    };
+            | ("linux", "x86_64", "x86_64-unknown-linux-musl")
+            | ("linux", "x86_64", "x86_64-unknown-linux-gnu")
+            | ("macos", "x86_64", "x86_64-apple-darwin")
+            | ("macos", "aarch64", "aarch64-apple-darwin")
+    );
     if !compatible {
         bail!(
             "distribution target `{selected}` does not match this native host (`{native}`); run \
@@ -213,10 +218,12 @@ fn run_cargo_gate(
 }
 
 fn run_self_check(snapshot: &SourceSnapshot, target_dir: &Path) -> Result<()> {
+    prepare_self_check_dependencies(&snapshot.root)?;
     initialise_scratch_git(&snapshot.root)?;
-    let mut command = Command::new("bash");
+    let mut command = Command::new(bash::self_check_bash()?);
     command
         .arg("tools/self-check.sh")
+        .arg("--keep-going")
         .current_dir(&snapshot.root)
         .env("CARGO_TARGET_DIR", target_dir)
         .env("SOURCE_DATE_EPOCH", &snapshot.identity.source_date_epoch);
@@ -250,6 +257,7 @@ fn initialise_scratch_git(root: &Path) -> Result<()> {
     for args in [
         vec!["init", "--quiet", "--initial-branch=main"],
         vec!["config", "core.autocrlf", "false"],
+        vec!["config", "core.longpaths", "true"],
         vec!["config", "user.name", "vibevm distribution check"],
         vec!["config", "user.email", "distribution@vibevm.invalid"],
         vec!["add", "-A"],

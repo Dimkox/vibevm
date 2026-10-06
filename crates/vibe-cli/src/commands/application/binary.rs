@@ -2,6 +2,9 @@
 
 specmark::scope!("spec://org.vibevm.core/vibevm/common/PROP-059#distribution");
 
+mod publication;
+use publication::{PublishedFiles, publish_files};
+
 use std::collections::BTreeMap;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
@@ -282,13 +285,22 @@ pub fn publish(
     let management_dir = host_root.join("management");
     fs::create_dir_all(&management_dir)?;
     let bundle_entry = generation.join(&verified.manifest.management.entry);
-    let stable_launcher = management_dir.join(stable_launcher_name_for(&bundle_entry));
+    let stable_launcher = management_dir.join(stable_launcher_name_for(
+        &bundle_entry,
+        &verified.manifest.os,
+    ));
     let management_path = management_dir.join("binary.json");
     let launcher_count = verified.manifest.launchers.len();
     let stage_dir = host_root.join(format!(".management-pending-{}", std::process::id()));
     fs::create_dir(&stage_dir)?;
-    let staged_launcher = stage_dir.join(stable_launcher_name_for(&bundle_entry));
-    fs::write(&staged_launcher, stable_launcher_body(&bundle_entry))?;
+    let staged_launcher = stage_dir.join(stable_launcher_name_for(
+        &bundle_entry,
+        &verified.manifest.os,
+    ));
+    fs::write(
+        &staged_launcher,
+        stable_launcher_body(&bundle_entry, &verified.manifest.os),
+    )?;
     let staged_management = stage_dir.join("binary.json");
     write_json(
         &staged_management,
@@ -326,26 +338,34 @@ pub fn publish(
     })
 }
 
-fn stable_launcher_name_for(bundle_entry: &Path) -> &'static str {
-    if bundle_entry
+fn stable_launcher_name_for(bundle_entry: &Path, os: &str) -> &'static str {
+    let extension = bundle_entry
         .extension()
-        .is_some_and(|extension| extension == "cmd")
-    {
-        "launch.cmd"
+        .and_then(|value| value.to_str())
+        .map(str::to_ascii_lowercase);
+    if os == "windows" {
+        match extension.as_deref() {
+            Some("ps1") => "launch.ps1",
+            None | Some("cmd" | "bat" | "exe") => "launch.cmd",
+            _ => "launch.sh",
+        }
     } else {
         "launch.sh"
     }
 }
 
-fn stable_launcher_body(bundle_entry: &Path) -> Vec<u8> {
-    if stable_launcher_name_for(bundle_entry) == "launch.cmd" {
-        return format!(
-            "@echo off\r\ncall \"{}\" %*\r\n",
-            bundle_entry.display().to_string().replace('%', "%%")
-        )
-        .into_bytes();
+fn stable_launcher_body(bundle_entry: &Path, os: &str) -> Vec<u8> {
+    match stable_launcher_name_for(bundle_entry, os) {
+        "launch.cmd" => format!(
+            "@echo off\r\nsetlocal DisableDelayedExpansion\r\n\"{}\" %*\r\n",
+            bundle_entry.display().to_string().replace('%', "%%"),
+        ).into_bytes(),
+        "launch.ps1" => format!(
+            "$ErrorActionPreference = 'Stop'\r\n$global:LASTEXITCODE = 0\r\n& '{}' @args\r\nexit $LASTEXITCODE\r\n",
+            bundle_entry.to_string_lossy().replace('\'', "''"),
+        ).into_bytes(),
+        _ => format!("#!/bin/sh\nexec {} \"$@\"\n", sh_quote(bundle_entry)).into_bytes(),
     }
-    format!("#!/bin/sh\nexec {} \"$@\"\n", sh_quote(bundle_entry)).into_bytes()
 }
 
 fn sh_quote(path: &Path) -> String {
@@ -399,95 +419,6 @@ pub fn uninstall(entry: &ManagementEntry) -> Result<String> {
         "removed {} receipt-owned launcher(s)",
         management.launchers.len()
     ))
-}
-
-struct PublishedFiles {
-    backups: Vec<(PathBuf, PathBuf)>,
-    published: Vec<PathBuf>,
-}
-
-impl PublishedFiles {
-    fn commit(self) {
-        for (backup, _) in self.backups {
-            let _ = fs::remove_file(backup);
-        }
-    }
-
-    fn rollback(self) -> Result<()> {
-        for destination in self.published.iter().rev() {
-            match fs::remove_file(destination) {
-                Ok(()) => {}
-                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-                Err(error) => return Err(error).context("removing rolled-back application file"),
-            }
-        }
-        for (backup, destination) in self.backups.into_iter().rev() {
-            fs::rename(&backup, &destination).context("restoring prior application file")?;
-        }
-        Ok(())
-    }
-}
-
-fn publish_files(desired: &[(PathBuf, PathBuf)], retire: &[PathBuf]) -> Result<PublishedFiles> {
-    let mut destinations = std::collections::BTreeSet::new();
-    if desired
-        .iter()
-        .any(|(_, destination)| !destinations.insert(destination.to_path_buf()))
-    {
-        bail!("application publication repeats a destination");
-    }
-    for destination in retire {
-        if !destinations.insert(destination.clone()) {
-            bail!("application publication both replaces and retires a destination");
-        }
-    }
-    let mut staged = Vec::new();
-    for (index, (source, destination)) in desired.iter().enumerate() {
-        let temporary = sibling_temporary(destination, "pending", index)?;
-        fs::copy(source, &temporary)
-            .with_context(|| format!("staging launcher `{}`", destination.display()))?;
-        staged.push((temporary, destination.clone()));
-    }
-    let mut backups = Vec::new();
-    let mut published = Vec::new();
-    let result = (|| {
-        for (index, destination) in retire.iter().enumerate() {
-            let backup = sibling_temporary(destination, "prior", desired.len() + index)?;
-            fs::rename(destination, &backup)?;
-            backups.push((backup, destination.clone()));
-        }
-        for (index, (temporary, destination)) in staged.iter().enumerate() {
-            let backup = sibling_temporary(destination, "prior", index)?;
-            if destination.exists() {
-                fs::rename(destination, &backup)?;
-                backups.push((backup, destination.clone()));
-            }
-            fs::rename(temporary, destination)?;
-            published.push(destination.clone());
-        }
-        Ok::<(), anyhow::Error>(())
-    })();
-    if let Err(error) = result {
-        for destination in published.iter().rev() {
-            let _ = fs::remove_file(destination);
-        }
-        for (backup, destination) in backups.iter().rev() {
-            let _ = fs::rename(backup, destination);
-        }
-        for (temporary, _) in &staged {
-            let _ = fs::remove_file(temporary);
-        }
-        return Err(error).context("publishing application files");
-    }
-    Ok(PublishedFiles { backups, published })
-}
-
-fn sibling_temporary(destination: &Path, role: &str, index: usize) -> Result<PathBuf> {
-    let name = destination
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or_else(|| anyhow::anyhow!("application destination has no portable file name"))?;
-    Ok(destination.with_file_name(format!("{name}.vibe-{role}-{}-{index}", std::process::id())))
 }
 
 fn verify_generation(root: &Path, manifest: &BundleManifest) -> Result<()> {

@@ -255,7 +255,7 @@ fn completed_default_lifecycle_document_is_pinned_in_full() {
  "notices":[],"ok":true,"requested":"deploy","steps":[
   {"phase":"validate","status":"ok"},{"phase":"install","status":"fresh"},{"phase":"generate","status":"ok"},
   {"phase":"build","status":"ok"},{"phase":"test","status":"no-op"},{"phase":"create","status":"no-op"},
-  {"phase":"verify","status":"no-op"},{"phase":"package","status":"no-op"},{"phase":"deploy","status":"no-op"}],
+  {"phase":"verify","status":"ok"},{"phase":"package","status":"no-op"},{"phase":"deploy","status":"no-op"}],
  "verification":{"artifacts":[],"evidence":1,"evidence_id":"<evidence-id>","inputs":[],
   "observed_at":"<instant>","status":"unavailable","run":{
    "chain":["validate","install","generate","build","test","create","verify","package","deploy"],
@@ -365,7 +365,7 @@ config = { message = "GOLDEN-GENERATE" }
     fs::create_dir_all(&scripts).unwrap();
     fs::write(
         scripts.join("fail.sh"),
-        "printf PHASE-OUT\nprintf PHASE-ERR >&2\nexit 29\n",
+        "printf 'PHASE-OUT\\n'\nprintf PHASE-ERR >&2\nexit 29\n",
     )
     .unwrap();
     fs::write(
@@ -457,9 +457,9 @@ fn install_barrier_document_stream_is_pinned_in_full() {
         "[package]\ngroup='org.goldenpkg'\nname='hooked'\nkind='tool'\nversion='0.1.0'\n\n[hooks]\npre-install='hooks/pre'\npost-install='hooks/post'\n",
     )
     .unwrap();
-    fs::write(package.join("hooks/pre.sh"), "printf PRE-RAN\n").unwrap();
+    fs::write(package.join("hooks/pre.sh"), "printf 'PRE-RAN\\n'\n").unwrap();
     fs::write(package.join("hooks/pre.ps1"), "Write-Output PRE-RAN\n").unwrap();
-    fs::write(package.join("hooks/post.sh"), "printf POST-RAN\n").unwrap();
+    fs::write(package.join("hooks/post.sh"), "printf 'POST-RAN\\n'\n").unwrap();
     fs::write(package.join("hooks/post.ps1"), "Write-Output POST-RAN\n").unwrap();
 
     let user = UserScratch::new();
@@ -567,7 +567,7 @@ lifecycle `deploy`:
   → build: ok
   → test: no-op
   → create: no-op
-  → verify: no-op
+  → verify: ok
   → package: no-op
   → deploy: no-op
   → verification: unavailable (0 input(s), 0 artifact(s))

@@ -202,8 +202,19 @@ fn canonical_composition_rename_refuses_before_intent() {
         fs::read_to_string(target.join("caf\u{e9}.md")).unwrap(),
         "composed"
     );
-    // … and its decomposed `e` + U+0301 neighbour, a distinct file here.
-    fs::write(target.join("cafe\u{301}.md"), "foreign").unwrap();
+    // A normalization-sensitive host has a foreign neighbour. APFS resolves
+    // the NFD spelling to the owned file, so planting foreign bytes there
+    // would corrupt the fixture before the production guard runs.
+    let distinct = !target.join("cafe\u{301}.md").exists();
+    if distinct {
+        fs::write(target.join("cafe\u{301}.md"), "foreign").unwrap();
+    } else {
+        assert_eq!(
+            fs::read_to_string(target.join("cafe\u{301}.md")).unwrap(),
+            "composed",
+            "the native filesystem aliases the owned composed spelling",
+        );
+    }
     let committed = fs::read(project.path().join(RECEIPT)).unwrap();
 
     fs::remove_file(body.join("caf\u{e9}.md")).unwrap();
@@ -231,8 +242,8 @@ fn canonical_composition_rename_refuses_before_intent() {
     );
     assert_eq!(
         fs::read_to_string(target.join("cafe\u{301}.md")).unwrap(),
-        "foreign",
-        "the decomposed neighbour is preserved, never adopted"
+        if distinct { "foreign" } else { "composed" },
+        "the decomposed neighbour or native alias is preserved, never adopted",
     );
     assert_eq!(fs::read(project.path().join(RECEIPT)).unwrap(), committed);
     assert!(
@@ -451,10 +462,11 @@ fn receipt_owned_paths_obey_the_one_portable_component_law() {
     fs::write(&receipt_path, &text).unwrap();
 }
 
-/// A real non-UTF-8 filename in the source refuses at selection time, before
+/// A raw non-UTF-8 filename refuses through the source-entry decoder, before
 /// the map, the stage, the intent, or any target mutation — and the already
 /// committed receipt and target stay byte-identical. Unix-only: Windows
-/// cannot create such a name through the ordinary filesystem API.
+/// cannot create such a name through the ordinary filesystem API; APFS
+/// supplies the same raw OS units directly to the production decoder.
 #[cfg(unix)]
 #[test]
 fn non_utf8_source_filename_refuses_and_leaves_the_commit_untouched() {
@@ -473,14 +485,33 @@ fn non_utf8_source_filename_refuses_and_leaves_the_commit_untouched() {
 
     let body = one.path().join("skills/body");
     let name = OsString::from_vec(vec![b'b', 0xff, 0xfe, b'.', b'm', b'd']);
-    fs::write(body.join(&name), "unrepresentable").unwrap();
-
-    let error = crate::pkgskill::lower_project_skill_bindings(
-        project.path(),
-        vec![provider(one.path(), "one", "alpha", &["claude"])],
-    )
-    .unwrap_err();
-    let error = format!("{error:#}");
+    let raw_path = body.join(&name);
+    let error = match fs::write(&raw_path, "unrepresentable") {
+        Ok(()) => format!(
+            "{:#}",
+            crate::pkgskill::lower_project_skill_bindings(
+                project.path(),
+                vec![provider(one.path(), "one", "alpha", &["claude"])],
+            )
+            .unwrap_err(),
+        ),
+        Err(error) => {
+            // APFS rejects invalid UTF-8 before an entry can exist. Exercise
+            // the exact production directory-entry decoder with those same
+            // raw OS units instead; unrelated fixture I/O failures still fail.
+            assert!(
+                cfg!(target_os = "macos")
+                    && (error.kind() == std::io::ErrorKind::InvalidInput
+                        || error.raw_os_error() == Some(92)), // Darwin EILSEQ.
+                "the host could not create the raw-name fixture: {error}",
+            );
+            assert!(!raw_path.exists());
+            format!(
+                "{:#}",
+                crate::pkgskill::exact_path::exact_utf8_relative(&body, &raw_path).unwrap_err(),
+            )
+        }
+    };
     assert!(error.contains("is not valid UTF-8"), "{error}");
     assert!(
         error.contains("b\\xFF\\xFE.md"),

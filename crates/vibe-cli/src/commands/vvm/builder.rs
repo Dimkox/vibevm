@@ -16,6 +16,17 @@ use vibe_core::progress::{Progress, ProgressDiagnosticLevel, ProgressTask};
 
 use super::model::{Profile, VersionId};
 
+/// Build-affecting variables captured at the CLI composition root for source reuse.
+pub(crate) const SOURCE_BUILD_ENVIRONMENT: [&str; 7] = [
+    "RUSTFLAGS",
+    "CARGO_ENCODED_RUSTFLAGS",
+    "RUSTC",
+    "RUSTC_WRAPPER",
+    "RUSTC_WORKSPACE_WRAPPER",
+    "CARGO_BUILD_TARGET",
+    "RUSTUP_TOOLCHAIN",
+];
+
 /// A selector resolved to a concrete version id and commit (PROP-019 §2.7).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ResolvedVersion {
@@ -34,6 +45,11 @@ pub(crate) struct BuildOutput {
 
 /// Builds a vibevm source tree into both essential binaries (PROP-019 §2.7).
 pub(crate) trait Builder {
+    /// Unknown toolchains conservatively retain the ordinary build path.
+    fn probe_toolchain(&self, _source_root: &Path) -> Option<String> {
+        None
+    }
+
     fn build(&self, source_root: &Path, target_dir: &Path, profile: Profile)
     -> Result<BuildOutput>;
 }
@@ -60,6 +76,10 @@ impl CargoBuilder {
 
 #[spec(implements = "spec://org.vibevm.core/vibevm/common/PROP-060#SELF-STAGES")]
 impl Builder for CargoBuilder {
+    fn probe_toolchain(&self, source_root: &Path) -> Option<String> {
+        probe_toolchain(source_root)
+    }
+
     fn build(
         &self,
         source_root: &Path,
@@ -167,20 +187,26 @@ impl CargoBuilder {
         build.set_progress(1, Some(2), "components");
         index.finish();
         build.set_progress(2, Some(2), "components");
-        let toolchain = Command::new("rustc")
-            .current_dir(source_root)
-            .arg("--version")
-            .output()
-            .ok()
-            .filter(|o| o.status.success())
-            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
-            .unwrap_or_else(|| "unknown".to_string());
+        let toolchain = probe_toolchain(source_root).unwrap_or_else(|| "unknown".to_string());
         Ok(BuildOutput {
             binary,
             index_binary,
             toolchain,
         })
     }
+}
+
+fn probe_toolchain(source_root: &Path) -> Option<String> {
+    let output = Command::new("rustc")
+        .current_dir(source_root)
+        .arg("--version")
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let version = String::from_utf8(output.stdout).ok()?.trim().to_owned();
+    (!version.is_empty()).then_some(version)
 }
 
 struct ProgressDetailWriter<'a> {

@@ -75,13 +75,10 @@
         let seal = adapter.owned_tree_seal(name, owner).unwrap();
         let journal = cleanup_journal(execution, name, owner, seal.clone());
         let mut completed = Vec::new();
-        loop {
-            let OwnedTreeCleanupPreparation::Intent(intent) = adapter
-                .prepare_owned_tree_cleanup(&journal, name, owner, &seal, &completed)
-                .unwrap()
-            else {
-                break;
-            };
+        while let OwnedTreeCleanupPreparation::Intent(intent) = adapter
+            .prepare_owned_tree_cleanup(&journal, name, owner, &seal, &completed)
+            .unwrap()
+        {
             let completion = adapter
                 .execute_owned_tree_cleanup(&journal, name, owner, &seal, &completed, &intent)
                 .unwrap();
@@ -246,13 +243,10 @@
             SafefsTransactionFilesystem::open(&source, &project.identity_token().unwrap()).unwrap();
         restarted.rebind_from_journal(&journal).unwrap();
         let mut completed = journal.cleanup_wal.as_ref().unwrap().completed.clone();
-        loop {
-            let OwnedTreeCleanupPreparation::Intent(intent) = restarted
-                .prepare_owned_tree_cleanup(&journal, candidate, owner, &seal, &completed)
-                .unwrap()
-            else {
-                break;
-            };
+        while let OwnedTreeCleanupPreparation::Intent(intent) = restarted
+            .prepare_owned_tree_cleanup(&journal, candidate, owner, &seal, &completed)
+            .unwrap()
+        {
             let completion = restarted
                 .execute_owned_tree_cleanup(&journal, candidate, owner, &seal, &completed, &intent)
                 .unwrap();

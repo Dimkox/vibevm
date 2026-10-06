@@ -97,6 +97,8 @@ pub(crate) struct FileEntry {
 /// The per-instance file manifest (`.vvm-manifest.toml`).
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Manifest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_inputs_sha256: Option<String>,
     #[serde(default, rename = "file")]
     pub files: Vec<FileEntry>,
 }
@@ -174,7 +176,10 @@ pub(crate) fn manifest_for(dist: &[(PathBuf, String)]) -> Result<Manifest, Place
     for (src, rel) in dist {
         files.push(entry_for(src, rel)?);
     }
-    Ok(Manifest { files })
+    Ok(Manifest {
+        files,
+        ..Manifest::default()
+    })
 }
 
 /// Whether two entries are the same file: by content hash for small files,
@@ -294,7 +299,10 @@ pub(crate) fn place(
             source,
         })?;
     }
-    let staging_parent = staging.parent().expect("version staging has a parent");
+    let staging_parent = staging.parent().ok_or_else(|| PlaceError::Layout {
+        path: staging.clone(),
+        source: io::Error::new(io::ErrorKind::InvalidInput, "version staging has no parent"),
+    })?;
     guard(store, staging_parent)?;
     fs::create_dir_all(staging_parent).map_err(|source| PlaceError::Layout {
         path: staging_parent.to_path_buf(),
@@ -339,9 +347,14 @@ pub(crate) fn place(
                 source,
             })?;
         }
-        let expected = manifest
-            .get(rel)
-            .expect("distribution manifest covers every file");
+        let expected = manifest.get(rel).ok_or_else(|| PlaceError::Copy {
+            from: src.clone(),
+            to: dest.clone(),
+            source: io::Error::new(
+                io::ErrorKind::InvalidData,
+                "distribution manifest does not cover the placed file",
+            ),
+        })?;
         if !actual_matches(expected, &dest) {
             return Err(PlaceError::Copy {
                 from: src.clone(),
@@ -411,6 +424,9 @@ pub(crate) fn publish_staged_instance(
     })?;
     Ok(final_dir)
 }
+
+#[path = "placer_missing_manifest_tests.rs"]
+mod missing_manifest_tests;
 
 #[cfg(test)]
 mod tests {
@@ -545,6 +561,7 @@ mod tests {
         };
         let valid = Manifest {
             files: vec![entry(BINARY_NAME)],
+            ..Manifest::default()
         };
         assert!(manifest_shape_valid(
             super::super::model::Origin::Binary,
@@ -557,11 +574,13 @@ mod tests {
         ] {
             assert!(!manifest_shape_valid(
                 super::super::model::Origin::Binary,
-                &Manifest { files }
+                &Manifest {
+                    files,
+                    ..Manifest::default()
+                }
             ));
         }
     }
-
     #[test]
     fn source_change_between_manifest_and_copy_is_rejected() {
         let temp = tempfile::tempdir().unwrap();

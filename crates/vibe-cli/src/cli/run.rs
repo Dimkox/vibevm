@@ -1,3 +1,5 @@
+specmark::scope!("spec://org.vibevm.core/vibevm/common/PROP-054#HOST-RUN-COMMANDS");
+
 use std::path::PathBuf;
 
 /// Arguments for `vibe run <command> [-- <args>...]`.

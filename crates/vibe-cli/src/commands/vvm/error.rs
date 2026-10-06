@@ -107,12 +107,17 @@ pub(crate) enum VvmError {
     )]
     Offline { verb: String, address: String },
 
-    #[error("vibe self doctor found {problems} unresolved problem(s)")]
+    #[error(
+        "vibe self doctor found {problems} unresolved problem(s) \
+         (violates spec://org.vibevm.core/vibevm/common/PROP-019#introspection; \
+          fix: follow the reported repair recipes, or run `vibe self doctor --fix` to repair shims/PATH with consent)"
+    )]
     DoctorProblems { problems: usize },
 
     #[error(
         "installed instance `{selector}` is incomplete or corrupt \
-         (fix: reinstall that version; use `--force` to retain the damaged #N for inspection)"
+         (violates spec://org.vibevm.core/vibevm/common/PROP-019#instances; \
+          fix: reinstall that version; use `--force` to retain the damaged #N for inspection)"
     )]
     CorruptInstance { selector: String },
 }

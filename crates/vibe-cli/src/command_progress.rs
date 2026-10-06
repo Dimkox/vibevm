@@ -47,6 +47,7 @@ pub(crate) const TOP_LEVEL_COMMANDS: &[&str] = &[
     "registry",
     "reinstall",
     "requirements",
+    "run",
     "scrape",
     "search",
     "select",
@@ -137,7 +138,11 @@ pub(crate) fn policy(command: &Command, terminal_attached: bool) -> CommandPolic
             Some(ExtensionsCommand::Analyze(_)) => FiniteFallback("Command extensions analyze"),
         },
         Command::Validate(_) => FiniteFallback("Command validate"),
-        Command::Install(args) if !args.global => ExistingRoot,
+        Command::Install(args)
+            if !args.global || args.packages.iter().any(|p| p.starts_with("mcp:")) =>
+        {
+            ExistingRoot
+        }
         Command::Install(_) => FiniteFallback("Command global install"),
         Command::Generate(_) => FiniteFallback("Command generate"),
         Command::Build(_) => FiniteFallback("Command build"),

@@ -99,7 +99,7 @@ pub fn lex_element(s: &str, at: usize) -> Option<RawElement> {
         if i == name_start {
             errors.push(format!(
                 "unexpected character `{}` inside <status> tag",
-                &after[i..]
+                after[i..]
                     .chars()
                     .next()
                     .map(String::from)

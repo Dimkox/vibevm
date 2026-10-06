@@ -197,11 +197,36 @@ fn an_unselected_link_changes_nothing() {
 #[test]
 fn a_portable_identity_collision_refuses_the_manifest_after_legacy_rows() {
     let dir = project();
-    // `caf\u{E9}` (NFC) and `cafe\u{301}` (NFD) are two distinct directory
-    // entries on NTFS and on the usual Unix filesystems, and one physical
-    // identity under the shared case/normalisation fold.
-    fs::write(dir.path().join("caf\u{E9}.txt"), "composed").unwrap();
-    fs::write(dir.path().join("cafe\u{301}.txt"), "decomposed").unwrap();
+    let composed = "caf\u{E9}.txt";
+    let decomposed = "cafe\u{301}.txt";
+    assert_eq!(
+        vibe_safefs::identity_key(composed),
+        vibe_safefs::identity_key(decomposed),
+        "canonical equivalence belongs to the shared portable identity law",
+    );
+    fs::write(dir.path().join(composed), "composed").unwrap();
+    let distinct = !dir.path().join(decomposed).exists();
+    fs::write(dir.path().join(decomposed), "decomposed").unwrap();
+    if !distinct {
+        // APFS normalizes lookup even when case-sensitive. Exercise the
+        // complete evidence/legacy pipeline with representable case aliases,
+        // while the explicit assertion above still pins NFC/NFD identity.
+        assert_eq!(
+            fs::read_to_string(dir.path().join(composed)).unwrap(),
+            "decomposed"
+        );
+        fs::remove_file(dir.path().join(composed)).unwrap();
+        fs::write(dir.path().join("Alias.txt"), "composed").unwrap();
+        fs::write(dir.path().join("alias.txt"), "decomposed").unwrap();
+        assert_eq!(
+            fs::read_to_string(dir.path().join("Alias.txt")).unwrap(),
+            "composed"
+        );
+        assert_eq!(
+            fs::read_to_string(dir.path().join("alias.txt")).unwrap(),
+            "decomposed"
+        );
+    }
 
     let prepared = prepared_with_patterns(dir.path(), &["*.txt"]);
     assert_eq!(refusal_of(&prepared), InputRefusal::Aliased);
@@ -259,7 +284,9 @@ fn an_injected_post_reads_identity_swap_refuses() {
     let file = dir.path().join("a.txt");
     inject::arm_after_reads(Some(Box::new(move |relative| {
         assert_eq!(relative, "a.txt");
-        fs::remove_file(&file).unwrap();
+        // Keep the inspected object alive: unlink-and-create can immediately
+        // reuse its inode on Unix, which would not inject an identity change.
+        fs::rename(&file, file.with_extension("previous")).unwrap();
         fs::write(&file, "TWO").unwrap();
     })));
 

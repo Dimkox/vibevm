@@ -115,9 +115,9 @@ fn plan_partitions_old_matching_records() {
         .map(|r| (r.version_id(), r.instance))
         .collect();
     let mut covered_sorted = covered.clone();
-    covered_sorted.sort_by(|a, b| a.1.cmp(&b.1));
+    covered_sorted.sort_by_key(|record| record.1);
     let mut expected_sorted = expected.clone();
-    expected_sorted.sort_by(|a, b| a.1.cmp(&b.1));
+    expected_sorted.sort_by_key(|record| record.1);
     assert_eq!(
         covered_sorted, expected_sorted,
         "every old record is covered"
@@ -337,6 +337,7 @@ fn run_rejects_a_non_source_tree_target() {
         shell: None,
         path_var: None,
         offline: false,
+        source_build_environment: Vec::new(),
     };
     let args = VvmRelocateArgs {
         target: tmp.path().display().to_string(),

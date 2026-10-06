@@ -81,7 +81,7 @@ the repo's `rust-toolchain.toml` (the pin VVM honours when building).</related><
       </facts>
     </standalone>
     <surface title="2.2 Command surface — `vibe self` (+ `vibe vars`)">
-      <p><req-surface fact="true" status="spec/done">`req r5`</req-surface></p>
+      <p><req-surface fact="true" status="spec/done">`req r7`</req-surface></p>
       <p><SELF-NAMING fact="true" status="spec/done">`vibe self` — named after rustup's `self` (a tool that manages its own
 versions), and unambiguous where `man` collided with the Unix manual page:</SELF-NAMING></p>
       <facts ordered="false">
@@ -92,14 +92,20 @@ versions), and unambiguous where `man` collided with the Unix manual page:</SELF
   (always allocate a fresh immutable `#N`).</CMD-INSTALL>
         <CMD-UPDATE fact="true" status="impl/done" action="continue" actionstage="doc" audience="user">`self update` follows the running origin, and moves versions FORWARD (owner
   ruling 2026-09-14, replacing the v1 rule that a binary execution refreshes its
-  own number and never jumps). A source/worktree execution rebuilds its exact
-  source root at `latest`. A binary execution reads the release channel's
+  own number and never jumps). A source/worktree execution checks its exact
+  source root at `latest` before Cargo and rebuilds only when the source inputs,
+  provenance, profile, toolchain or installed payload changed, or `--force` was
+  requested. An unchanged already-active instance is a no-op: no build,
+  placement, activation, environment rewrite or installation output. Its human result explains that the selected source checkout is unchanged and names that checkout’s full path; JSON retains the machine envelope. A binary execution reads the release channel's
   newest-release aggregate manifest and goes to the **newest published
   release**: newer than the running version installs and activates it by the
   same verified path an explicit `X.Y.Z` takes. The SAME version is not a no-op
   — a release may be rebuilt under its own number, so the manifest's bundle
   digest decides: changed bytes install a fresh immutable `#N`, unchanged bytes
-  reuse the instance already held and cost no bundle download at all. A newest
+  reuse the instance already held and cost no bundle download at all. If that
+  verified instance is already active, update does not reactivate it or emit
+  installation messages; JSON reports reuse without requiring an index restart.
+  A newest
   release OLDER than the running one (withdrawn on the far side) never walks the
   machine backwards. `--force` installs a fresh `#N` whatever the digest says.
   `self install stable` enters this same path, since `stable` IS the newest
@@ -300,7 +306,7 @@ four layers:</ACTIVATION-LAW></p>
       </facts>
     </path>
     <build title="2.7 Install pipelines — source builds and verified native bundles">
-      <p><req-build-pipeline fact="true" status="spec/done">`req r2`</req-build-pipeline></p>
+      <p><req-build-pipeline fact="true" status="spec/done">`req r4`</req-build-pipeline></p>
       <p><PIPELINE-OVERVIEW fact="true" status="impl/done">Both lanes end identically: stage a complete `vibe` + `vibe-index`
 distribution, record a fresh immutable local instance, then flip `current`.
 The source lane builds from a referenced checkout; the binary lane verifies a
@@ -317,6 +323,7 @@ bounded published bundle and installs its owned clean source snapshot.</PIPELINE
     `pull`; stash first if dirty), never re-cloned, so a full rebuild
     (hours, in a large future) is avoided.</LOC-MANAGED>
         <STEP-RESOLVE fact="true" status="spec/done">**Resolve.** The selector (§2.3) → a concrete commit, recorded.</STEP-RESOLVE>
+        <SOURCE-FRESHNESS fact="true" status="spec/done">**Source freshness before Cargo.** The existing per-instance `.vvm-manifest.toml` may carry `source_inputs_sha256`. The recipe hashes the exact Git worktree's tracked and nonignored untracked regular input paths and bytes, deletion state, executable permissions where supported, source root/HEAD and build-affecting environment. Git index staging alone does not change input identity. Reuse also requires matching commit, profile, toolchain, origin/source path and verified installed payload. Unprovable sources and legacy instances without evidence use the normal build; an old instance's immutable manifest is never amended to manufacture evidence. Seal a new fingerprint only when source inputs stayed unchanged throughout the build. Opaque untracked nested Git worktree directories are outside the parent Git input namespace and are excluded only after checking ordinary ancestors, a nonredirected `.git` marker and Git top-level identity; their boundaries are rechecked before sealing. Tracked gitlinks, unknown directories, special inputs and redirects remain unprovable. Ignored/generated inputs and dependencies or configuration outside the parent Git worktree, including separate nested repositories, require `--force` when changed; they are not silently claimed as part of this bounded recipe.</SOURCE-FRESHNESS>
         <STEP-BUILD fact="true" status="impl/done">**Build.** `cargo build [--release] -p vibe-cli -p vibe-index` into the **shared**
   `build/` target dir (§9.3 — never the source tree's `target/`; load-
   bearing on Windows and keeps the dev tree clean), honouring

@@ -107,7 +107,7 @@ fn is_lower_hex_64(value: &str) -> bool {
 
 fn decode_hex_32(value: &str) -> Result<[u8; 32], ()> {
     let mut output = [0_u8; 32];
-    for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
+    for (index, pair) in value.as_bytes().as_chunks::<2>().0.iter().enumerate() {
         output[index] = (nibble(pair[0])? << 4) | nibble(pair[1])?;
     }
     Ok(output)

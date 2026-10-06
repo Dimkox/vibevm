@@ -345,7 +345,7 @@ macro_rules! system_transaction_store_inherent_methods {
                 let stable_report = self.require_stable_complete_report(&durable)?;
                 let (owner, transaction_directory) = match self.load_owner(project, transaction) {
                     Ok(value) => value,
-                    Err(error)
+                    Err(_error)
                         if project_home
                             .open_child(transaction_component(transaction)?)
                             .map_err(|source| {

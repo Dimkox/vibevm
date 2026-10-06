@@ -6,7 +6,7 @@ Installs the current VibeVM release for native Windows x64.
 irm https://vibevm.org/install.ps1 | iex
 
 .EXAMPLE
-& ([scriptblock]::Create((irm https://vibevm.org/install.ps1))) -Version 1.0.0
+& ([scriptblock]::Create((irm https://vibevm.org/install.ps1))) -Version 1.0.2
 
 .EXAMPLE
 & ([scriptblock]::Create((irm https://vibevm.org/install.ps1))) -Force

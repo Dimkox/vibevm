@@ -8,7 +8,151 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
-_(nothing yet — 1.0.0 just shipped)_
+## [1.0.7] — 2026-10-04
+
+- Source self-update freshness handles opaque untracked nested Git worktrees
+  instead of rejecting them as non-file inputs. Local verification caches are
+  ignored as machine outputs. Regression coverage includes the actual host
+  checkout with an isolated temporary store; repeated calls reuse the sealed
+  instance without rebuilding. Verbose progress distinguishes unavailable
+  snapshots from missing legacy evidence. An unchanged source update explains
+  why nothing needs updating and names the selected source checkout.
+
+## [1.0.6] — 2026-10-04
+
+- `vibe self update` checks source freshness before Cargo and reuses unchanged
+  source builds without copying a new instance. An already-active verified
+  binary release skips redundant activation and installation messages; JSON
+  no-op output no longer requests a `vibe-index` restart. `--force` and
+  `self reinstall` retain deliberate refresh behavior.
+
+## [1.0.5] — 2026-10-04
+
+- Package uninstall removes newly orphaned transitive dependencies using the
+  installed lock graph, without downloading or reinstalling packages. Shared
+  dependencies and declarations in other workspace nodes remain installed;
+  pure-transitive removal is refused. Confirmation and in-place protection
+  cover the complete removal set, and boot is regenerated from the pruned world.
+  Empty package containers are removed while other versions and untracked
+  siblings remain untouched. JSON reports the removal count, complete slot
+  paths and whether the selected package was retained by another declaration.
+
+## [1.0.4] — 2026-10-03
+
+Global application installation accepts platform-specific launcher variants.
+Each command needs a native launcher, and a package may publish several
+variants without requiring a Windows `.cmd`/`.ps1` pair on Linux or macOS.
+The shared ownership checks also recognize `.exe` and `.bat`; update,
+rollback and uninstall retain exact file/hash protection. Windows management
+entries select the correct batch/native or PowerShell wrapper; POSIX entries
+keep shell argument forwarding.
+
+Zap's tracked source installer was corrected alongside this release to report
+its deployed native launchers instead of demanding Windows files everywhere.
+Published binary witnesses and application protocol versions are unchanged.
+
+## [1.0.3] — 2026-10-02
+
+Global MCP installation now keeps preparation, dependency installation and
+agent registration visibly active. Resolution messages distinguish version
+selection, metadata reads, download-source lookup and in-place checkout
+instead of repeating an indistinguishable "Resolving" label.
+
+- **Agent and server selection:** interactive checkbox menus use Space to
+  toggle and Enter to confirm. Install starts with only All checked; All and
+  individual subsets are exclusive. Checked rows use `[+]`. Multi-server
+  packages offer the same selection, with explicit `--agent`/`--server`
+  filters for scripts and JSON string arrays for exact server names.
+- **Selective global uninstall:** inspect native client configurations and
+  initially check only agents with an exact owned installed registration.
+  Show missing, changed and pending states. Remove only selected owned
+  entries; retain the package while another agent still owns registrations.
+  Refresh preserves each agent's chosen server subset. Drift protection and
+  rollback preserve foreign entries and later edits; JSON reports whether
+  the package was removed.
+- **Installation scope:** the known global MCP service user-project is
+  materialized automatically with a human notice naming its full destination.
+  A concrete project keeps its existing confirmation policy and names the
+  full target path. Automatic service installation does not bypass unrelated
+  binary consent or agent/server choices.
+- **Initialization:** `vibe init` can choose a root `[project]` or `[package]`
+  declaration in the same scaffold. `--type project|package`, `--group` and
+  `--name` provide explicit script inputs. Interactive init explains the
+  group/name coordinate before asking group, name, type and remaining fields.
+  Metadata flags and the chosen package kind reach the manifest; reinit
+  preserves authored files and refuses silent role conversion. Interior
+  hyphens such as `package-name` are supported. Legacy nested package/group
+  forms remain available.
+- **Prompt coexistence:** progress stays paused for the entire field-entry
+  dialog, however long a person leaves it unanswered, and resumes afterward.
+  Native client-directory injection isolates global MCP fixtures on Windows.
+- **Release validation:** the full workspace gate now provisions its pinned
+  generator and clean-snapshot dependency slot. Unix lock guards explicitly
+  release inherited file-description locks; placement rejects incomplete
+  manifests through typed errors. Portable fixtures retain identity, rollback,
+  capability-refusal and stream assertions across operating systems.
+  Windows scratch Git enables long paths and gates select Git for Windows
+  Bash explicitly. Native macOS gates use an owned
+  case-sensitive temporary volume and physical paths; Unicode fixtures
+  exercise the same refusal rules when APFS cannot represent distinct names.
+  Health preparation fixtures seal their own regular tool assets. The
+  workspace also passes current Rust 1.98 Clippy without lint suppressions;
+  hash recipes, wire formats and their golden data stay unchanged.
+
+## [1.0.2] — 2026-10-01
+
+MCP packages can declare a remote Streamable HTTP endpoint alongside the
+existing local stdio binary form. `vibe mcp install` accepts a package and
+optional server selector, and `vibe install -g mcp:<group>/<name>` maintains
+an exact-pinned user inventory and registers the endpoint with selected
+agents. Global update and uninstall follow the same inventory. Per-agent
+registration receipts protect operator-owned and hand-edited entries.
+
+Qwen Code joins the agent integration matrix with project and user scopes.
+Codex project MCP configuration follows its current `.codex/config.toml`
+surface. Remote URL projection uses each client's native configuration
+shape; Claude Desktop reports that direct remote configuration is unsupported.
+An endpoint-only package needs no local binary or build.
+
+## [1.0.1] — 2026-09-30
+
+A patch release with three fixes found while packaging Anatoly Levenchuk's
+FPF corpus (37 hierarchical packages, 843 pattern documents) for VibeVM
+and publishing it to the `vibespecs` registry. No new commands, no
+manifest or wire changes; the documentation package stays at its version.
+
+- **Markdown converter: nested list items with multibyte text no longer
+  panic.** `vibe-specdoc`'s `item_unit` sliced a nested item's opener line
+  at `indent + list_marker_len(line)`, but `list_marker_len` already counts
+  the indent; on a nested item whose text starts with a multibyte character
+  (`  * \`ΓFoldRef.edition?\``, FPF-Spec Part G) the slice landed inside the
+  character and `vibe install` aborted with «byte index is not a char
+  boundary». On ASCII the same off-by-indent silently misplaced the GFM
+  task-box probe, so nested `[ ]` boxes were not restored. Regression tests
+  pin both cases; the docs-corpus test is repinned at its 54 pages, with the
+  plain legal page and the deliberately unparsable tutorial projection
+  listed by name.
+- **Boot lane: nested static umbrellas install in XML projects.** The
+  once-each pass of the lane compiler (B-006, `desubstitute_covered_units`)
+  decided every unit-STATIC substitution against one pre-pass snapshot.
+  When a boot-bearing member of a zone itself statically links a child (a
+  DPF package requiring a shared base package under a suite umbrella), the
+  umbrella stayed substituted and, in a `spec_format = "xml"` project, its
+  compiled per-unit `STATIC.xml` was read as a document: `vibe install`
+  failed with «unexpected text content» while a Markdown project accepted
+  the same graph. The pass now runs to a fixpoint, with a regression test
+  for the umbrella → member → base shape.
+- **`vibe search` works against the default registry index.** The index
+  of a GitHub registry is a static mirror (`raw.githubusercontent.com/
+  <org>/index/<ref>`): files, no routes. The client found it through its
+  handshake and then asked the live-server-only route `/v1/packages`,
+  reported the mirror's 404 as «registry unreachable», and every default
+  project searched nothing. The client now reads the mirror's
+  `primary.jsonl` and scores it locally with the server's own tokeniser
+  and ranking, which moved into `vibe_wire::behaviour::index_search` as
+  the one home for both readers; a base that publishes neither the route
+  nor the catalog keeps the 404. PROP-005 `##INT-SEARCH` and
+  `##TEXT-INDEX` record the two shapes.
 
 ## [1.0.0] — 2026-08-20
 

@@ -58,7 +58,9 @@ impl Pinned {
         expected: &EntryState,
     ) -> std::result::Result<DirectoryDurability, OwnedTreeCleanupError> {
         platform::remove_expected(self, name, expected).map_err(|error| match error {
+            #[cfg(windows)]
             platform::NativeRemoveError::Changed(detail) => OwnedTreeCleanupError::Third { detail },
+            #[cfg(windows)]
             platform::NativeRemoveError::Io(error) => {
                 OwnedTreeCleanupError::Io(anyhow::Error::new(error))
             }
@@ -78,9 +80,11 @@ impl Pinned {
         let path = self.join(name);
         let (dir, durability) =
             platform::create_directory(self, name).map_err(|error| match error {
+                #[cfg(windows)]
                 platform::NativeCreateError::NotCreated(error) => {
                     OwnedDirectoryCreateError::NotCreated(anyhow::Error::new(error))
                 }
+                #[cfg(windows)]
                 platform::NativeCreateError::CreatedButUnsealed(error) => {
                     OwnedDirectoryCreateError::CreatedButUnsealed {
                         path: path.clone(),
@@ -148,20 +152,25 @@ impl Pinned {
         let durability =
             platform::rename_noreplace(self, destination, source_name, destination_name, expected)
                 .map_err(|error| match error {
+                    #[cfg(windows)]
                     platform::NoReplaceError::Occupied => RenameError::Occupied {
                         path: destination.join(destination_name),
                     },
+                    #[cfg(windows)]
                     platform::NoReplaceError::SourceChanged => RenameError::SourceChanged {
                         path: self.join(source_name),
                         detail: "native source handle did not match the expected state".to_owned(),
                     },
+                    #[cfg(windows)]
                     platform::NoReplaceError::SourceReappeared => RenameError::PossiblyMoved {
                         source: self.join(source_name),
                         destination: destination.join(destination_name),
                         detail: "source name was concurrently recreated after rename".to_owned(),
                     },
+                    #[cfg(windows)]
                     platform::NoReplaceError::CrossFilesystem => RenameError::CrossFilesystem,
                     platform::NoReplaceError::Unsupported => RenameError::Unsupported,
+                    #[cfg(windows)]
                     platform::NoReplaceError::Io(error) => {
                         RenameError::Failed(anyhow::Error::new(error).context(format!(
                             "renaming `{}` to `{}` without replacement",

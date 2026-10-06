@@ -137,6 +137,9 @@ fn local_process_primitive_runs_a_sealed_group_in_an_isolated_view() {
     let mut backend = LocalProcessBackend::new();
     let mut plan = local_process_plan(&["--help"], 10);
     plan.checks[0].sandbox.graceful_termination = false;
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let result = run_phase(&mut backend, &plan, &local_context(&phase, &protected)).unwrap();
     assert_eq!(result.checks.len(), 1);
     assert_eq!(result.checks[0].commands[0].exit_code, 0);
@@ -149,6 +152,9 @@ fn nonzero_health_preserves_exact_argv_and_bounded_stream_evidence() {
     let mut backend = LocalProcessBackend::new();
     let mut plan = local_process_plan(&["--definitely-invalid-vibe-health-option"], 10);
     plan.checks[0].sandbox.graceful_termination = false;
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let error = run_phase(&mut backend, &plan, &local_context(&phase, &protected)).unwrap_err();
     let HealthError::CommandFailed { execution, .. } = error else {
         panic!("expected retained command failure, got {error}")
@@ -174,6 +180,9 @@ fn later_command_failure_preserves_every_prior_execution() {
         "--definitely-invalid-vibe-health-option".to_owned(),
     )];
     plan.checks[0].commands.push(failing);
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let error = run_phase(&mut backend, &plan, &local_context(&phase, &protected)).unwrap_err();
     let HealthError::CommandFailed {
         prior_executions,
@@ -213,6 +222,9 @@ fn later_check_failure_preserves_every_completed_check() {
         "--definitely-invalid-vibe-health-option".to_owned(),
     )];
     plan.checks.push(second);
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let error = run_phase(&mut backend, &plan, &local_context(&phase, &protected)).unwrap_err();
     let HealthError::CommandFailed {
         prior_checks,
@@ -240,6 +252,9 @@ fn exact_copy_after_is_accepted_only_with_reduced_assurance() {
     } else {
         TerminationMode::GracefulThenForced
     };
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let before = run_phase(&mut backend, &plan, &local_context(&phase, &protected)).unwrap();
     let mut after_context = local_context(&phase, &protected);
     after_context.phase = HealthPhase::After;
@@ -306,6 +321,9 @@ fn local_backend_materializes_sealed_exit_code_custom_bundle() {
         ],
     });
     let context = local_context(&phase, &protected);
+    if assert_native_unix_refusal(&plan, &context) {
+        return;
+    }
     let result = run_phase(&mut backend, &plan, &context).unwrap();
     assert_eq!(result.checks[0].commands[0].exit_code, 0);
     assert!(
@@ -366,6 +384,9 @@ fn local_process_primitive_times_out_and_terminates_its_group() {
         "VIBE_HEALTH_TIMEOUT_FIXTURE".to_owned(),
         EnvironmentValue::Literal("1".to_owned()),
     );
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let error = run_phase(
         &mut LocalProcessBackend::new(),
         &plan,
@@ -402,6 +423,9 @@ fn after_copy_tree_drift_retains_evidence_and_leaves_delivered_tree_unchanged() 
     );
     let mut context = local_context(&phase, &protected);
     context.phase = HealthPhase::After;
+    if assert_native_unix_refusal(&plan, &context) {
+        return;
+    }
     let error = run_phase(&mut LocalProcessBackend::new(), &plan, &context).unwrap_err();
     let HealthError::CommandChangedTree { execution, .. } = error else {
         panic!("expected retained tree-drift evidence, got {error}")
@@ -428,6 +452,9 @@ fn timeout_covers_descendant_held_pipes_without_hanging() {
         "VIBE_HEALTH_PIPE_FIXTURE".to_owned(),
         EnvironmentValue::Literal("leader".to_owned()),
     );
+    if assert_native_unix_refusal(&plan, &local_context(&phase, &protected)) {
+        return;
+    }
     let started = std::time::Instant::now();
     let error = run_phase(
         &mut LocalProcessBackend::new(),
@@ -457,6 +484,9 @@ fn cancellation_terminates_live_descendant_group_and_is_phase_typed() {
         EnvironmentValue::Literal("leader".to_owned()),
     );
     let mut context = local_context(&phase, &protected);
+    if assert_native_unix_refusal(&plan, &context) {
+        return;
+    }
     let cancellation = context.cancellation.clone();
     let trigger = std::thread::spawn(move || {
         std::thread::sleep(std::time::Duration::from_millis(100));
