@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "scope": "standalone data-only preparation component",
-  "upstream_commit": "30d217bfce47bcaccadabd9468f00e315dbcfead",
+  "upstream_commit": "b6659978453f50e6d1d4d99626d70b980a2c5847",
   "specification_commit": "737867129e703fd63c30e567a195f98353fe9c1e",
-  "python": "3.13.5",
+  "python": "3.13.16",
   "os": "Linux",
   "builder": {
     "name": "vibevm-factory-context-data-only",
     "version": "0.1.0",
     "source_digest": "sha256:4da4867402a6e5cbaaf37e8d2244bf212744d5c5bf0546bba372e2dfe29a256f",
-    "upstream_commit": "30d217bfce47bcaccadabd9468f00e315dbcfead",
+    "upstream_commit": "b6659978453f50e6d1d4d99626d70b980a2c5847",
     "parser": "python-tomllib",
     "runtime": "cpython-3.13",
     "tree_profile": "posix-normalized",
