@@ -189,10 +189,7 @@ impl Vocabularies {
                 // pulled from the vocabulary home participate in shared policy.
                 continue;
             }
-            ordinary_vocabularies.extend(
-                self.closure(std::slice::from_ref(root), schema)?
-                    .into_iter(),
-            );
+            ordinary_vocabularies.extend(self.closure(std::slice::from_ref(root), schema)?);
         }
         // The schema's own definitions, snapshotted before placement: the
         // collision refusal below must fire on what the author wrote, not

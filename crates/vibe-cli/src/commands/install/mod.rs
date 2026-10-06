@@ -28,14 +28,21 @@ mod confirm;
 mod direct;
 mod draft;
 mod events;
+mod global_mcp;
 mod observer;
 mod report;
 mod resolver;
 
 pub(crate) use closure_diff::{emit_closure_diff, lane_sizes};
 pub(crate) use confirm::CliConfirmGate;
+use confirm::UserProjectAction;
 pub(crate) use direct::run as run_direct;
+use direct::run_user_project;
 pub(crate) use draft::InstallDraft;
+pub(crate) use global_mcp::{
+    preflight_uninstall as preflight_global_mcp_uninstall, run as run_global_mcp,
+    uninstall as run_global_mcp_uninstall, update as run_global_mcp_update, user_project_root,
+};
 pub(crate) use observer::{CliInstallObserver, CliRegistryEnvironment, LifecycleSlotObserver};
 pub(crate) use report::{HookReportPresentation, LifecycleHookView};
 pub(crate) use resolver::{

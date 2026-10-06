@@ -41,10 +41,28 @@ run_step() {
 
   local started=$SECONDS ticker="" rc=0
   if [ "$QUIET" -eq 0 ]; then
-    ( while sleep 30; do
+    (
+      # The heartbeat must never pin an owned temporary source volume.
+      cd / || exit 2
+      sleep_pid=""
+      cleanup_ticker() {
+        trap - EXIT TERM INT
+        if [ -n "$sleep_pid" ]; then
+          kill "$sleep_pid" 2>/dev/null || :
+          wait "$sleep_pid" 2>/dev/null || :
+        fi
+      }
+      trap cleanup_ticker EXIT
+      trap 'exit 0' TERM INT
+      while :; do
+        sleep 30 &
+        sleep_pid=$!
+        wait "$sleep_pid" || break
+        sleep_pid=""
         printf 'self-check: … still in [%d/%d] %s, +%ss\n' \
           "$STEP_NO" "$STEP_TOTAL" "$label" "$((SECONDS - started))" >&2
-      done ) &
+      done
+    ) &
     ticker=$!
   fi
 
@@ -69,10 +87,22 @@ run_step() {
   return "$rc"
 }
 
-run_step "cargo fmt --all --check" \
-  cargo fmt --all --check || OVERALL=$?
+case "${OSTYPE:-}" in
+  msys*|cygwin*|win32*)
+    run_step "cargo fmt --all --check" \
+      python tools/self-check-format-windows.py || OVERALL=$?
+    ;;
+  *)
+    run_step "cargo fmt --all --check" \
+      cargo fmt --all --check || OVERALL=$?
+    ;;
+esac
+TEST_OPTIONS=(test --workspace --quiet)
+if [ "$KEEP_GOING" -eq 1 ]; then
+  TEST_OPTIONS+=(--no-fail-fast)
+fi
 run_step "cargo test --workspace" \
-  cargo test --workspace --quiet || OVERALL=$?
+  cargo "${TEST_OPTIONS[@]}" || OVERALL=$?
 run_step "cargo clippy --workspace --all-targets -- -D warnings" \
   cargo clippy --workspace --all-targets --quiet -- -D warnings || OVERALL=$?
 run_step "vibe check --path . --quiet" \

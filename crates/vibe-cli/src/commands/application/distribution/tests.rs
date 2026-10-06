@@ -194,3 +194,88 @@ fn linux_target_selection_distinguishes_gnu_and_musl() {
         .unwrap();
     assert_eq!(selected.libc.as_deref(), Some("gnu"));
 }
+
+fn launcher_variants(os: &str, destinations: &[&str]) -> (BundleManifest, DistributionTarget) {
+    let (_temp, archive, mut target) = fixture(false);
+    let mut zip = ZipArchive::new(File::open(archive).unwrap()).unwrap();
+    let bytes = read_entry(&mut zip, BUNDLE_MANIFEST, MAX_MANIFEST_BYTES).unwrap();
+    let mut manifest = bundle_manifest_from_wire(serde_json::from_slice(&bytes).unwrap());
+    manifest.os = os.into();
+    manifest.libc = (os == "linux").then(|| "gnu".into());
+    target.os = manifest.os.clone();
+    target.libc = manifest.libc.clone();
+    manifest.management.entry = if os == "windows" {
+        "management/launch.cmd"
+    } else {
+        "management/launch.sh"
+    }
+    .into();
+    manifest.launchers = destinations
+        .iter()
+        .map(|destination| BundleLauncher {
+            command: "demo".into(),
+            path: format!("launchers/{destination}"),
+            destination: (*destination).into(),
+        })
+        .collect();
+    manifest.files = std::iter::once(manifest.management.entry.clone())
+        .chain(
+            manifest
+                .launchers
+                .iter()
+                .map(|launcher| launcher.path.clone()),
+        )
+        .map(|path| BundleFile {
+            path,
+            sha256: digest(b"launcher"),
+            size: 8,
+        })
+        .collect();
+    (manifest, target)
+}
+
+#[test]
+fn each_native_platform_accepts_independent_launcher_variants() {
+    for name in ["demo", "demo.cmd", "demo.bat", "demo.ps1", "demo.exe"] {
+        let (manifest, target) = launcher_variants("windows", &[name]);
+        validate_bundle(&manifest, &target, &identity()).unwrap();
+    }
+    for os in ["linux", "macos"] {
+        for names in [
+            vec!["demo"],
+            vec!["demo.sh"],
+            vec!["demo", "demo.sh", "demo.ps1"],
+        ] {
+            let (manifest, target) = launcher_variants(os, &names);
+            validate_bundle(&manifest, &target, &identity()).unwrap();
+        }
+    }
+    let (manifest, target) = launcher_variants("windows", &["demo.exe", "demo.bat", "demo.ps1"]);
+    validate_bundle(&manifest, &target, &identity()).unwrap();
+}
+
+#[test]
+fn nonnative_variants_cannot_supply_missing_platform_command_coverage() {
+    for name in ["demo.cmd", "demo.bat", "demo.exe", "demo.ps1"] {
+        let (manifest, target) = launcher_variants("linux", &[name]);
+        assert!(
+            validate_bundle(&manifest, &target, &identity())
+                .unwrap_err()
+                .to_string()
+                .contains("platform-runnable launcher")
+        );
+    }
+    for names in [vec!["demo.py"], vec!["demo.exe", "demo.exe"]] {
+        let (manifest, target) = launcher_variants("windows", &names);
+        assert!(validate_bundle(&manifest, &target, &identity()).is_err());
+    }
+    let (mut manifest, target) = launcher_variants("windows", &["demo.exe"]);
+    manifest.application.commands.push("second".into());
+    let expected = manifest.application.clone();
+    assert!(
+        validate_bundle(&manifest, &target, &expected)
+            .unwrap_err()
+            .to_string()
+            .contains("platform-runnable launcher")
+    );
+}

@@ -13,11 +13,6 @@ fn strong_owned_directory_create_is_explicitly_unsupported() {
 }
 
 #[cfg(unix)]
-fn link_file(target: &Path, link: &Path) -> bool {
-    std::os::unix::fs::symlink(target, link).is_ok()
-}
-
-#[cfg(unix)]
 fn link_directory(target: &Path, link: &Path) -> bool {
     std::os::unix::fs::symlink(target, link).is_ok()
 }

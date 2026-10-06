@@ -68,7 +68,7 @@ category = "flow"
     .unwrap();
     fs::write(
         package.join("hooks/pre.sh"),
-        "set -eu\nprintf 'pre\\n' >> hook-order.txt\nprintf 'generated before boot\\n' > boot/generated.md\n",
+        "set -eu\nprintf 'pre\\n' >> hook-order.txt\nmkdir -p boot\nprintf 'generated before boot\\n' > boot/generated.md\n",
     )
     .unwrap();
     fs::write(
@@ -83,7 +83,7 @@ category = "flow"
     .unwrap();
     fs::write(
         package.join("hooks/pre.ps1"),
-        "Add-Content -LiteralPath hook-order.txt -Value pre\nSet-Content -LiteralPath boot/generated.md -Value 'generated before boot'\n",
+        "Add-Content -LiteralPath hook-order.txt -Value pre\nNew-Item -ItemType Directory -Path boot -Force | Out-Null\nSet-Content -LiteralPath boot/generated.md -Value 'generated before boot'\n",
     )
     .unwrap();
     fs::write(

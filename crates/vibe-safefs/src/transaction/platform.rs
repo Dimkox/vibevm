@@ -7,23 +7,32 @@ use crate::Pinned;
 
 #[derive(Debug)]
 pub(super) enum NoReplaceError {
+    #[cfg(windows)]
     Occupied,
+    #[cfg(windows)]
     SourceChanged,
+    #[cfg(windows)]
     SourceReappeared,
+    #[cfg(windows)]
     CrossFilesystem,
     Unsupported,
+    #[cfg(windows)]
     Io(std::io::Error),
 }
 
 pub(super) enum NativeCreateError {
+    #[cfg(windows)]
     NotCreated(std::io::Error),
+    #[cfg(windows)]
     CreatedButUnsealed(std::io::Error),
     #[cfg(not(windows))]
     Unsupported,
 }
 
 pub(super) enum NativeRemoveError {
+    #[cfg(windows)]
     Changed(String),
+    #[cfg(windows)]
     Io(std::io::Error),
     #[cfg(not(windows))]
     Unsupported,

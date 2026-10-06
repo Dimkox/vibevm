@@ -302,7 +302,7 @@ fn frame_level(digest: &mut StableDigest, level: Option<vibe_core::manifest::Ext
 fn frame_table(digest: &mut StableDigest, table: &toml::Table) {
     digest.usize(table.len());
     let mut entries = table.iter().collect::<Vec<_>>();
-    entries.sort_unstable_by(|(left, _), (right, _)| left.cmp(right));
+    entries.sort_unstable_by_key(|(key, _)| *key);
     for (key, value) in entries {
         digest.field(key.as_bytes());
         frame_value(digest, value);

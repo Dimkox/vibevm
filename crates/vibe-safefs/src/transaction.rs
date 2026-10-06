@@ -249,6 +249,7 @@ pub(crate) mod native_mutation_hook {
     pub fn arm(hook: Option<Hook>) {
         DURING.with(|slot| *slot.borrow_mut() = hook);
     }
+    #[cfg(windows)]
     pub fn during(parent: &crate::Pinned, name: &str) {
         let hook = DURING.with(|slot| slot.borrow_mut().take());
         if let Some(hook) = hook {
@@ -257,7 +258,7 @@ pub(crate) mod native_mutation_hook {
     }
 }
 
-#[cfg(not(any(test, feature = "inject-failures")))]
+#[cfg(all(windows, not(any(test, feature = "inject-failures"))))]
 pub(crate) mod native_mutation_hook {
     pub fn during(_: &crate::Pinned, _: &str) {}
 }

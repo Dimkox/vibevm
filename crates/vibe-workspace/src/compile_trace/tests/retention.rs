@@ -239,8 +239,11 @@ fn a_snapshot_swapped_after_eligibility_is_never_deleted() {
     let target = run_dir(root.path(), &doomed).join("index.json");
 
     let planted = target.clone();
+    let inspected = root.path().join("inspected-index.json");
     vibe_safefs::arm_before_proved_removal(Some(Box::new(move |_, _| {
-        std::fs::remove_file(&planted).unwrap();
+        // Retain the inspected inode outside the swept run; unlink/recreate
+        // can immediately reuse it on Unix and fail to inject a true swap.
+        std::fs::rename(&planted, &inspected).unwrap();
         std::fs::write(&planted, b"SOMEBODY ELSE'S FILE").unwrap();
     })));
     let live = run_id(99);

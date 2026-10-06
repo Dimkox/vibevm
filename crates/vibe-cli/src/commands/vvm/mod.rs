@@ -48,6 +48,7 @@ use model::{InstallRecord, State, VersionId};
 use provenance::running_record;
 use store::VersionStore;
 
+pub(crate) use builder::SOURCE_BUILD_ENVIRONMENT;
 pub(crate) use embedded::embedded_root_at;
 pub use selfloc::{SelfLocation, derive_self, same_location};
 
@@ -85,6 +86,8 @@ pub struct VvmEnv {
     /// to one answer at the composition root. The domain reads none of
     /// those itself; it is handed the verdict (PROP-019 `##CMD-OFFLINE`).
     pub offline: bool,
+    /// Owned process inputs for the source fingerprint; never read in the domain.
+    pub source_build_environment: Vec<(String, Option<std::ffi::OsString>)>,
 }
 
 impl VvmEnv {
@@ -162,7 +165,7 @@ pub fn run(ctx: &output::Context, args: VvmArgs, env: VvmEnv) -> Result<()> {
         VvmSubcommand::Bootstrap(a) => observed(ctx, "Bootstrapping vibevm", |progress| {
             bundle::run_bootstrap_cmd(ctx, &env, a, progress)
         }),
-        VvmSubcommand::Update(a) => observed(ctx, "Updating vibevm", |progress| {
+        VvmSubcommand::Update(a) => observed(ctx, "Checking vibevm updates", |progress| {
             bundle::run_update_cmd(ctx, &env, a, progress)
         }),
         VvmSubcommand::Reinstall(a) => observed(ctx, "Reinstalling vibevm", |progress| {
@@ -321,7 +324,9 @@ fn run_install_cmd(
         } else if args.mirror.is_none()
             && let Some(root) = source::linked_source(&store, &selector, &args.selector)?
         {
-            ctx.step(&format!("rebuilding from linked source {}", root.display()));
+            if command != "self:update" {
+                ctx.step(&format!("rebuilding from linked source {}", root.display()));
+            }
             let resolved = source::label_in_tree(&root)?;
             let path = source::external_path(&root);
             (root, resolved, model::Origin::External, Some(path))
@@ -359,6 +364,7 @@ fn run_install_cmd(
         now: &now,
         origin,
         source_path,
+        build_environment: &env.source_build_environment,
     };
     source_selection.detail(format!(
         "source origin: {}; revision: {}",
@@ -381,7 +387,12 @@ fn run_install_cmd(
         outcome.home,
         store.instance_dir(&outcome.record.version_id(), outcome.record.instance)
     );
-    let _ = outcome.reused;
+    if outcome.reused
+        && command == "self:update"
+        && bundle::report_source_if_current(ctx, env, &store, &outcome.record, &source_dir)?
+    {
+        return Ok(());
+    }
     let task = progress.task("Activating installed version");
     let result = activate_record(ctx, env, &store, &outcome.record, command);
     if result.is_ok() {

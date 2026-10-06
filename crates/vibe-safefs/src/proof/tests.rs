@@ -85,7 +85,8 @@ fn a_file_swapped_after_inspection_is_never_removed() {
     crate::arm_before_proved_removal(Some(Box::new(move |_, name| {
         // Somebody else's file, at exactly the name we judged.
         let at = planted.join("archive").join(name);
-        fs::remove_file(&at).unwrap();
+        // Retain the proved inode: unlink/recreate can immediately reuse it.
+        fs::rename(&at, at.with_extension("inspected")).unwrap();
         fs::write(&at, "SOMEBODY ELSE'S FILE").unwrap();
     })));
     let refusal = project.remove_file_proved_in(&archive, "0000.json", &proof);
@@ -180,7 +181,8 @@ fn a_directory_swapped_after_inspection_is_never_removed() {
     let planted = dir.path().to_path_buf();
     crate::arm_before_proved_removal(Some(Box::new(move |_, name| {
         let at = planted.join("trace").join(name);
-        fs::remove_dir(&at).unwrap();
+        // Retain the proved directory so its identity cannot be reused.
+        fs::rename(&at, at.with_extension("inspected")).unwrap();
         fs::create_dir(&at).unwrap();
         fs::write(at.join("someone-elses.txt"), "keep").unwrap();
     })));
@@ -215,7 +217,8 @@ fn an_empty_replacement_directory_is_still_refused_on_identity() {
     let planted = dir.path().to_path_buf();
     crate::arm_before_proved_removal(Some(Box::new(move |_, name| {
         let at = planted.join("trace").join(name);
-        fs::remove_dir(&at).unwrap();
+        // Retain the proved directory so its identity cannot be reused.
+        fs::rename(&at, at.with_extension("inspected")).unwrap();
         fs::create_dir(&at).unwrap();
     })));
     let refusal = project.remove_dir_proved_in(&trace, "run", &proof);
@@ -263,7 +266,8 @@ fn the_removal_hook_fires_once_and_leaves_nothing_armed() {
     let planted = dir.path().to_path_buf();
     crate::arm_before_proved_removal(Some(Box::new(move |_, name| {
         let at = planted.join("archive").join(name);
-        fs::remove_file(&at).unwrap();
+        // Retain the proved inode: unlink/recreate can immediately reuse it.
+        fs::rename(&at, at.with_extension("inspected")).unwrap();
         fs::write(&at, "swapped").unwrap();
     })));
     assert!(project.remove_file_proved_in(&archive, "a", &a).is_err());

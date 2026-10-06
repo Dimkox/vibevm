@@ -1908,7 +1908,7 @@ fn mcp_install_scope_both_writes_to_project_and_user_for_claude() {
 }
 
 #[test]
-fn mcp_install_scope_both_collapses_to_user_for_user_only_agent() {
+fn mcp_install_scope_both_writes_codex_project_and_user_configs() {
     let user = UserScratch::new();
     let project = tempfile::tempdir().unwrap();
     user.init_project(project.path());
@@ -1937,13 +1937,16 @@ fn mcp_install_scope_both_collapses_to_user_for_user_only_agent() {
     );
     let v: serde_json::Value = serde_json::from_slice(&out.stdout).unwrap();
     let results = v["results"].as_array().unwrap();
-    // Both expands to two entries — but the project one is `skipped`
-    // (Codex has no project surface) and the user one is `would-create`.
+    // Current Codex reads project .codex/config.toml in trusted projects,
+    // as well as its user config. Both scopes are now registerable.
     let by_scope: std::collections::BTreeMap<&str, &str> = results
         .iter()
         .map(|r| (r["scope"].as_str().unwrap(), r["status"].as_str().unwrap()))
         .collect();
-    assert_eq!(by_scope.get("project"), Some(&"skipped"));
+    assert!(matches!(
+        by_scope.get("project"),
+        Some(&"would-create") | Some(&"would-update") | Some(&"unchanged")
+    ));
     assert!(matches!(
         by_scope.get("user"),
         Some(&"would-create") | Some(&"would-update") | Some(&"unchanged")

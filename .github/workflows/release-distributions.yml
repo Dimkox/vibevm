@@ -7,7 +7,7 @@ on:
         description: Mutable product version to prepare and finalize
         required: true
         type: string
-        default: "1.0.1"
+        default: "1.0.7"
       upload:
         description: Replace the version's GitHub draft, upload all five bundles, and publish it
         required: true
@@ -118,6 +118,89 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes musl-tools
 
+      - name: Provision the pinned JTD generator for the full gate
+        if: ${{ inputs.self_check }}
+        shell: bash
+        run: |
+          set -eu
+          tool="$RUNNER_TEMP/jtd-codegen"
+          mkdir -p "$tool"
+          if [ '${{ runner.os }}' = macOS ] && [ '${{ runner.arch }}' = ARM64 ]; then
+            cargo install --git https://github.com/jsontypedef/json-typedef-codegen \
+              --tag v0.4.1 --locked --root "$tool" --bin jtd-codegen jtd_codegen_cli
+            tool="$tool/bin"
+          else
+            case '${{ runner.os }}' in
+              Windows) platform=x86_64-pc-windows-gnu ;;
+              macOS) platform=x86_64-apple-darwin ;;
+              Linux) platform=x86_64-unknown-linux-gnu ;;
+              *) exit 1 ;;
+            esac
+            curl --fail --location --retry 3 \
+              "https://github.com/jsontypedef/json-typedef-codegen/releases/download/v0.4.1/$platform.zip" \
+              --output "$tool/tool.zip"
+            python -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' "$tool/tool.zip" "$tool"
+            if [ '${{ runner.os }}' != Windows ]; then chmod +x "$tool/jtd-codegen"; fi
+          fi
+          echo "$tool" >> "$GITHUB_PATH"
+
+      - name: Prepare a native case-sensitive macOS scratch volume
+        if: ${{ runner.os == 'macOS' && inputs.self_check }}
+        shell: bash
+        run: |
+          set -eu
+          image="$RUNNER_TEMP/vibevm-gate.sparseimage"
+          mount="$RUNNER_TEMP/vibevm-gate"
+          hdiutil create -size 16g -type SPARSE -fs 'Case-sensitive APFS' -volname vibevm-gate "$image"
+          mkdir -p "$mount"
+          hdiutil attach -nobrowse -mountpoint "$mount" "$image"
+          mkdir -p "$mount/tmp"
+          # /var is a system symlink on macOS. The no-follow fixtures need the
+          # physical spelling, and case-alias controls need distinct files.
+          python3 -c 'import os, sys; print("TMPDIR=" + os.path.realpath(sys.argv[1]))' "$mount/tmp" >> "$GITHUB_ENV"
+
+      - name: Prepare physical Windows scratch and native MSVC tools
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scratch = Join-Path $env:RUNNER_TEMP 'vvm'
+          New-Item -ItemType Directory -Path $scratch -Force | Out-Null
+          $scratch = & python -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' $scratch
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve the physical Windows scratch directory.' }
+          "TEMP=$scratch" >> $env:GITHUB_ENV
+          "TMP=$scratch" >> $env:GITHUB_ENV
+
+          $cargoTool = & rustup which cargo
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot locate the selected native Cargo toolchain.' }
+          $env:PATH = (Split-Path -Parent $cargoTool) + ';' + $env:PATH
+
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or -not $installation) { throw 'The native MSVC x64 build tools are unavailable.' }
+          $developerCommand = Join-Path $installation 'Common7\Tools\VsDevCmd.bat'
+          $developerEnvironment = & $env:ComSpec /d /c "call `"$developerCommand`" -no_logo -arch=x64 -host_arch=x64 >nul && set"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot initialize the native MSVC environment.' }
+          # Import only compiler/search-path variables; never print the full environment.
+          foreach ($entry in $developerEnvironment) {
+            $pair = $entry -split '=', 2
+            if ($pair.Count -eq 2 -and $pair[0] -in @('PATH', 'INCLUDE', 'LIB', 'LIBPATH', 'VCToolsInstallDir')) {
+              Set-Item -LiteralPath "Env:$($pair[0])" -Value $pair[1]
+              "$($pair[0])=$($pair[1])" >> $env:GITHUB_ENV
+            }
+          }
+          $msvcBin = Join-Path $env:VCToolsInstallDir 'bin\Hostx64\x64'
+          $linker = Join-Path $msvcBin 'link.exe'
+          if (-not (Test-Path -LiteralPath $linker -PathType Leaf)) { throw 'The native MSVC x64 linker is unavailable.' }
+          "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER=$linker" >> $env:GITHUB_ENV
+          # Git Bash otherwise places GNU link.exe ahead of MSVC. Preserve the
+          # native linker on PATH even in callback environments that filter Cargo variables.
+          $bashEnvironment = Join-Path $env:RUNNER_TEMP 'vvm-msvc.bash'
+          $bashBin = $msvcBin.Replace("'", "'\''")
+          $bashSetup = 'export PATH="$(cygpath -u ''' + $bashBin + '''):$PATH"' + "`n"
+          [IO.File]::WriteAllText($bashEnvironment, $bashSetup, [Text.UTF8Encoding]::new($false))
+          "BASH_ENV=$($bashEnvironment.Replace('\', '/'))" >> $env:GITHUB_ENV
+
       - name: Build the Windows bundle
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
@@ -169,6 +252,13 @@ jobs:
             dist/vibevm-*
             dist/vibe-bootstrap-*
           if-no-files-found: error
+
+      - name: Detach the owned macOS scratch volume
+        if: ${{ always() && runner.os == 'macOS' && inputs.self_check }}
+        shell: bash
+        run: |
+          mount="$RUNNER_TEMP/vibevm-gate"
+          if mount | grep -F " on $mount ("; then hdiutil detach "$mount"; fi
 
   upload:
     name: Upload ${{ matrix.target }} from retained build output

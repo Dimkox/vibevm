@@ -12,7 +12,7 @@ impl Pinned {
         #[cfg(not(windows))]
         {
             let _ = (name, ownership_token, persisted_identity);
-            return Err(ReopenOwnedDirectoryError::Unsupported);
+            Err(ReopenOwnedDirectoryError::Unsupported)
         }
         #[cfg(windows)]
         {
@@ -127,9 +127,11 @@ impl Pinned {
         let path = self.join(name);
         let (dir, parent_durability) =
             super::platform::create_directory(self, name).map_err(|error| match error {
+                #[cfg(windows)]
                 super::platform::NativeCreateError::NotCreated(error) => {
                     OwnedDirectoryCreateError::NotCreated(anyhow::Error::new(error))
                 }
+                #[cfg(windows)]
                 super::platform::NativeCreateError::CreatedButUnsealed(error) => {
                     OwnedDirectoryCreateError::CreatedButUnsealed {
                         path: path.clone(),

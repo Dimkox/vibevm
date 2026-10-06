@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ReleaseVersion = '1.0.1'
+$ReleaseVersion = '1.0.2'
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 function Resolve-InstallBase {

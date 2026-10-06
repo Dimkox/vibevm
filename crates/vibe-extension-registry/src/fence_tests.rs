@@ -182,10 +182,10 @@ fn ambient_offenders(source: &str) -> Vec<String> {
                 flatten_use_tree(&use_item.tree, Vec::new(), &mut imports);
                 offenders.extend(imports.iter().filter_map(classify_import));
             }
-            Item::ExternCrate(extern_crate) => {
-                if extern_crate.ident == "std" && extern_crate.rename.is_some() {
-                    offenders.push(STD_ALIAS.to_string());
-                }
+            Item::ExternCrate(extern_crate)
+                if extern_crate.ident == "std" && extern_crate.rename.is_some() =>
+            {
+                offenders.push(STD_ALIAS.to_string());
             }
             _ => {}
         }

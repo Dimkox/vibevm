@@ -10,6 +10,14 @@ use crate::manifest::declarant_path::{declarant_path, is_windows_device_name};
 
 /// The closed source transport vocabulary for the first reference-bridge
 /// wire. Later transports require an explicit schema addition.
+///
+/// ```
+/// use vibe_core::manifest::EmbeddedSourceKind;
+///
+/// let kind: EmbeddedSourceKind = toml::Value::String("git".into()).try_into().unwrap();
+/// assert_eq!(kind, EmbeddedSourceKind::Git);
+/// assert!(toml::Value::String("tar".into()).try_into::<EmbeddedSourceKind>().is_err());
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum EmbeddedSourceKind {
@@ -19,6 +27,15 @@ pub enum EmbeddedSourceKind {
 /// Authentication posture for an embedded source. Reference bridges are
 /// public and credential-free in v1; this enum makes any future expansion an
 /// explicit wire change rather than accepting arbitrary strings today.
+///
+/// ```
+/// use vibe_core::manifest::EmbeddedSourceAuth;
+///
+/// assert_eq!(EmbeddedSourceAuth::default(), EmbeddedSourceAuth::None);
+/// let auth: EmbeddedSourceAuth = toml::Value::String("none".into()).try_into().unwrap();
+/// assert_eq!(auth, EmbeddedSourceAuth::None);
+/// assert!(toml::Value::String("token".into()).try_into::<EmbeddedSourceAuth>().is_err());
+/// ```
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum EmbeddedSourceAuth {
@@ -27,6 +44,31 @@ pub enum EmbeddedSourceAuth {
 }
 
 /// One immutable upstream source referenced by a package.
+///
+/// The source pin authenticates upstream bytes and their own attribution;
+/// package authorship and the bridge licence remain separate manifest fields.
+///
+/// ```
+/// use vibe_core::manifest::{EmbeddedSourceAuth, EmbeddedSourceDecl, EmbeddedSourceKind};
+///
+/// let source: EmbeddedSourceDecl = toml::from_str(r#"
+/// name = "upstream"
+/// kind = "git"
+/// url = "https://github.com/example/upstream.git"
+/// commit = "0123456789abcdef0123456789abcdef01234567"
+/// content_hash = "sha256-tree/1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+/// ref_hint = "refs/tags/v1.2.3"
+/// upstream_authors = ["Example Upstream Authors"]
+/// upstream_license = "MIT"
+/// license_path = "LICENSE"
+/// license_url = "https://github.com/example/upstream/blob/0123456789abcdef0123456789abcdef01234567/LICENSE"
+/// "#).unwrap();
+/// source.validate().unwrap();
+/// assert_eq!(source.kind, EmbeddedSourceKind::Git);
+/// assert_eq!(source.auth, EmbeddedSourceAuth::None);
+/// let rendered = toml::to_string(&source).unwrap();
+/// assert_eq!(source, toml::from_str::<EmbeddedSourceDecl>(&rendered).unwrap());
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EmbeddedSourceDecl {

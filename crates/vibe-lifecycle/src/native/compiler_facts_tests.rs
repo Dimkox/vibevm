@@ -101,7 +101,7 @@ fn exact_missing_source_records_one_coalesced_fact_and_is_one_shot() {
         .take_pending_build_facts(&expected)
         .expect("FACTS fixture");
     assert_eq!(facts.len(), 1, "repeated manager calls coalesce by order");
-    let debug = format!("{:?}", &facts[0]);
+    let debug = format!("{:?}", facts[0]);
     assert!(debug.contains("build:cargo"));
     assert!(debug.contains(current_platform().key()));
     assert!(

@@ -275,7 +275,7 @@ fn package_kind_copies_match_the_declared_domain() {
 
     let prompt_kinds = string_array_after(
         "crates/vibe-cli/src/commands/init/prompts.rs",
-        "let kind_items = vec!",
+        "\"Package kind\",",
     );
     unordered(
         &mut drift,
@@ -333,7 +333,7 @@ fn package_kind_copies_match_the_declared_domain() {
     prose(
         &mut drift,
         "vibe init --kind help",
-        "crates/vibe-cli/src/cli/pkg.rs",
+        "crates/vibe-cli/src/cli/init.rs",
         &format!("Package kind: {plain}. Default: tool."),
     );
     prose(

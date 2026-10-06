@@ -26,9 +26,20 @@ use super::placer::{self, Manifest};
 use super::store::{BINARY_NAME, INDEX_BINARY_NAME, VersionStore};
 use crate::output;
 
+mod freshness;
+use freshness::SourceSnapshot;
+
 /// A best-effort store lock so source installs and local imports do not race.
 pub(crate) struct InstallLock {
     _file: fs::File,
+}
+
+impl Drop for InstallLock {
+    fn drop(&mut self) {
+        // Unix forks may briefly inherit the locked open-file description.
+        // Closing our descriptor alone would leave that lock held in a child.
+        let _ = self._file.unlock();
+    }
 }
 
 impl InstallLock {
@@ -71,6 +82,7 @@ pub(crate) struct InstallRequest<'a> {
     pub now: &'a str,
     pub origin: Origin,
     pub source_path: Option<String>,
+    pub build_environment: &'a [(String, Option<std::ffi::OsString>)],
 }
 
 pub(crate) struct InstallOutcome {
@@ -94,6 +106,37 @@ pub(crate) fn perform_install(
 ) -> Result<InstallOutcome> {
     let id = &req.resolved.id;
 
+    let freshness = progress.task("Checking source freshness");
+    let before = SourceSnapshot::capture(source_root, &req.resolved.commit, req.build_environment);
+    let toolchain = builder.probe_toolchain(source_root);
+    let prev = latest_instance(store, id)?;
+    if before.is_none() {
+        freshness.detail("source input snapshot unavailable; freshness cannot be proven");
+    } else if prev
+        .as_ref()
+        .is_some_and(|(_, manifest, _)| manifest.source_inputs_sha256.is_none())
+    {
+        freshness.detail("previous instance has no source fingerprint; establishing a baseline");
+    } else {
+        freshness
+            .detail("comparing source fingerprint, provenance, toolchain and installed payload");
+    }
+    if !req.force
+        && let (Some(snapshot), Some(toolchain), Some((home, manifest, record))) =
+            (&before, &toolchain, &prev)
+        && manifest.source_inputs_sha256.as_ref() == Some(&snapshot.0)
+        && same_provenance(record, req, toolchain)
+        && placer::installed_files_match(store, record)
+    {
+        freshness.finish();
+        return Ok(InstallOutcome {
+            record: record.clone(),
+            home: home.clone(),
+            reused: true,
+        });
+    }
+    freshness.finish();
+
     ctx.step(&format!(
         "building {id} ({}) from {}",
         req.profile.as_str(),
@@ -107,7 +150,7 @@ pub(crate) fn perform_install(
     ];
     let placement = progress.task("Placing essential binaries");
     placement.set_progress(0, Some(dist.len() as u64), "files");
-    let manifest = match placer::manifest_for(&dist) {
+    let mut manifest = match placer::manifest_for(&dist) {
         Ok(manifest) => manifest,
         Err(error) => {
             placement.fail("distribution inspection failed");
@@ -115,9 +158,20 @@ pub(crate) fn perform_install(
         }
     };
 
-    let prev = latest_instance(store, id)?;
+    if let Some(before) = before
+        && SourceSnapshot::capture(source_root, &req.resolved.commit, req.build_environment)
+            .as_ref()
+            == Some(&before)
+        && toolchain.as_ref() == Some(&out.toolchain)
+    {
+        manifest.source_inputs_sha256 = Some(before.0);
+    }
+    if manifest.source_inputs_sha256.is_none() {
+        placement.detail("source fingerprint was not sealed: inputs changed or were unprovable");
+    }
     if let Some((prev_dir, prev_man, prev_rec)) = &prev
         && !req.force
+        && manifest.source_inputs_sha256 == prev_man.source_inputs_sha256
         && placer::matches_on_disk(store, &manifest, prev_man, prev_dir)
         && same_provenance(prev_rec, req, &out.toolchain)
     {
@@ -201,6 +255,19 @@ mod tests {
     use crate::commands::vvm::model::Kind;
     use specmark::verifies;
 
+    #[cfg(unix)]
+    #[test]
+    fn mutation_lock_releases_even_when_a_child_inherits_the_open_description() {
+        let temp = tempfile::tempdir().unwrap();
+        let store = VersionStore::new(temp.path());
+        let lock = InstallLock::acquire(&store).unwrap();
+        let inherited = lock._file.try_clone().unwrap();
+        drop(lock);
+        let next = InstallLock::acquire(&store).unwrap();
+        drop(next);
+        drop(inherited);
+    }
+
     /// A builder that writes a chosen byte string into the managed target dir
     /// (where `out.binary` resolves) instead of compiling.
     struct FakeBuilder {
@@ -247,6 +314,7 @@ mod tests {
             now,
             origin: Origin::Managed,
             source_path: None,
+            build_environment: &[],
         }
     }
 

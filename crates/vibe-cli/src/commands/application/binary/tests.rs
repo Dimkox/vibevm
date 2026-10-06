@@ -278,3 +278,83 @@ fn successful_source_transition_gets_a_clean_host_and_retires_binary_backup() {
                 .contains("suspended"))
     );
 }
+
+#[test]
+fn management_wrappers_follow_platform_and_preserve_literal_paths() {
+    for extension in ["cmd", "bat", "exe", "CMD"] {
+        let path = PathBuf::from(format!("C:/a %VALUE%! & b/engine.{extension}"));
+        assert_eq!(stable_launcher_name_for(&path, "windows"), "launch.cmd");
+        let body = String::from_utf8(stable_launcher_body(&path, "windows")).unwrap();
+        assert!(body.contains("setlocal DisableDelayedExpansion"), "{body}");
+        assert!(body.contains("\"C:/a %%VALUE%%! & b/engine."), "{body}");
+        assert!(body.ends_with("\" %*\r\n"), "{body}");
+        assert!(!body.contains("call "), "CALL would re-expand percent text");
+    }
+    let ps1 = Path::new("C:/a 'quoted' $value & b/engine.ps1");
+    assert_eq!(stable_launcher_name_for(ps1, "windows"), "launch.ps1");
+    let body = String::from_utf8(stable_launcher_body(ps1, "windows")).unwrap();
+    assert!(
+        body.contains("& 'C:/a ''quoted'' $value & b/engine.ps1' @args"),
+        "{body}"
+    );
+    assert!(body.contains("exit $LASTEXITCODE"), "{body}");
+    let posix = Path::new("/a 'quoted' $value & b/engine");
+    assert_eq!(stable_launcher_name_for(posix, "linux"), "launch.sh");
+    let body = String::from_utf8(stable_launcher_body(posix, "linux")).unwrap();
+    assert_eq!(
+        body,
+        "#!/bin/sh\nexec '/a '\\''quoted'\\'' $value & b/engine' \"$@\"\n"
+    );
+}
+
+#[test]
+fn native_and_batch_variants_keep_exact_ownership_through_drift_and_uninstall() {
+    let temp = tempdir().unwrap();
+    let settings = temp.path().join("settings");
+    let host = settings.join("opt/apps/demo");
+    let mut distribution = verified(temp.path(), 'a');
+    for name in ["demo.exe", "demo.bat"] {
+        let relative = format!("launchers/{name}");
+        let bytes = format!("owned {name} variant").into_bytes();
+        fs::write(distribution.payload_root.join(&relative), &bytes).unwrap();
+        distribution.manifest.files.push(BundleFile {
+            path: relative.clone(),
+            sha256: digest(&bytes),
+            size: bytes.len() as u64,
+        });
+        distribution.manifest.launchers.push(BundleLauncher {
+            command: "demo".into(),
+            path: relative,
+            destination: name.into(),
+        });
+    }
+    let publication = publish(&settings, &host, distribution, None, &[]).unwrap();
+    let management = publication.management();
+    assert_eq!(publication.launchers().len(), 4);
+    publication.commit();
+    let executable = settings.join("opt/bin/demo.exe");
+    let batch = settings.join("opt/bin/demo.bat");
+    let owned = fs::read(&executable).unwrap();
+    let outside = temp.path().join("outsider.exe");
+    fs::write(&outside, &owned).unwrap();
+    fs::write(&executable, b"foreign edit").unwrap();
+    assert!(
+        uninstall(&management)
+            .unwrap_err()
+            .to_string()
+            .contains("drifted")
+    );
+    assert!(
+        batch.is_file(),
+        "drift refuses before any owned variant is removed"
+    );
+    fs::write(&executable, owned).unwrap();
+    uninstall(&management).unwrap();
+    for name in ["demo.cmd", "demo.ps1", "demo.exe", "demo.bat"] {
+        assert!(!settings.join("opt/bin").join(name).exists());
+    }
+    assert!(
+        outside.is_file(),
+        "a same-hash outside file is never removed"
+    );
+}

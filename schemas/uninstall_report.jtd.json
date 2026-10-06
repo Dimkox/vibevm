@@ -21,22 +21,73 @@
     "package": {
       "type": "string",
       "metadata": {
-        "description": "`<kind>:<name>` of the package that was removed."
+        "description": "Qualified group/name coordinate of the direct dependency declaration removed from the selected node."
       }
     },
     "version": {
       "type": "string"
     },
     "removed_count": {
-      "type": "uint32"
+      "type": "uint32",
+      "metadata": {
+        "description": "Number of locked packages removed by this operation, including newly orphaned transitives. Zero when other workspace requirements retain the package."
+      }
     },
     "paths": {
       "elements": {
         "type": "string"
       },
       "metadata": {
-        "description": "Forward-slash-normalised paths of every file removed. User-owned paths (e.g. `spec/boot/00-core.md`, `spec/boot/90-user.md`, `spec/WAL.md`) are filtered out at plan-time and never appear here. Required member: a removal that took nothing still writes `paths` as `[]` — omitting a required collection would produce a document invalid by this same schema (rule R21).",
+        "description": "Forward-slash workspace-relative dependency slot paths in the removal plan. Paths outside materialized slots, global caches and authored source directories never appear here. Required collection: a declaration-only removal emits [].",
         "x-empty": "emit"
+      }
+    }
+  },
+  "optionalProperties": {
+    "removed_slot": {
+      "type": "string",
+      "metadata": {
+        "description": "Compatibility field for the selected package slot; empty when the selected package remains required elsewhere.",
+        "x-default": null
+      }
+    },
+    "package_removed": {
+      "type": "boolean",
+      "metadata": {
+        "description": "Whether the selected package was removed from the locked world, as opposed to removing only its declaration.",
+        "x-default": null
+      }
+    },
+    "adoption_facts": {
+      "properties": {
+        "status": {
+          "enum": [
+            "absent",
+            "removed",
+            "kept"
+          ],
+          "metadata": {
+            "x-vocabulary": "closed"
+          }
+        }
+      },
+      "optionalProperties": {
+        "path": {
+          "type": "string",
+          "metadata": {
+            "x-default": null
+          }
+        },
+        "hint": {
+          "type": "string",
+          "metadata": {
+            "x-default": null
+          }
+        }
+      },
+      "metadata": {
+        "description": "Disposition of the selected dependency declaration’s adoption overlay. Transitive overlays remain user-owned.",
+        "x-default": null
       }
     }
   }

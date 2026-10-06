@@ -1,5 +1,6 @@
     use std::fs;
 
+    #[cfg(windows)]
     use tempfile::TempDir;
 
     use super::*;

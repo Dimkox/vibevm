@@ -235,7 +235,7 @@ pub(super) fn decode_base64(input: &str) -> Result<Vec<u8>, &'static str> {
         return Err("length not a multiple of 4");
     }
     let mut out = Vec::with_capacity(cleaned.len() / 4 * 3);
-    for quad in cleaned.chunks_exact(4) {
+    for quad in cleaned.as_chunks::<4>().0 {
         let pad_third = quad[2] == b'=';
         let pad_fourth = quad[3] == b'=';
         let packed = (sextet(quad[0])? << 18)

@@ -32,6 +32,7 @@ use download::{
     DownloadCleanup, Downloader, HttpDownloader, cache_busted, download_path, safe_url,
 };
 use report::{ActivationReport, emit_outcome};
+pub(super) use report::{report_if_current, report_source_if_current};
 use selection::{current_target, read_aggregate, select_platform, validated_release_base};
 
 pub(super) fn installed_bundle_intact(store: &VersionStore, record: &InstallRecord) -> bool {
@@ -270,9 +271,9 @@ pub(super) fn install_newest_release(
 
 /// Three outcomes, one manifest read. A newer release is installed and
 /// activated by the same verified path an explicit version number takes.
-/// The SAME version is not a no-op: a release can be rebuilt under its own
-/// number, so the manifest's bundle digest decides between a fresh instance
-/// and a reuse. An OLDER newest release means one was withdrawn on the far
+/// The SAME version still requires checking the bundle digest: a release can
+/// be rebuilt under its own number. An intact reused active instance needs no
+/// activation. An OLDER newest release means one was withdrawn on the far
 /// side; `update` never walks a machine backwards on its own.
 fn move_to_newest_release(
     remote: &RemoteContext<'_>,
@@ -300,11 +301,11 @@ fn move_to_newest_release(
         return Ok(());
     }
     let reused = install_selected(remote, platform, &release_base, force)?;
-    remote.ctx.summary(&if reused {
-        format!("newest release is {newest} — already installed")
-    } else {
-        format!("newest release is still {newest}, rebuilt since this install — reinstalled")
-    });
+    if !reused {
+        remote.ctx.summary(&format!(
+            "newest release is still {newest}, rebuilt since this install — reinstalled"
+        ));
+    }
     Ok(())
 }
 
@@ -467,6 +468,17 @@ fn install_selected(
     {
         existing.detail(format!("reusing intact {}", outcome.record.selector()));
         existing.finish();
+        if remote.command == "self:update"
+            && report_if_current(
+                remote.ctx,
+                remote.env,
+                remote.store,
+                &outcome.record,
+                remote.command,
+            )?
+        {
+            return Ok(true);
+        }
         let _lock = InstallLock::acquire(remote.store)?;
         return finish_install(remote, &outcome);
     }

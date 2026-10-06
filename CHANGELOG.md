@@ -8,7 +8,111 @@ Format roughly follows [Keep a Changelog](https://keepachangelog.com/), grouped 
 
 ## [Unreleased]
 
-_(nothing yet)_
+## [1.0.7] — 2026-10-04
+
+- Source self-update freshness handles opaque untracked nested Git worktrees
+  instead of rejecting them as non-file inputs. Local verification caches are
+  ignored as machine outputs. Regression coverage includes the actual host
+  checkout with an isolated temporary store; repeated calls reuse the sealed
+  instance without rebuilding. Verbose progress distinguishes unavailable
+  snapshots from missing legacy evidence. An unchanged source update explains
+  why nothing needs updating and names the selected source checkout.
+
+## [1.0.6] — 2026-10-04
+
+- `vibe self update` checks source freshness before Cargo and reuses unchanged
+  source builds without copying a new instance. An already-active verified
+  binary release skips redundant activation and installation messages; JSON
+  no-op output no longer requests a `vibe-index` restart. `--force` and
+  `self reinstall` retain deliberate refresh behavior.
+
+## [1.0.5] — 2026-10-04
+
+- Package uninstall removes newly orphaned transitive dependencies using the
+  installed lock graph, without downloading or reinstalling packages. Shared
+  dependencies and declarations in other workspace nodes remain installed;
+  pure-transitive removal is refused. Confirmation and in-place protection
+  cover the complete removal set, and boot is regenerated from the pruned world.
+  Empty package containers are removed while other versions and untracked
+  siblings remain untouched. JSON reports the removal count, complete slot
+  paths and whether the selected package was retained by another declaration.
+
+## [1.0.4] — 2026-10-03
+
+Global application installation accepts platform-specific launcher variants.
+Each command needs a native launcher, and a package may publish several
+variants without requiring a Windows `.cmd`/`.ps1` pair on Linux or macOS.
+The shared ownership checks also recognize `.exe` and `.bat`; update,
+rollback and uninstall retain exact file/hash protection. Windows management
+entries select the correct batch/native or PowerShell wrapper; POSIX entries
+keep shell argument forwarding.
+
+Zap's tracked source installer was corrected alongside this release to report
+its deployed native launchers instead of demanding Windows files everywhere.
+Published binary witnesses and application protocol versions are unchanged.
+
+## [1.0.3] — 2026-10-02
+
+Global MCP installation now keeps preparation, dependency installation and
+agent registration visibly active. Resolution messages distinguish version
+selection, metadata reads, download-source lookup and in-place checkout
+instead of repeating an indistinguishable "Resolving" label.
+
+- **Agent and server selection:** interactive checkbox menus use Space to
+  toggle and Enter to confirm. Install starts with only All checked; All and
+  individual subsets are exclusive. Checked rows use `[+]`. Multi-server
+  packages offer the same selection, with explicit `--agent`/`--server`
+  filters for scripts and JSON string arrays for exact server names.
+- **Selective global uninstall:** inspect native client configurations and
+  initially check only agents with an exact owned installed registration.
+  Show missing, changed and pending states. Remove only selected owned
+  entries; retain the package while another agent still owns registrations.
+  Refresh preserves each agent's chosen server subset. Drift protection and
+  rollback preserve foreign entries and later edits; JSON reports whether
+  the package was removed.
+- **Installation scope:** the known global MCP service user-project is
+  materialized automatically with a human notice naming its full destination.
+  A concrete project keeps its existing confirmation policy and names the
+  full target path. Automatic service installation does not bypass unrelated
+  binary consent or agent/server choices.
+- **Initialization:** `vibe init` can choose a root `[project]` or `[package]`
+  declaration in the same scaffold. `--type project|package`, `--group` and
+  `--name` provide explicit script inputs. Interactive init explains the
+  group/name coordinate before asking group, name, type and remaining fields.
+  Metadata flags and the chosen package kind reach the manifest; reinit
+  preserves authored files and refuses silent role conversion. Interior
+  hyphens such as `package-name` are supported. Legacy nested package/group
+  forms remain available.
+- **Prompt coexistence:** progress stays paused for the entire field-entry
+  dialog, however long a person leaves it unanswered, and resumes afterward.
+  Native client-directory injection isolates global MCP fixtures on Windows.
+- **Release validation:** the full workspace gate now provisions its pinned
+  generator and clean-snapshot dependency slot. Unix lock guards explicitly
+  release inherited file-description locks; placement rejects incomplete
+  manifests through typed errors. Portable fixtures retain identity, rollback,
+  capability-refusal and stream assertions across operating systems.
+  Windows scratch Git enables long paths and gates select Git for Windows
+  Bash explicitly. Native macOS gates use an owned
+  case-sensitive temporary volume and physical paths; Unicode fixtures
+  exercise the same refusal rules when APFS cannot represent distinct names.
+  Health preparation fixtures seal their own regular tool assets. The
+  workspace also passes current Rust 1.98 Clippy without lint suppressions;
+  hash recipes, wire formats and their golden data stay unchanged.
+
+## [1.0.2] — 2026-10-01
+
+MCP packages can declare a remote Streamable HTTP endpoint alongside the
+existing local stdio binary form. `vibe mcp install` accepts a package and
+optional server selector, and `vibe install -g mcp:<group>/<name>` maintains
+an exact-pinned user inventory and registers the endpoint with selected
+agents. Global update and uninstall follow the same inventory. Per-agent
+registration receipts protect operator-owned and hand-edited entries.
+
+Qwen Code joins the agent integration matrix with project and user scopes.
+Codex project MCP configuration follows its current `.codex/config.toml`
+surface. Remote URL projection uses each client's native configuration
+shape; Claude Desktop reports that direct remote configuration is unsupported.
+An endpoint-only package needs no local binary or build.
 
 ## [1.0.1] — 2026-09-30
 

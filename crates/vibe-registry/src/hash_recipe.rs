@@ -167,24 +167,11 @@ pub fn order_entries<T>(recipe: RecipeId, items: Vec<(String, T)>) -> Vec<(Strin
 mod tests {
     use super::*;
 
-    /// Both recipes are separator-independent — and that includes recipe 0,
-    /// which is **not** what the plan assumed.
-    ///
-    /// The recorded suspicion was that recipe 0, sorting `Vec<PathBuf>` before
-    /// normalising, would order differently on a `\` host than on a `/` host.
-    /// Measured here and refuted: `Path`'s `Ord` is **component-wise**, so it
-    /// never sees a separator byte to be confused by. Recipe 0's real property
-    /// is that it orders by components; recipe 1's is that it orders the
-    /// normalised bytes. Those are two different orders (see
-    /// [`the_recipes_diverge_on_a_sibling_below_slash`]) — but neither of them
-    /// depends on the host.
-    ///
-    /// `vibe-index` carries the same proof over its own copy. Two
-    /// implementations mean two proofs: a property shown on one says nothing
-    /// about the other, and "MUST stay in lockstep" is a claim about both or
-    /// about neither.
+    /// Tree1 normalises separators before sorting on every host. Legacy0
+    /// remains frozen: it orders raw Path components, and Unix treats a
+    /// backslash as a literal filename byte rather than a separator.
     #[test]
-    fn neither_recipe_depends_on_the_input_separator() {
+    fn tree1_normalizes_separators_while_legacy0_preserves_native_path_order() {
         let unix = vec![
             "spec/inner/a.md".to_string(),
             "spec-x.md".to_string(),
@@ -197,14 +184,36 @@ mod tests {
             "specX.md".to_string(),
             "README.md".to_string(),
         ];
+        let normalized_order = vec![
+            "README.md".to_string(),
+            "spec-x.md".to_string(),
+            "spec/inner/a.md".to_string(),
+            "specX.md".to_string(),
+        ];
+        assert_eq!(order_paths(RecipeId::Tree1, &unix), normalized_order);
+        assert_eq!(order_paths(RecipeId::Tree1, &windows), normalized_order);
 
-        for recipe in [RecipeId::Legacy0, RecipeId::Tree1] {
-            assert_eq!(
-                order_paths(recipe, &unix),
-                order_paths(recipe, &windows),
-                "{recipe:?}'s order must not depend on the input separator"
-            );
-        }
+        let component_order = vec![
+            "README.md".to_string(),
+            "spec/inner/a.md".to_string(),
+            "spec-x.md".to_string(),
+            "specX.md".to_string(),
+        ];
+        assert_eq!(order_paths(RecipeId::Legacy0, &unix), component_order);
+        let raw_backslash_order = if cfg!(windows) {
+            component_order
+        } else {
+            vec![
+                "README.md".to_string(),
+                "spec-x.md".to_string(),
+                "specX.md".to_string(),
+                "spec/inner/a.md".to_string(),
+            ]
+        };
+        assert_eq!(
+            order_paths(RecipeId::Legacy0, &windows),
+            raw_backslash_order
+        );
     }
 
     /// Where the two recipes actually part company — and it is not the byte

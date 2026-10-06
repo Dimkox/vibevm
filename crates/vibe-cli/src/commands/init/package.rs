@@ -41,51 +41,74 @@ fn boot_category(kind: PackageKind) -> &'static str {
     }
 }
 
-/// Create a package in an existing project root (dynamic link).
-pub(super) fn create_package_in_project(
+pub(super) struct PreparedPackage {
+    fields: ProjectFields,
+    kind: PackageKind,
+    translation: Option<Translation>,
+}
+
+/// Collect and validate all nested-package choices before creating its container.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn prepare_package(
     ctx: &output::Context,
     args: &InitArgs,
-    project_path: &Path,
+    root: &Path,
     group: &str,
     name: &str,
-    user_config: &mut UserConfig,
+    user_config: &UserConfig,
     interactive: bool,
-) -> Result<()> {
-    let path = canonical_no_unc(project_path)?;
-    if !path.join(Manifest::FILENAME).exists() {
-        bail!(
-            "no `vibe.toml` in `{}` — `vibe init package` must be run inside a project root",
-            path.display()
-        );
-    }
-
-    // Gather package field values (interactive or defaults from project fields).
-    let fields = if interactive {
-        prompts::prompt_package_fields(group, name, user_config)?
+) -> Result<PreparedPackage> {
+    let (fields, kind) = if interactive {
+        ctx.suspend_progress(|| {
+            prompts::identity_introduction(ctx);
+            prompts::prompt_package_fields(args, group, name, user_config)
+        })?
     } else {
-        prompts::package_fields_from_args(args, group, name, user_config)
+        (
+            prompts::package_fields_from_args(args, group, name, user_config),
+            requested_kind(args)?,
+        )
     };
-    prompts::maybe_save_author(user_config, &fields.authors);
-
-    ctx.heading(&format!(
-        "Creating package `{group}/{name}` in `{}`",
-        path.display()
-    ));
-
-    let kind = requested_kind(args)?;
+    super::root_role::validate_fields(&fields, true)?;
     let translation = match args.translates.as_deref() {
         None => None,
         Some(coordinate) => {
             if kind != PackageKind::Doc {
-                bail!(
-                    "`--translates` scaffolds a translation, and a translation is a `doc` \
-                     package — pass `--kind doc` as well \
-                     (spec://org.vibevm.core/vibevm/common/PROP-057#LOC-PACKAGE-PER-LANGUAGE)"
-                );
+                bail!("`--translates` requires a doc package; pass --kind doc");
             }
-            Some(doc::resolve_translation(&path, coordinate, name)?)
+            Some(doc::resolve_translation(root, coordinate, name)?)
         }
     };
+    Ok(PreparedPackage {
+        fields,
+        kind,
+        translation,
+    })
+}
+
+/// Create the already validated package in its project container.
+pub(super) fn create_package_in_project(
+    ctx: &output::Context,
+    project_path: &Path,
+    group: &str,
+    name: &str,
+    user_config: &mut UserConfig,
+    prepared: PreparedPackage,
+) -> Result<()> {
+    let path = canonical_no_unc(project_path)?;
+    if !path.join(Manifest::FILENAME).exists() {
+        bail!("no vibe.toml in `{}`", path.display());
+    }
+    let PreparedPackage {
+        fields,
+        kind,
+        translation,
+    } = prepared;
+    prompts::maybe_save_author(user_config, &fields.authors);
+    ctx.heading(&format!(
+        "Creating package `{group}/{name}` in `{}`",
+        path.display()
+    ));
 
     let mut outcomes = create_package_dirs_from_fields(
         ctx,

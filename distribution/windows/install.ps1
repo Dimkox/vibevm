@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ReleaseVersion = '1.0.1'
+$ReleaseVersion = '1.0.2'
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $PayloadPath = Join-Path $ScriptRoot 'vibe.exe'
 $ManifestPath = Join-Path $ScriptRoot 'SHA256SUMS.txt'
@@ -104,7 +104,7 @@ function Restore-CurrentPointer {
 }
 
 if (-not [Environment]::Is64BitOperatingSystem) {
-    throw 'vibe 1.0.1 for Windows requires an x86_64 (64-bit) Windows installation'
+    throw 'vibe 1.0.2 for Windows requires an x86_64 (64-bit) Windows installation'
 }
 if (-not (Test-Path -LiteralPath $PayloadPath -PathType Leaf)) {
     throw "vibe.exe must be beside install.ps1: $PayloadPath"

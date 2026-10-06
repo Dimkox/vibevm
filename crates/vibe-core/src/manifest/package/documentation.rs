@@ -327,6 +327,19 @@ pub struct GlossaryDecl {
 /// The id is the folder as the page paths spell it, never the title, so
 /// an adaptation names the same sections as its source and shows other
 /// words for them.
+///
+/// ```
+/// use vibe_core::manifest::NavigationSectionDecl;
+///
+/// let section: NavigationSectionDecl =
+///     toml::from_str("id = \"start\"\ntitle = \"Getting started\"\n").unwrap();
+/// assert_eq!(section.id, "start");
+/// assert_eq!(section.title, "Getting started");
+/// let mut translation = section.clone();
+/// translation.title = "Начало работы".into();
+/// assert_eq!(translation.id, section.id); // Folder identity survives translation.
+/// assert_ne!(translation.title, section.title);
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct NavigationSectionDecl {

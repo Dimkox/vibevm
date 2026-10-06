@@ -372,7 +372,9 @@ fn remove_native(
     expected: &EntryState,
 ) -> std::result::Result<DirectoryDurability, OwnedTreeCleanupError> {
     super::platform::remove_expected(parent, name, expected).map_err(|error| match error {
+        #[cfg(windows)]
         super::platform::NativeRemoveError::Changed(detail) => third_error(detail),
+        #[cfg(windows)]
         super::platform::NativeRemoveError::Io(error) => {
             OwnedTreeCleanupError::Io(anyhow::Error::new(error))
         }

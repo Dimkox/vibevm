@@ -171,7 +171,7 @@ pub fn redact_credentials(s: impl AsRef<str>) -> String {
                 let after_scheme = scheme_end + 3;
                 let mut at_pos = None;
                 let mut bound = bytes.len();
-                let stops = [b'/', b'?', b'#', b' ', b'\t', b'\n', b'\r', b'"', b'\''];
+                let stops = *b"/?# \t\n\r\"'";
                 for (j, b) in bytes.iter().enumerate().skip(after_scheme) {
                     if *b == b'@' {
                         at_pos = Some(j);

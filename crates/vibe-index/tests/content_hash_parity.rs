@@ -246,29 +246,74 @@ fn recipes_share_the_digest_on_a_normal_tree() {
 // would otherwise lossy-collapse to one hash, so an unverifiable answer would
 // look valid (PROP-044 §4.7). Constructing such a path needs raw `OsString`
 // bytes, which `std::os::unix::ffi::OsStringExt` provides — so the real
-// assertion runs on Unix; on every other host the test is `#[ignore]`'d with
-// this explanation rather than silently absent.
+// assertion runs on Unix. Filesystems such as APFS refuse the name before a
+// tree exists; that branch verifies the refusal leaves valid-tree hashes
+// unchanged, while the private admission unit test exercises the same raw
+// path on every Unix host without relying on filesystem representability.
 #[cfg(unix)]
 #[test]
 fn non_utf8_path_is_a_hard_error_under_recipe_1() {
     use std::os::unix::ffi::OsStringExt;
 
     let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("valid.txt"), b"valid").unwrap();
+    let legacy_before = compute_content_hash_with(RecipeId::Legacy0, dir.path()).unwrap();
+    let tree_before = compute_content_hash_with(RecipeId::Tree1, dir.path()).unwrap();
     // 0xFF is not a valid UTF-8 lead byte.
     let bad = dir.path().join(std::ffi::OsString::from_vec(vec![0xFF]));
-    std::fs::write(&bad, b"x").unwrap();
-
-    let err = compute_content_hash_with(RecipeId::Tree1, dir.path());
-    assert!(
-        err.is_err(),
-        "recipe 1 must reject a non-UTF-8 path as a hard error"
-    );
-    // Recipe 0 is frozen-lossy: it still hashes the tree (the pre-recipe
-    // behaviour), for contrast.
-    assert!(
-        compute_content_hash_with(RecipeId::Legacy0, dir.path()).is_ok(),
-        "recipe 0 stays lossy on non-UTF-8 (frozen behaviour)"
-    );
+    match std::fs::write(&bad, b"x") {
+        Ok(()) => {
+            assert!(
+                compute_content_hash_with(RecipeId::Tree1, dir.path()).is_err(),
+                "recipe 1 must reject a non-UTF-8 path as a hard error"
+            );
+            // Recipe 0 is frozen-lossy: it still hashes the tree.
+            assert!(
+                compute_content_hash_with(RecipeId::Legacy0, dir.path()).is_ok(),
+                "recipe 0 stays lossy on non-UTF-8 (frozen behaviour)"
+            );
+        }
+        Err(error) => {
+            assert!(
+                cfg!(target_os = "macos") && error.raw_os_error() == Some(92),
+                "unexpected filename creation refusal (APFS requires EILSEQ): {error}",
+            );
+            let entries = std::fs::read_dir(dir.path())
+                .unwrap()
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap();
+            assert_eq!(
+                entries.len(),
+                1,
+                "the refused name must not create an entry"
+            );
+            assert_eq!(entries[0].file_name(), "valid.txt");
+            assert_eq!(
+                compute_content_hash_with(RecipeId::Legacy0, dir.path()).unwrap(),
+                legacy_before
+            );
+            assert_eq!(
+                compute_content_hash_with(RecipeId::Tree1, dir.path()).unwrap(),
+                tree_before
+            );
+            assert_eq!(
+                vibe_registry::compute_content_hash_with(
+                    vibe_registry::RecipeId::Legacy0,
+                    dir.path()
+                )
+                .unwrap(),
+                legacy_before
+            );
+            assert_eq!(
+                vibe_registry::compute_content_hash_with(
+                    vibe_registry::RecipeId::Tree1,
+                    dir.path()
+                )
+                .unwrap(),
+                tree_before
+            );
+        }
+    }
 }
 
 #[cfg(not(unix))]

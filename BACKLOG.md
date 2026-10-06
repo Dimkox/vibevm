@@ -1568,7 +1568,7 @@ structure, and it goes when the file does.
 | @fact:B135-WHAT **what** | `vibe uninstall org.vibevm.world/wal --path hello-vibe --assume-yes` печатает «removed its vibedeps/ slot», но `vibevm/vibedeps/org.vibevm.world.wal/` остаётся пустым каталогом; `test ! -e vibevm/vibedeps/org.vibevm.world.wal` красный |
 | @fact:B135-EFFECT **effect** | «нет и следа» после удаления не выполняется буквально; скрипты и ассерты документации, проверяющие отсутствие каталога, ложно красные |
 | @fact:B135-SEVERITY **severity** | P3 — пустой каталог безвреден, но противоречит отчёту команды |
-| @fact:B135-DISPOSITION **disposition** | `open` — удалять пустой родительский каталог слота вместе со слотом |
+| @fact:B135-DISPOSITION **disposition** | `closed` — 2026-10-04: удаление транзитивного замыкания убирает пустые контейнеры пакетов через нерекурсивный `remove_dir`, сохраняя другие версии и неучтённые файлы. Проверено тестом `empty_containers_removed_but_untracked_sibling_preserved` на Windows и Linux и свежими копиями FPF GOLDEN: остатки пакетов/контейнеров 0/0, 1/1 и 28/28. |
 | @fact:B135-FILED **filed by** | кампания документации, прогон промптов PP-O1 (`remove-a-package`) и проба центральной сессии, 2026-09-12 |
 
 ## B-136 — `vibe outdated` требует `[[registry]]` в манифесте, которого `vibe init` не пишет
@@ -2327,10 +2327,10 @@ structure, and it goes when the file does.
 
 | field | value |
 |---|---|
-| @fact:B211-WHAT **what** | `vibe init package … --link static` writes `link = "dynamic"`, and without `--format` the scaffold writes `format = "normal"` although `--help` says the default is `simple`. |
+| @fact:B211-WHAT **what** | `vibe init package … --link static` still writes `link = "dynamic"`. The format-help mismatch recorded here was corrected during root declaration selection on 2026-10-02: help now reports the existing `normal` default. |
 | @fact:B211-EVIDENCE **evidence** | 2026-09-27, the sandbox walks of `DOCS-MD-XML-TUTORIAL` (`f-cat-link-static`, `f-cat-defaults`) and `DOCS-OBSIDIAN-TUTORIAL`. |
 | @fact:B211-SEVERITY **severity** | P3 — two flags that do not do what their help says. |
-| @fact:B211-DISPOSITION **disposition** | `open` — honour `--link`, and make the default and the help agree (see also `B-201`). The tutorials set the link in the manifest. |
+| @fact:B211-DISPOSITION **disposition** | `open` — honour `--link` (see also `B-201`). Format help is aligned with the existing default; the tutorials still set the link in the manifest. |
 | @fact:B211-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
 
 ## B-212 — PROP-035 lags the compiler it describes {#b-212}
@@ -2342,3 +2342,33 @@ structure, and it goes when the file does.
 | @fact:B212-SEVERITY **severity** | P3 — a normative text that trails the product. |
 | @fact:B212-DISPOSITION **disposition** | `open` — reconcile PROP-035 with PROP-045 by the owner's hand, and add the agreement check. |
 | @fact:B212-FILED **filed by** | DOCS-MD-XML-TUTORIAL (M-052), 2026-09-27. |
+
+## B-213 — audit native client configuration isolation in remaining Windows tests {#b-213}
+
+| field | value |
+|---|---|
+| @fact:B213-WHAT **what** | `UserScratch` relocates Vibe settings/cache, but Windows `dirs` resolves client home/config through KnownFolders rather than HOME/USERPROFILE overrides. A user-scope MCP subprocess fixture is therefore not isolated by those environment variables. The global MCP fixtures found during agent-selection work were replaced with in-process dispatch over injected temporary client directories; remaining client-config test surfaces need an explicit audit. |
+| @fact:B213-EVIDENCE **evidence** | 2026-10-02: `dirs-5.0.1/src/win.rs`, `vibe-test-support/src/isolate.rs`, and the retired global cases in `crates/vibe-cli/tests/cli_application.rs`. The replacement `global_mcp_dispatch/tests.rs` proves all destination paths are inside its temporary root and verifies retention, rollback and drift there. No assumption about restoring unknown prior real client state is safe. |
+| @fact:B213-SEVERITY **severity** | P1 — an unisolated test can read or modify the developer's client configuration. |
+| @fact:B213-DISPOSITION **disposition** | `open` — inventory the remaining tests that reach native user-scope client paths; inject directory authority or otherwise prove isolation before executing them. Extend the user-home tripwire beyond Vibe settings to cover client configs without printing their contents. The current global MCP fixtures are already migrated. |
+| @fact:B213-FILED **filed by** | Global MCP agent/server selection review, 2026-10-02. |
+
+## B-214 — legacy nested init interpolates metadata into TOML {#b-214}
+
+| field | value |
+|---|---|
+| @fact:B214-WHAT **what** | Legacy `vibe init package` scaffolding inserts authors, license and description directly into quoted TOML templates. Valid prose containing quotes, backslashes or newlines can produce an invalid manifest. New root project/package declarations serialize typed manifests safely, but the legacy nested generic/doc template writers still require migration. |
+| @fact:B214-EVIDENCE **evidence** | 2026-10-02 source review: `commands/init/package.rs::create_package_dirs_from_fields` manually quotes authors and prose; `commands/init/doc.rs::manifest_text` formats metadata similarly. Root-role integration tests prove quoted authors/license/description safely roundtrip through the new typed root writer. |
+| @fact:B214-SEVERITY **severity** | P2 — otherwise valid metadata can leave a broken nested scaffold. |
+| @fact:B214-DISPOSITION **disposition** | `open` — replace legacy nested template metadata with typed serialization and validate the complete candidate before config/scaffold writes; add isolated quoted-metadata regressions for generic and doc packages. This is separate from the accepted root declaration/group choice. |
+| @fact:B214-FILED **filed by** | Init root declaration/group review, 2026-10-02. |
+
+## B-215 — duplicate test cfg attributes block all-target CLI clippy {#b-215}
+
+| field | value |
+|---|---|
+| @fact:B215-WHAT **what** | The existing global MCP test modules repeat cfg(test) at both the module declaration and file level. Strict all-target CLI clippy rejects duplicated_attributes although ordinary compilation and tests accept them. |
+| @fact:B215-EVIDENCE **evidence** | 2026-10-02: cargo clippy -p vibe-cli --all-targets -- -D warnings reports duplicate attributes in global_mcp_dispatch/tests.rs:1 and tests/progress.rs:1; these files are unchanged by the init role feature. |
+| @fact:B215-SEVERITY **severity** | P3 — inherited test-only lint debt. |
+| @fact:B215-DISPOSITION **disposition** | `closed` — redundant file attributes removed; parent test-only boundaries retained. Full Linux workspace all-target Clippy and full seven-step gate passed during 1.0.3 distribution validation (2026-10-02). |
+| @fact:B215-FILED **filed by** | Init root declaration/group verification, 2026-10-02. |

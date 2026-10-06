@@ -113,7 +113,15 @@ impl TransactionStore for MemoryStore {
         material.extend_from_slice(journal.transaction_id.0.as_bytes());
         Ok(VerificationWorkspaceIntent {
             name: "v".into(),
-            display_root: format!("C:/external/{}/v", journal.transaction_id.0),
+            display_root: format!(
+                "{}/{}/v",
+                if cfg!(windows) {
+                    "C:/external"
+                } else {
+                    "/external"
+                },
+                journal.transaction_id.0,
+            ),
             ownership_token: digest(&material).0,
         })
     }

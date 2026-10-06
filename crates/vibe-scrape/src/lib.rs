@@ -22,6 +22,24 @@ const CONTRACT_CAP: usize = 1024 * 1024;
 
 /// Parse, observe and fully prepare a scrape without mutating the project.
 pub fn prepare(request: ScrapeRequest) -> Result<PreparedScrape, ScrapeError> {
+    prepare_with_health(request, |project, contract, inventory| {
+        let mut resolver = health::SystemHealthResolver::new(project);
+        health::prepare(project, contract, inventory, &mut resolver)
+    })
+}
+
+/// The shared planning pipeline, with only read-only health discovery injected.
+fn prepare_with_health<F>(
+    request: ScrapeRequest,
+    prepare_health: F,
+) -> Result<PreparedScrape, ScrapeError>
+where
+    F: FnOnce(
+        &vibe_safefs::Project,
+        &contract::Contract,
+        &model::Inventory,
+    ) -> Result<health::PreparedHealth, health::HealthError>,
+{
     if !request.root.is_absolute() {
         return Err(ScrapeError::request("project root must be absolute"));
     }
@@ -30,8 +48,7 @@ pub fn prepare(request: ScrapeRequest) -> Result<PreparedScrape, ScrapeError> {
     let output_identity = validate_mode(&request, &project)?;
     let contract = load_contract(&request, &project)?;
     let inventory = inventory::collect(&project)?;
-    let mut health_resolver = health::SystemHealthResolver::new(&project);
-    let mut health = health::prepare(&project, &contract.value, &inventory, &mut health_resolver)
+    let mut health = prepare_health(&project, &contract.value, &inventory)
         .map_err(|error| ScrapeError::blocked(error.to_string()))?;
     let platform = health::LocalProcessBackend::new();
     let capabilities = health::HealthBackend::capabilities(&platform);

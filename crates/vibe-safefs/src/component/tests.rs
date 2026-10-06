@@ -284,11 +284,25 @@ fn complete_sets_share_the_identity_and_literal_path_laws() {
 
 #[test]
 fn overlap_and_containment_use_the_same_component_boundaries() {
-    let target = Path::new(r"C:\project\.claude\skills\demo");
-    let alias = Path::new(r"c:\PROJECT\.CLAUDE\skills\demo\nested");
-    let sibling = Path::new(r"C:\project\.claude\skills\other");
+    // Use native path components on both hosts. Backslashes inside a Unix
+    // Path are literal characters, not Windows directory separators.
+    let target = Path::new("project/.claude/skills/demo");
+    let alias = Path::new("PROJECT/.CLAUDE/skills/demo/nested");
+    let sibling = Path::new("project/.claude/skills/other");
     assert!(paths_overlap(target, alias));
     assert!(!paths_overlap(target, sibling));
+    assert!(!paths_overlap(
+        target,
+        Path::new("project/.claude/skills/demo-extra")
+    ));
+    #[cfg(windows)]
+    {
+        // Keep the drive-prefix alias case alongside the shared native paths.
+        assert!(paths_overlap(
+            Path::new(r"C:\project\.claude\skills\demo"),
+            Path::new(r"c:\PROJECT\.CLAUDE\skills\demo\nested"),
+        ));
+    }
 
     let scope = tempfile::tempdir().unwrap();
     let root = scope.path().join("project");

@@ -1,7 +1,7 @@
 # Official container images
 
 The release publishes four Linux/amd64 images under the `vibevm` Docker Hub
-organization. Every image has the mutable product tags `1.0.0` and `latest`.
+organization. Every image has the mutable product tags `1.0.3` and `latest`.
 
 - `vibevm/vibevm`: Alpine, Git, SSH tools, and the verified musl Vibe binary.
 - `vibevm/vibevm-zap`: the base image plus the verified binary Zap application;

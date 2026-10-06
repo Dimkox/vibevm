@@ -12,6 +12,10 @@ use vibe_wire::generated::application::e1::{
     context as context_wire, index as index_wire, reply as reply_wire,
 };
 
+#[path = "launcher.rs"]
+mod launcher;
+pub(super) use launcher::{launcher_belongs_to_command, launcher_kind};
+
 pub const CONTEXT_PROTOCOL: &str = "vibe-application-context/1";
 pub const RESULT_PROTOCOL: &str = "vibe-application-result/1";
 pub const INDEX_PROTOCOL: &str = "vibe-user-applications/1";

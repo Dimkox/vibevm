@@ -403,10 +403,34 @@ fn non_utf8_input_names_stay_outside_the_utf8_glob_namespace() {
     let row = row(dir.path(), "x", "0.1.0", Some(vec!["**".into()]));
     let ctx = context(dir.path(), row.effective_config().unwrap());
     let before = fingerprint_execution(&row, &ctx).unwrap();
-    fs::write(dir.path().join(OsString::from_vec(vec![b'x', 0x80])), "x").unwrap();
-    fs::write(dir.path().join(OsString::from_vec(vec![b'x', 0x81])), "y").unwrap();
+    let admission = super::fingerprint::inputs::input_glob_path;
+    assert_eq!(
+        admission(std::path::Path::new("ordinary.txt")),
+        Some("ordinary.txt".into())
+    );
+    for (byte, payload) in [(0x80, "x"), (0x81, "y")] {
+        let name = OsString::from_vec(vec![b'x', byte]);
+        // The exact production namespace gate receives both raw spellings,
+        // even when APFS refuses to represent them as directory entries.
+        assert_eq!(admission(std::path::Path::new(&name)), None);
+        let path = dir.path().join(name);
+        if let Err(error) = fs::write(&path, payload) {
+            assert!(
+                cfg!(target_os = "macos")
+                    && (error.kind() == std::io::ErrorKind::InvalidInput
+                        || error.raw_os_error() == Some(92)), // Darwin EILSEQ.
+                "raw-name fixture creation failed unexpectedly: {error}",
+            );
+            assert!(!path.exists());
+        }
+    }
 
     assert_eq!(fingerprint_execution(&row, &ctx).unwrap(), before);
+    assert_eq!(
+        super::fingerprint::legacy::execution_fingerprint_with(&row, &ctx, None).unwrap(),
+        before,
+        "the frozen legacy stream excludes the same raw OS names",
+    );
 }
 
 #[test]

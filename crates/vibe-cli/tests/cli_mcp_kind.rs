@@ -148,6 +148,21 @@ fn mcp_install_registers_and_uninstall_removes_package_servers() {
     // vibevm's own product entry rides the same install.
     assert!(doc["mcpServers"]["vibevm"].is_object());
 
+    // A pre-receipt installation carried only the JSON managed marker.
+    // A selected reinstall must adopt it even though the payload is unchanged.
+    let receipt = project.path().join(".mcp.json.vibevm-mcp.json");
+    fs::remove_file(&receipt).unwrap();
+    user.vibe()
+        .args(["mcp", "install", "mcp:org.vibevm/pin-server", "--path"])
+        .arg(project.path())
+        .args(["--agent", "claude", "--scope", "project", "--yes"])
+        .assert()
+        .success();
+    assert!(
+        receipt.exists(),
+        "selected install adopts the legacy marker"
+    );
+
     // Uninstall removes the managed entry AND the sidecar, leaving
     // operator-owned keys (none here beyond vibevm's own) intact.
     user.vibe()
@@ -167,4 +182,58 @@ fn mcp_install_registers_and_uninstall_removes_package_servers() {
         serde_json::from_str(&fs::read_to_string(&cfg_path).unwrap()).unwrap();
     assert!(doc["mcpServers"].get("pin-server").is_none());
     assert!(doc.get("vibevm").is_none(), "sidecar removed whole");
+}
+
+#[test]
+fn selected_mcp_package_registers_and_removes_codex_project_entry() {
+    let user = UserScratch::new();
+    let project = tempfile::tempdir().unwrap();
+    user.init_project(project.path());
+    user.vibe()
+        .args(["install", "mcp:org.vibevm/pin-server", "--path"])
+        .arg(project.path())
+        .arg("--registry")
+        .arg(fixture_registry())
+        .arg("--assume-yes")
+        .assert()
+        .success();
+
+    let installed = user
+        .vibe()
+        .args([
+            "mcp",
+            "install",
+            "mcp:org.vibevm/pin-server@=1.0.0",
+            "--path",
+        ])
+        .arg(project.path())
+        .args(["--agent", "codex", "--scope", "project", "--yes", "--quiet"])
+        .output()
+        .unwrap();
+    assert!(
+        installed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&installed.stderr)
+    );
+    assert!(String::from_utf8_lossy(&installed.stdout).contains("vibe mcp install:"));
+    let config = project.path().join(".codex/config.toml");
+    let text = fs::read_to_string(&config).unwrap();
+    assert!(text.contains("pin-server"), "{text}");
+    assert!(text.contains("command"), "{text}");
+
+    let removed = user
+        .vibe()
+        .args(["mcp", "uninstall", "mcp:org.vibevm/pin-server", "--path"])
+        .arg(project.path())
+        .args(["--agent", "codex", "--scope", "project", "--yes", "--quiet"])
+        .output()
+        .unwrap();
+    assert!(
+        removed.status.success(),
+        "{}",
+        String::from_utf8_lossy(&removed.stderr)
+    );
+    assert!(String::from_utf8_lossy(&removed.stdout).contains("vibe mcp uninstall:"));
+    let text = fs::read_to_string(config).unwrap();
+    assert!(!text.contains("pin-server"), "{text}");
 }

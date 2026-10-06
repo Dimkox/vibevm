@@ -10,84 +10,6 @@ specmark::scope!("spec://org.vibevm.core/vibevm/VIBEVM-SPEC#command-summary");
 use std::path::PathBuf;
 
 #[derive(Debug, clap::Args)]
-pub struct InitArgs {
-    /// Positional arguments: `[package|group] [pkgref] [path]`.
-    ///
-    /// Forms:
-    ///   vibe init                              — project in CWD (legacy)
-    ///   vibe init projectname                  — project in projectname/
-    ///   vibe init org.vibevm.apple projectname — project + package in projectname/
-    ///   vibe init org.vibevm.apple             — project + package in CWD
-    ///   vibe init org.vibevm.apple/orange      — project + package in CWD
-    ///   vibe init package org.vibevm.apple/orange [path]  — add package
-    ///   vibe init group org.vibevm.apple [path]           — add group
-    #[arg(num_args = 0..=3)]
-    pub positional: Vec<String>,
-
-    /// Directory to initialize (back-compat with `--path .`).
-    /// When positional path is also given, the positional wins.
-    #[arg(long)]
-    pub path: Option<PathBuf>,
-
-    /// Pre-set the active stack name (still requires installation separately).
-    #[arg(long)]
-    pub stack: Option<String>,
-
-    /// Project name; defaults to the basename of the target directory.
-    #[arg(long)]
-    pub name: Option<String>,
-
-    /// Override the default registry URL written into `vibe.toml`.
-    #[arg(long = "registry-url", conflicts_with = "no_registry")]
-    pub registry_url: Option<String>,
-
-    /// Override the default ref (`main`) recorded under `[registry]`.
-    #[arg(long = "registry-ref", conflicts_with = "no_registry")]
-    pub registry_ref: Option<String>,
-
-    /// Do not write a `[registry]` section into `vibe.toml`.
-    #[arg(long = "no-registry")]
-    pub no_registry: bool,
-
-    // --- Package creation flags (for `vibe init package` and project+pkg forms) ---
-    /// Package kind: flow, feat, stack, tool, mcp, lang, doc, app. Default: tool.
-    #[arg(long)]
-    pub kind: Option<String>,
-
-    /// Scaffold a translation of the documentation at `<group>/<name>`:
-    /// mirrors the source's pages and copies its `[[documents]]`.
-    /// Requires `--kind doc`; the language comes from this package's own
-    /// name, which a translation spells `<docname>-<lang>`.
-    #[arg(long = "translates", value_name = "COORDINATE")]
-    pub translates: Option<String>,
-
-    /// Package/project version. Default: 0.1.0 for packages, 0.0.1 for projects.
-    #[arg(long)]
-    pub version: Option<String>,
-
-    /// Author name (can be repeated). Default: detected from git config.
-    #[arg(long = "author")]
-    pub authors: Vec<String>,
-
-    /// License. Default: UPL-1.0.
-    #[arg(long)]
-    pub license: Option<String>,
-
-    /// One-line description.
-    #[arg(long)]
-    pub description: Option<String>,
-
-    /// Package format: simple or normal. Default: simple.
-    #[arg(long)]
-    pub format: Option<String>,
-
-    /// Link type for the boot snippet: static or dynamic.
-    /// Default: static for project+package, dynamic for `init package`.
-    #[arg(long)]
-    pub link: Option<String>,
-}
-
-#[derive(Debug, clap::Args)]
 pub struct ListArgs {
     /// Filter by package kind (flow, feat, stack, tool, mcp, lang, doc, app).
     #[arg(long)]
@@ -157,9 +79,19 @@ pub struct InstallArgs {
     /// constraint on) `vibe.toml` `[requires].packages`.
     pub packages: Vec<String>,
 
-    /// Install exactly one declared user application under the Vibe settings root.
+    /// Install a user application or an `mcp:` package under the Vibe settings root.
     #[arg(short = 'g', long = "global")]
     pub global: bool,
+
+    /// Target coding agent for a global MCP package. Without this flag an
+    /// interactive terminal offers all detected agents by default.
+    #[arg(long, requires = "global")]
+    pub agent: Option<String>,
+
+    /// Global MCP server names: comma-separated, or a JSON string array for literal commas.
+    /// Without the flag, multiple servers offer checkboxes (default: all).
+    #[arg(long, requires = "global")]
+    pub server: Option<String>,
 
     /// For a global application, build the resolved source revision even
     /// when a verified platform distribution is available.
@@ -563,12 +495,17 @@ pub struct ReinstallArgs {
 
 #[derive(Debug, clap::Args)]
 pub struct UninstallArgs {
-    /// Package reference `<kind>:<name>` (version is ignored on uninstall).
+    /// Direct package reference; removes dependencies no longer needed by the workspace.
+    /// The version selector is ignored on uninstall.
     pub package: String,
 
     /// Uninstall one user application without mutating a project.
     #[arg(short = 'g', long = "global")]
     pub global: bool,
+
+    /// Target agent registration for a global MCP package; `all` removes all owned registrations.
+    #[arg(long, requires = "global")]
+    pub agent: Option<String>,
 
     /// Directory of the project (defaults to current).
     #[arg(long, default_value = ".")]
