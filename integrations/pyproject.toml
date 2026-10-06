@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vibevm-factory-context"
+version = "0.1.0"
+description = "Optional data-only context preparation for Adaptive Factory"
+readme = "factory_context/README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.setuptools]
+packages = ["factory_context"]
+
+[tool.setuptools.package-data]
+factory_context = ["README.md"]
